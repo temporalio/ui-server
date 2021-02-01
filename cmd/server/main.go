@@ -58,7 +58,7 @@ func buildCLI() *cli.App {
 				if err != nil {
 					return cli.NewExitError(fmt.Sprintf("Unable to start server: %v.", err), 1)
 				}
-				return cli.NewExitError("All services are stopped.", 0)
+				return cli.NewExitError("Server is stopped.", 0)
 			},
 		},
 	}
