@@ -39,15 +39,15 @@ type (
 
 // NewServer returns a new instance of server that serves one or many services.
 func NewServer() *Server {
-	// Echo instance
 	e := echo.New()
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.File("/", "client/build/index.html")
 
 	// Routes
-	e.GET("/", hello)
+	e.GET("/api/hello", hello)
 
 	s := &Server{
 		App: e,
