@@ -20,49 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package server
+package routes
 
 import (
-	"fmt"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/temporalio/web-go/server/routes"
+	"github.com/temporalio/web-go/server/temporal"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
-type (
-	// Server ui server.
-	Server struct {
-		App *echo.Echo
-	}
-)
-
-// NewServer returns a new instance of server that serves one or many services.
-func NewServer() *Server {
-	e := echo.New()
-
-	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.File("/", "client/build/index.html")
-	e.Static("/", "client/build")
-
-	routes.SetAPIRoutes(e)
-
-	s := &Server{
-		App: e,
-	}
-	return s
+// SetAPIRoutes sets api routes
+func SetAPIRoutes(e *echo.Echo) {
+	api := e.Group("/api")
+	api.GET("/namespaces", listNamespaces)
+	api.GET("/namespaces/:namespace/workflows", listWorkflows)
 }
 
-// Start web ui server.
-func (s *Server) Start() error {
-	fmt.Println("Starting web server...")
-	s.App.Logger.Fatal(s.App.Start(":8080"))
-	return nil
+func listNamespaces(c echo.Context) error {
+	tClient, _ := temporal.NewClient("127.0.0.1:7233")
+
+	req := workflowservice.ListNamespacesRequest{NextPageToken: nil, PageSize: 10}
+	res, _ := tClient.ListNamespaces(&req)
+	return c.JSON(http.StatusOK, res)
 }
 
-// Stop web ui server.
-func (s *Server) Stop() {
-	fmt.Println("Stopping web server...")
+func listWorkflows(c echo.Context) error {
+	namespace := c.Param("namespace")
+	tClient, _ := temporal.NewClient("127.0.0.1:7233")
+
+	// reqOpen := workflowservice.ListOpenWorkflowExecutionsRequest{NextPageToken: nil, MaximumPageSize: 100, Namespace: "default"}
+	// resOpen, _ := tClient.ListOpenWorkflowExecutions(&reqOpen)
+
+	reqClosed := workflowservice.ListClosedWorkflowExecutionsRequest{NextPageToken: nil, MaximumPageSize: 100, Namespace: namespace}
+	resClosed, _ := tClient.ListClosedWorkflowExecutions(&reqClosed)
+
+	return c.JSON(http.StatusOK, resClosed)
 }
