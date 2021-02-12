@@ -24,9 +24,14 @@ package server
 
 import (
 	"fmt"
+	"net/http"
+
+	// statik build output
+	_ "github.com/temporalio/web-go/statik"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rakyll/statik/fs"
 	"github.com/temporalio/web-go/server/routes"
 )
 
@@ -44,10 +49,14 @@ func NewServer() *Server {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.File("/", "client/build/index.html")
-	e.Static("/", "client/build")
-
 	routes.SetAPIRoutes(e)
+
+	statikFS, err := fs.New()
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	h := http.FileServer(statikFS)
+	e.GET("/*", echo.WrapHandler(http.StripPrefix("/", h)))
 
 	s := &Server{
 		App: e,
