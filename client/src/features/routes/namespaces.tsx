@@ -1,0 +1,53 @@
+import { useState, useEffect } from "react";
+import {
+  Switch,
+  Link,
+  Route,
+  useRouteMatch,
+  useParams,
+} from "react-router-dom";
+
+import { Workflows, NamespacesList } from "features/routes";
+
+interface Namespace {
+  namespace_info: { name: string } ;
+}
+
+interface Params {
+  namespace: string;
+}
+
+function Namespaces() {
+  const { path, url } = useRouteMatch();
+  let { namespace } = useParams<Params>();
+
+  const [namespaces, setNamespaces] = useState<Namespace[]>([]);
+
+  const fetchNamespaces = async () => {
+    const res = await fetch("http://localhost:8080/api/namespaces");
+    const body = await res.json();
+    setNamespaces(body.namespaces);
+  };
+
+  useEffect(() => {
+    fetchNamespaces();
+  }, []);
+
+  return (
+    <div>
+      <h4>
+        <Link to="/namespaces">Namespaces</Link> : {namespace}
+      </h4>
+      <Switch>
+        <Route path={`${path}/workflows`}>
+          <Workflows />
+        </Route>
+        <Route exact path={path}>
+          <NamespacesList namespaces={namespaces} />
+        </Route>
+      </Switch>
+    </div>
+  );
+}
+
+export { Namespaces };
