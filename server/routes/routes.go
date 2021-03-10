@@ -31,29 +31,29 @@ import (
 )
 
 // SetAPIRoutes sets api routes
-func SetAPIRoutes(e *echo.Echo) {
+func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) {
 	api := e.Group("/api")
-	api.GET("/namespaces", listNamespaces)
-	api.GET("/namespaces/:namespace/workflows", listWorkflows)
+	api.GET("/namespaces", listNamespaces(temporalClient))
+	api.GET("/namespaces/:namespace/workflows", listWorkflows(temporalClient))
 }
 
-func listNamespaces(c echo.Context) error {
-	tClient, _ := temporal.NewClient("127.0.0.1:7233")
-
-	req := workflowservice.ListNamespacesRequest{NextPageToken: nil, PageSize: 10}
-	res, _ := tClient.ListNamespaces(&req)
-	return c.JSON(http.StatusOK, res)
+func listNamespaces(t *temporal.Client) func(echo.Context) error {
+	return func(c echo.Context) error {
+		req := workflowservice.ListNamespacesRequest{NextPageToken: nil, PageSize: 10}
+		res, _ := t.ListNamespaces(&req)
+		return c.JSON(http.StatusOK, res)
+	}
 }
 
-func listWorkflows(c echo.Context) error {
-	namespace := c.Param("namespace")
-	tClient, _ := temporal.NewClient("127.0.0.1:7233")
+func listWorkflows(t *temporal.Client) func(echo.Context) error {
+	return func(c echo.Context) error {
+		namespace := c.Param("namespace")
+		// reqOpen := workflowservice.ListOpenWorkflowExecutionsRequest{NextPageToken: nil, MaximumPageSize: 100, Namespace: "default"}
+		// resOpen, _ := t.ListOpenWorkflowExecutions(&reqOpen)
 
-	// reqOpen := workflowservice.ListOpenWorkflowExecutionsRequest{NextPageToken: nil, MaximumPageSize: 100, Namespace: "default"}
-	// resOpen, _ := tClient.ListOpenWorkflowExecutions(&reqOpen)
+		reqClosed := workflowservice.ListClosedWorkflowExecutionsRequest{NextPageToken: nil, MaximumPageSize: 100, Namespace: namespace}
+		resClosed, _ := t.ListClosedWorkflowExecutions(&reqClosed)
 
-	reqClosed := workflowservice.ListClosedWorkflowExecutionsRequest{NextPageToken: nil, MaximumPageSize: 100, Namespace: namespace}
-	resClosed, _ := tClient.ListClosedWorkflowExecutions(&reqClosed)
-
-	return c.JSON(http.StatusOK, resClosed)
+		return c.JSON(http.StatusOK, resClosed)
+	}
 }

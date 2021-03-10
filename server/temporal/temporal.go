@@ -48,11 +48,11 @@ type (
 // NewClient creates a new frontend service gRPC client
 func NewClient(
 	rpcAddress string,
-) (Client, error) {
+) (*Client, error) {
 	connection := rpc.CreateFrontendGRPCConnection(rpcAddress)
 	frontend := workflowservice.NewWorkflowServiceClient(connection)
 	client := Client{frontend: frontend, timeout: DefaultTimeout}
-	return client, nil
+	return &client, nil
 }
 
 func (c *Client) createContext(parent context.Context) (context.Context, context.CancelFunc) {

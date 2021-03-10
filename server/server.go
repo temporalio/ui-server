@@ -33,6 +33,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rakyll/statik/fs"
 	"github.com/temporalio/web-go/server/routes"
+	"github.com/temporalio/web-go/server/temporal"
 )
 
 type (
@@ -49,7 +50,12 @@ func NewServer() *Server {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	routes.SetAPIRoutes(e)
+
+	tClient, err := temporal.NewClient("127.0.0.1:7233")
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	routes.SetAPIRoutes(e, tClient)
 
 	statikFS, err := fs.New()
 	if err != nil {
