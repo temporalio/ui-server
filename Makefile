@@ -43,7 +43,7 @@ build-gogo-grpc: $(PROTO_OUT)
 
 clean:
 	rm -rf ./api
-	(cd client && rm -rf ./build ./node_modules)
+	(cd client && rm -rf ./build)
 	rm -rf ./statik
 
 ##### Install dependencies #####
