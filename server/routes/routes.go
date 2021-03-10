@@ -26,8 +26,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/temporalio/web-go/api/workflowservice/v1"
 	"github.com/temporalio/web-go/server/temporal"
-	"go.temporal.io/api/workflowservice/v1"
 )
 
 // SetAPIRoutes sets api routes

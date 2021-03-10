@@ -26,8 +26,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/temporalio/web-go/api/workflowservice/v1"
 	"github.com/temporalio/web-go/server/rpc"
-	"go.temporal.io/api/workflowservice/v1"
 )
 
 const (
