@@ -43,7 +43,8 @@ var webuiAssets embed.FS
 type (
 	// Server ui server.
 	Server struct {
-		App *echo.Echo
+		httpServer     *echo.Echo
+		temporalClient *temporal.Client
 	}
 )
 
@@ -56,7 +57,7 @@ func NewServer() *Server {
 	e.Use(middleware.Recover())
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 
-	tClient, err := temporal.NewClient("127.0.0.1:7233")
+	tClient, err := temporal.NewClient("127.0.0.1:7233", e.Logger)
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
@@ -65,7 +66,8 @@ func NewServer() *Server {
 	routes.SetWebUIRoutes(e, webuiHTML, webuiAssets)
 
 	s := &Server{
-		App: e,
+		httpServer:     e,
+		temporalClient: tClient,
 	}
 	return s
 }
@@ -73,11 +75,15 @@ func NewServer() *Server {
 // Start web ui server.
 func (s *Server) Start() error {
 	fmt.Println("Starting web server...")
-	s.App.Logger.Fatal(s.App.Start(":8080"))
+	s.httpServer.Logger.Fatal(s.httpServer.Start(":8080"))
 	return nil
 }
 
 // Stop web ui server.
 func (s *Server) Stop() {
 	fmt.Println("Stopping web server...")
+	if err := s.httpServer.Close(); err != nil {
+		s.httpServer.Logger.Warn(err)
+	}
+	s.temporalClient.Close()
 }
