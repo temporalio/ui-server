@@ -32,7 +32,7 @@ option ruby_package = "Temporal::Api::Version::V1";
 option csharp_namespace = "Temporal.Api.Version.V1";
 
 import "google/protobuf/timestamp.proto";
-import "dependencies/gogoproto/gogo.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "temporal/api/enums/v1/common.proto";
 
 // ReleaseInfo contains information about specific version of temporal.

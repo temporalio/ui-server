@@ -52,7 +52,7 @@ import "temporal/api/version/v1/message.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
-import "dependencies/gogoproto/gogo.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 message RegisterNamespaceRequest {
     string namespace = 1;

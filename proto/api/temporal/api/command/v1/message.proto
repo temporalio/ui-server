@@ -33,7 +33,7 @@ option csharp_namespace = "Temporal.Api.Command.V1";
 
 import "google/protobuf/duration.proto";
 
-import "dependencies/gogoproto/gogo.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 import "temporal/api/enums/v1/workflow.proto";
 import "temporal/api/enums/v1/command_type.proto";
