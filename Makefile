@@ -27,21 +27,33 @@ build-server: build-grpc
 PROTO_ROOT := proto/api
 PROTO_FILES = $(shell find $(PROTO_ROOT) -name "*.proto")
 PROTO_DIRS = $(sort $(dir $(PROTO_FILES)))
-PROTO_OUT := ./api
+PROTO_OUT := ./generated/api
 PROTO_IMPORTS := \
 	-I $(PROTO_ROOT) \
+	-I proto/dependencies/github.com/grpc-ecosystem/grpc-gateway/ \
+	-I proto/dependencies/github.com/gogo/googleapis/ \
 	-I proto/dependencies/
 
 $(PROTO_OUT):
 	mkdir $(PROTO_OUT)
 
-build-grpc: $(PROTO_OUT)
+PROTO_REFS := Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api
+
+build-grpc:
 	printf $(COLOR) "Compiling gRPC..."
+	rm -rf $(PROTO_OUT)/*
 	$(foreach PROTO_DIR,$(PROTO_DIRS),\
-	protoc $(PROTO_IMPORTS) \
-	--gogoslick_out=plugins=grpc,paths=source_relative,Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types:$(PROTO_OUT) $(PROTO_DIR)*.proto;)
+		protoc $(PROTO_IMPORTS) \
+			--gogoslick_out=plugins=grpc,paths=source_relative,$(PROTO_REFS):$(PROTO_OUT) \
+			--grpc-gateway_out=allow_patch_feature=false,paths=source_relative,$(PROTO_REFS):$(PROTO_OUT) \
+			--swagger_out=third_party/OpenAPI/ \
+		$(PROTO_DIR)*.proto \
+	;)
 	# fix grpc outputs path:
 	mv -f $(PROTO_OUT)/temporal/api/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
+
+	# Generate static assets for OpenAPI UI
+	statik -m -f -src third_party/OpenAPI/
 
 clean:
 	rm -rf ./api
@@ -49,17 +61,14 @@ clean:
 	rm -rf ./statik
 
 ##### Install dependencies #####
-install: install-submodules install-client
+install: install-utils install-client
+
+install-utils:
 	go get \
 		github.com/gogo/protobuf/protoc-gen-gogo \
 		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway \
 		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger \
-		github.com/mwitkow/go-proto-validators/protoc-gen-govalidators \
 		github.com/rakyll/statik
-
-install-submodules:
-	printf $(COLOR) "Updating git submodules..."
-	git submodule update --init --force
 
 install-client:
 	(cd client && yarn install)
