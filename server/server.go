@@ -27,7 +27,7 @@ import (
 	"net/http"
 
 	// statik build output
-	_ "github.com/temporalio/web-go/statik"
+	_ "github.com/temporalio/web-go/generated/web/statik"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
