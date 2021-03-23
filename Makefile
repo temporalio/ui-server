@@ -18,7 +18,7 @@ build: build-client build-server
 
 build-client:
 	(cd client && yarn build)
-	statik -src=./client/build
+	statik -m -f -dest generated/web -src=./client/build
 
 build-server: build-grpc
 	go mod tidy
@@ -53,12 +53,11 @@ build-grpc:
 	mv -f $(PROTO_OUT)/temporal/api/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
 
 	# Generate static assets for OpenAPI UI
-	statik -m -f -src third_party/OpenAPI/
+	statik -m -f -dest generated/openapi -src third_party/OpenAPI/
 
 clean:
-	rm -rf ./api
+	rm -rf ./generated/openapi ./generated/web
 	(cd client && rm -rf ./build)
-	rm -rf ./statik
 
 ##### Install dependencies #####
 install: install-utils install-client
