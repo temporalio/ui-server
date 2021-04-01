@@ -7,13 +7,14 @@ import {
 } from "react-router-dom";
 
 import "./App.css";
-import { Namespaces, Workflows } from "features/routes";
+import { Namespaces, Account } from "features/routes";
 
 function App() {
   return (
     <Router>
       <div className="App">
         <header className="App-header">
+          <Account />
           <Switch>
             <Route path={["/namespaces/:namespace", "/namespaces"]}>
               <Namespaces />

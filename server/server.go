@@ -57,6 +57,7 @@ func NewServer() *Server {
 		e.Logger.Fatal(err)
 	}
 	routes.SetAPIRoutes(e, tClient)
+	routes.SetAuthRoutes(e)
 	e.GET("/*", buildWebUIHander())
 
 	s := &Server{
