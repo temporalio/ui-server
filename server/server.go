@@ -23,18 +23,19 @@
 package server
 
 import (
+	"embed"
 	"fmt"
+	"io/fs"
 	"net/http"
-
-	// statik build output
-	_ "github.com/temporalio/web-go/generated/web/statik"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/rakyll/statik/fs"
 	"github.com/temporalio/web-go/server/routes"
 	"github.com/temporalio/web-go/server/temporal"
 )
+
+//go:embed generated/webui
+var webui embed.FS
 
 type (
 	// Server ui server.
@@ -56,13 +57,7 @@ func NewServer() *Server {
 		e.Logger.Fatal(err)
 	}
 	routes.SetAPIRoutes(e, tClient)
-
-	statikFS, err := fs.New()
-	if err != nil {
-		e.Logger.Fatal(err)
-	}
-	h := http.FileServer(statikFS)
-	e.GET("/*", echo.WrapHandler(http.StripPrefix("/", h)))
+	e.GET("/*", buildWebUIHander())
 
 	s := &Server{
 		App: e,
@@ -80,4 +75,11 @@ func (s *Server) Start() error {
 // Stop web ui server.
 func (s *Server) Stop() {
 	fmt.Println("Stopping web server...")
+}
+
+func buildWebUIHander() echo.HandlerFunc {
+	stream := fs.FS(webui)
+	stream, _ = fs.Sub(stream, "generated/webui")
+	handler := http.FileServer(http.FS(stream))
+	return echo.WrapHandler(handler)
 }

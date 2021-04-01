@@ -1,5 +1,5 @@
 .ONESHELL:
-.PHONY: statik
+.PHONY:
 
 all: clean install build
 
@@ -18,7 +18,8 @@ build: build-client build-server
 
 build-client:
 	(cd client && yarn build)
-	statik -m -f -dest generated/web -src=./client/build
+	mkdir server/generated/webui
+	mv client/build/* server/generated/webui
 
 build-server: build-grpc
 	go mod tidy
