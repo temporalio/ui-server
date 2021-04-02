@@ -57,8 +57,8 @@ build-grpc:
 	statik -m -f -dest generated/openapi -src third_party/OpenAPI/
 
 clean:
-	rm -rf ./generated/openapi ./generated/web
-	(cd client && rm -rf ./build)
+	rm -rf ./generated/openapi server/generated/webui
+	(cd webui && rm -rf ./build)
 
 ##### Install dependencies #####
 install: install-utils install-client
