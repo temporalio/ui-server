@@ -18,7 +18,7 @@ interface Params {
 }
 
 function Namespaces() {
-  const { path, url } = useRouteMatch();
+  const { path } = useRouteMatch();
   let { namespace } = useParams<Params>();
 
   const [namespaces, setNamespaces] = useState<Namespace[]>([]);
@@ -26,7 +26,7 @@ function Namespaces() {
   const fetchNamespaces = async () => {
     const res = await fetch("http://localhost:8080/api/namespaces");
     const body = await res.json();
-    setNamespaces(body.namespaces);
+    setNamespaces(body?.namespaces);
   };
 
   useEffect(() => {
