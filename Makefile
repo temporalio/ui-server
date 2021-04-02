@@ -57,7 +57,7 @@ build-grpc:
 	statik -m -f -dest generated/openapi -src third_party/OpenAPI/
 
 clean:
-	rm -rf ./generated/openapi server/generated/webui
+	rm -rf ./generated/openapi ./server/generated/webui
 	(cd webui && rm -rf ./build)
 
 ##### Install dependencies #####
@@ -65,7 +65,7 @@ install: install-utils install-webui
 
 install-utils:
 	go get \
-		github.com/gogo/protobuf/protoc-gen-gogo \
+		github.com/temporalio/gogo-protobuf/protoc-gen-gogoslick \
 		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway \
 		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger \
 		github.com/rakyll/statik
