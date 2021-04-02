@@ -14,12 +14,12 @@ PATH := $(GOBIN):$(PATH)
 COLOR := "\e[1;36m%s\e[0m\n"
 
 ##### Build #####
-build: build-client build-server
+build: build-webui build-server
 
-build-client:
-	(cd client && yarn build)
+build-webui:
+	(cd webui && yarn build)
 	mkdir server/generated/webui
-	mv client/build/* server/generated/webui
+	mv webui/build/* server/generated/webui
 
 build-server: build-grpc
 	go mod tidy
@@ -61,7 +61,7 @@ clean:
 	(cd webui && rm -rf ./build)
 
 ##### Install dependencies #####
-install: install-utils install-client
+install: install-utils install-webui
 
 install-utils:
 	go get \
@@ -70,5 +70,5 @@ install-utils:
 		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger \
 		github.com/rakyll/statik
 
-install-client:
-	(cd client && yarn install)
+install-webui:
+	(cd webui && yarn install)
