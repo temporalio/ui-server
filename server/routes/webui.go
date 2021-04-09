@@ -20,61 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package server
+package routes
 
 import (
+	"bytes"
 	"embed"
-	"fmt"
+	"io/fs"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/temporalio/web-go/server/routes"
-	"github.com/temporalio/web-go/server/temporal"
 )
 
-//go:embed generated/webui/index.html
-var webuiHTML []byte
-
-//go:embed generated/webui
-var webuiAssets embed.FS
-
-type (
-	// Server ui server.
-	Server struct {
-		App *echo.Echo
-	}
-)
-
-// NewServer returns a new instance of server that serves one or many services.
-func NewServer() *Server {
-	e := echo.New()
-
-	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-
-	tClient, err := temporal.NewClient("127.0.0.1:7233")
-	if err != nil {
-		e.Logger.Fatal(err)
-	}
-	routes.SetAPIRoutes(e, tClient)
-	routes.SetAuthRoutes(e)
-	routes.SetWebUIRoutes(e, webuiHTML, webuiAssets)
-
-	s := &Server{
-		App: e,
-	}
-	return s
+// SetAPIRoutes sets api routes
+func SetWebUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
+	assetsHandler := buildWebUIAssetsHander(assets)
+	e.GET("/static/*", assetsHandler)
+	e.GET("/favicon.ico", assetsHandler)
+	e.GET("/manifest.json", assetsHandler)
+	e.GET("/asset-manifest.json", assetsHandler)
+	e.GET("/logo192.png", assetsHandler)
+	e.GET("/logo512.png", assetsHandler)
+	e.GET("/robots.txt", assetsHandler)
+	e.GET("/*", buildWebUIHander(indexHTML))
 }
 
-// Start web ui server.
-func (s *Server) Start() error {
-	fmt.Println("Starting web server...")
-	s.App.Logger.Fatal(s.App.Start(":8080"))
-	return nil
+func buildWebUIHander(indexHTML []byte) echo.HandlerFunc {
+	return func(c echo.Context) (err error) {
+		return c.Stream(200, "text/html", bytes.NewBuffer(indexHTML))
+	}
 }
 
-// Stop web ui server.
-func (s *Server) Stop() {
-	fmt.Println("Stopping web server...")
+func buildWebUIAssetsHander(assets embed.FS) echo.HandlerFunc {
+	stream := fs.FS(assets)
+	stream, _ = fs.Sub(stream, "generated/webui")
+	handler := http.FileServer(http.FS(stream))
+	return echo.WrapHandler(handler)
 }
