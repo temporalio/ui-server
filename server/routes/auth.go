@@ -32,6 +32,8 @@ import (
 	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
@@ -147,10 +149,20 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, verifier *oidc.I
 		if err := idToken.Claims(&resp.IDTokenClaims); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
-		data, err := json.MarshalIndent(resp, "", "    ")
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		// data, err := json.MarshalIndent(resp, "", "    ")
+		// if err != nil {
+		// 	return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		// }
+
+		sess, _ := session.Get("session", c)
+		sess.Options = &sessions.Options{
+			Path:     "/",
+			MaxAge:   86400 * 7,
+			HttpOnly: true,
 		}
-		return c.JSON(http.StatusOK, data)
+		sess.Values["user"] = &resp.IDTokenClaims
+		sess.Save(c.Request(), c.Response())
+
+		return c.Redirect(http.StatusOK, "/")
 	}
 }

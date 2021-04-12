@@ -26,6 +26,8 @@ import (
 	"embed"
 	"fmt"
 
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/temporalio/web-go/server/routes"
@@ -52,6 +54,7 @@ func NewServer() *Server {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 
 	tClient, err := temporal.NewClient("127.0.0.1:7233")
 	if err != nil {

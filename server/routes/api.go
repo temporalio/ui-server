@@ -25,6 +25,7 @@ package routes
 import (
 	"net/http"
 
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/temporalio/web-go/generated/api/workflowservice/v1"
 	"github.com/temporalio/web-go/server/temporal"
@@ -35,6 +36,7 @@ func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) {
 	api := e.Group("/api")
 	api.GET("/namespaces", listNamespaces(temporalClient))
 	api.GET("/namespaces/:namespace/workflows", listWorkflows(temporalClient))
+	api.GET("/me", getCurrentUser())
 }
 
 func listNamespaces(t *temporal.Client) func(echo.Context) error {
@@ -55,5 +57,14 @@ func listWorkflows(t *temporal.Client) func(echo.Context) error {
 		resClosed, _ := t.ListClosedWorkflowExecutions(&reqClosed)
 
 		return c.JSON(http.StatusOK, resClosed)
+	}
+}
+
+func getCurrentUser() func(echo.Context) error {
+	return func(c echo.Context) error {
+		sess, _ := session.Get("session", c)
+		user := sess.Values["user"]
+
+		return c.JSON(http.StatusOK, user)
 	}
 }

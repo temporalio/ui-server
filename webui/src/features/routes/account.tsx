@@ -35,16 +35,14 @@ function Account() {
             alt="user pic"
             style={{ width: "2rem", height: "2rem" }}
           />
-          <p> {user.name}</p>
+          <p>{user.name}</p>
           <p>{user.email}</p>
         </div>
       )}
 
       <div>
         {user ? (
-          <button onClick={logout}>
-            Sign Out
-          </button>
+          <button onClick={logout}>Sign Out</button>
         ) : (
           <button onClick={login}>Continue to SSO</button>
         )}

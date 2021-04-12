@@ -5,8 +5,9 @@ go 1.16
 require (
 	github.com/coreos/go-oidc/v3 v3.0.0
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.3.2
+	github.com/gorilla/sessions v1.2.1
+	github.com/labstack/echo-contrib v0.9.0
 	github.com/labstack/echo/v4 v4.2.1
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/rakyll/statik v0.1.7
