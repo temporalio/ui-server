@@ -113,8 +113,7 @@ func authenticate(config *oauth2.Config) func(echo.Context) error {
 	}
 }
 
-func authenticateCb(ctx context.Context, config *oauth2.Config,
-	provider *oidc.Provider,
+func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.Provider,
 	verifier *oidc.IDTokenVerifier) func(echo.Context) error {
 	return func(c echo.Context) error {
 		r := c.Request()

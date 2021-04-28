@@ -36,7 +36,7 @@ func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) {
 	api := e.Group("/api")
 	api.GET("/namespaces", listNamespaces(temporalClient))
 	api.GET("/namespaces/:namespace/workflows", listWorkflows(temporalClient))
-	api.GET("/me", getCurrentUser())
+	api.GET("/me", getCurrentUser)
 }
 
 func listNamespaces(t *temporal.Client) func(echo.Context) error {
@@ -60,19 +60,17 @@ func listWorkflows(t *temporal.Client) func(echo.Context) error {
 	}
 }
 
-func getCurrentUser() func(echo.Context) error {
-	return func(c echo.Context) error {
-		sess, _ := session.Get("auth", c)
-		email := sess.Values["email"]
+func getCurrentUser(c echo.Context) error {
+	sess, _ := session.Get("auth", c)
+	email := sess.Values["email"]
 
-		if email == nil {
-			return c.JSON(http.StatusOK, nil)
-		}
-
-		user := struct {
-			Email string
-		}{email.(string)}
-
-		return c.JSON(http.StatusOK, user)
+	if email == nil {
+		return c.JSON(http.StatusOK, nil)
 	}
+
+	user := struct {
+		Email string
+	}{email.(string)}
+
+	return c.JSON(http.StatusOK, user)
 }
