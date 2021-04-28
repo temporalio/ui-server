@@ -19,7 +19,12 @@ function Account() {
   const fetchUser = async () => {
     const res = await fetch("http://localhost:8080/api/me");
     const body = await res.json();
-    setUser(body?.user);
+    const user: User = {
+      email: body?.Email,
+      picture: body?.Picture,
+      name: body?.Name,
+    };
+    setUser(user.email ? user : undefined);
   };
 
   useEffect(() => {
@@ -30,11 +35,6 @@ function Account() {
     <div>
       {user && (
         <div>
-          <img
-            src={user.picture}
-            alt="user pic"
-            style={{ width: "2rem", height: "2rem" }}
-          />
           <p>{user.name}</p>
           <p>{user.email}</p>
         </div>

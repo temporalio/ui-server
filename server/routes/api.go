@@ -62,8 +62,16 @@ func listWorkflows(t *temporal.Client) func(echo.Context) error {
 
 func getCurrentUser() func(echo.Context) error {
 	return func(c echo.Context) error {
-		sess, _ := session.Get("session", c)
-		user := sess.Values["user"]
+		sess, _ := session.Get("auth", c)
+		email := sess.Values["email"]
+
+		if email == nil {
+			return c.JSON(http.StatusOK, nil)
+		}
+
+		user := struct {
+			Email string
+		}{email.(string)}
 
 		return c.JSON(http.StatusOK, user)
 	}

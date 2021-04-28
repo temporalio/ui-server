@@ -45,6 +45,12 @@ const (
 	providerUrl  = ""
 )
 
+type User struct {
+	OAuth2Token   *oauth2.Token
+	IDTokenClaims *json.RawMessage
+	UserInfo      *oidc.UserInfo
+}
+
 func randString(nByte int) (string, error) {
 	b := make([]byte, nByte)
 	if _, err := io.ReadFull(rand.Reader, b); err != nil {
@@ -87,7 +93,7 @@ func SetAuthRoutes(e *echo.Echo) {
 
 	api := e.Group("/auth")
 	api.GET("/sso", authenticate(&config))
-	api.GET("/sso/callback", authenticateCb(ctx, &config, verifier))
+	api.GET("/sso/callback", authenticateCb(ctx, &config, provider, verifier))
 }
 
 func authenticate(config *oauth2.Config) func(echo.Context) error {
@@ -107,62 +113,82 @@ func authenticate(config *oauth2.Config) func(echo.Context) error {
 	}
 }
 
-func authenticateCb(ctx context.Context, config *oauth2.Config, verifier *oidc.IDTokenVerifier) func(echo.Context) error {
+func authenticateCb(ctx context.Context, config *oauth2.Config,
+	provider *oidc.Provider,
+	verifier *oidc.IDTokenVerifier) func(echo.Context) error {
 	return func(c echo.Context) error {
 		r := c.Request()
-		state, err := r.Cookie("state")
+		user, err := exchangeCode(ctx, r, config, provider, verifier)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "State cookie is not set in request")
-		}
-		if r.URL.Query().Get("state") != state.Value {
-			return echo.NewHTTPError(http.StatusBadRequest, "State cookie did not match")
+			return err
 		}
 
-		oauth2Token, err := config.Exchange(ctx, r.URL.Query().Get("code"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Unable to exchange token: "+err.Error())
-		}
-		rawIDToken, ok := oauth2Token.Extra("id_token").(string)
-		if !ok {
-			return echo.NewHTTPError(http.StatusInternalServerError, "No id_token field in oauth2 token.")
-		}
-		idToken, err := verifier.Verify(ctx, rawIDToken)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to verify ID Token: "+err.Error())
-		}
-
-		nonce, err := r.Cookie("nonce")
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Nonce is not provided")
-		}
-		if idToken.Nonce != nonce.Value {
-			return echo.NewHTTPError(http.StatusBadRequest, "Nonce did not match")
-		}
-
-		oauth2Token.AccessToken = "*REDACTED*"
-
-		resp := struct {
-			OAuth2Token   *oauth2.Token
-			IDTokenClaims *json.RawMessage // ID Token payload is just JSON.
-		}{oauth2Token, new(json.RawMessage)}
-
-		if err := idToken.Claims(&resp.IDTokenClaims); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-		}
-		// data, err := json.MarshalIndent(resp, "", "    ")
-		// if err != nil {
-		// 	return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-		// }
-
-		sess, _ := session.Get("session", c)
+		sess, _ := session.Get("auth", c)
 		sess.Options = &sessions.Options{
 			Path:     "/",
-			MaxAge:   86400 * 7,
+			MaxAge:   7 * 24 * int(time.Hour.Seconds()),
 			HttpOnly: true,
 		}
-		sess.Values["user"] = &resp.IDTokenClaims
+		// sess.Values["access-token"] = &user.OAuth2Token
+		sess.Values["email"] = &user.UserInfo.Email
+		// sess.Values["claims"] = &user.IDTokenClaims
 		sess.Save(c.Request(), c.Response())
 
-		return c.Redirect(http.StatusOK, "/")
+		return c.Redirect(http.StatusSeeOther, "/")
 	}
+}
+
+func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, provider *oidc.Provider, verifier *oidc.IDTokenVerifier) (*User, error) {
+	state, err := r.Cookie("state")
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "State cookie is not set in request")
+	}
+	if r.URL.Query().Get("state") != state.Value {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "State cookie did not match")
+	}
+
+	oauth2Token, err := config.Exchange(ctx, r.URL.Query().Get("code"))
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Unable to exchange token: "+err.Error())
+	}
+
+	userInfo, err := provider.UserInfo(ctx, oauth2.StaticTokenSource(oauth2Token))
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Unable to get user info: "+err.Error())
+	}
+
+	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
+	if !ok {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "No id_token field in oauth2 token.")
+	}
+	idToken, err := verifier.Verify(ctx, rawIDToken)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Unable to verify ID Token: "+err.Error())
+	}
+
+	nonce, err := r.Cookie("nonce")
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "Nonce is not provided")
+	}
+	if idToken.Nonce != nonce.Value {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "Nonce did not match")
+	}
+
+	oauth2Token.AccessToken = "*REDACTED*" // TODO this shouldn't be stored in cookies. Change to server side store instead of cookies
+
+	user := User{
+		OAuth2Token:   oauth2Token,
+		IDTokenClaims: new(json.RawMessage),
+		UserInfo:      userInfo,
+	}
+
+	if err := idToken.Claims(&user.IDTokenClaims); err != nil {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	// data, err := json.MarshalIndent(resp, "", "    ")
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	// }
+
+	return &user, nil
 }
