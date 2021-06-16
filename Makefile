@@ -18,7 +18,7 @@ build: build-webui build-server
 
 build-webui:
 	(cd webui && yarn build)
-	mkdir server/generated/webui
+	mkdir -p server/generated/webui
 	mv webui/build/* server/generated/webui
 
 build-server: build-grpc
@@ -36,7 +36,7 @@ PROTO_IMPORTS := \
 	-I proto/dependencies/
 
 $(PROTO_OUT):
-	mkdir $(PROTO_OUT)
+	mkdir -p $(PROTO_OUT)
 
 PROTO_REFS := Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api
 
@@ -54,6 +54,7 @@ build-grpc:
 	mv -f $(PROTO_OUT)/temporal/api/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
 
 	# Generate static assets for OpenAPI UI
+	mkdir -p ./generated/openapi
 	statik -m -f -dest generated/openapi -src third_party/OpenAPI/
 
 clean:
