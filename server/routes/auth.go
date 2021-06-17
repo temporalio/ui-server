@@ -40,6 +40,7 @@ import (
 )
 
 const (
+	enabled      = false
 	clientID     = ""
 	clientSecret = ""
 	providerUrl  = ""
@@ -73,6 +74,10 @@ func setCallbackCookie(c echo.Context, name, value string) {
 // SetAuthRoutes sets routes used by auth
 func SetAuthRoutes(e *echo.Echo) {
 	ctx := context.Background()
+
+	if enabled == false {
+		return
+	}
 
 	provider, err := oidc.NewProvider(ctx, providerUrl)
 	if err != nil {
