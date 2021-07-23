@@ -26,7 +26,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/temporalio/web-go/generated/api/workflowservice/v1"
+	"github.com/temporalio/web-go/server/generated/api/workflowservice/v1"
 	"github.com/temporalio/web-go/server/rpc"
 )
 
