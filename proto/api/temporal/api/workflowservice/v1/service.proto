@@ -33,6 +33,7 @@ option csharp_namespace = "Temporal.Api.WorkflowService.V1";
 
 
 import "temporal/api/workflowservice/v1/request_response.proto";
+import "google/api/annotations.proto";
 
 // WorkflowService API is exposed to provide support for long running applications.  Application is expected to call
 // StartWorkflowExecution to create an instance for each instance of long running workflow.  Such applications are expected
@@ -55,6 +56,9 @@ service WorkflowService {
 
     // ListNamespaces returns the information and configuration for all namespaces.
     rpc ListNamespaces (ListNamespacesRequest) returns (ListNamespacesResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/namespaces"
+        };
     }
 
     // (-- api-linter: core::0134::method-signature=disabled
@@ -223,14 +227,23 @@ service WorkflowService {
 
     // ListOpenWorkflowExecutions is a visibility API to list the open executions in a specific namespace.
     rpc ListOpenWorkflowExecutions (ListOpenWorkflowExecutionsRequest) returns (ListOpenWorkflowExecutionsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/workflows/open"
+        };
     }
 
     // ListClosedWorkflowExecutions is a visibility API to list the closed executions in a specific namespace.
     rpc ListClosedWorkflowExecutions (ListClosedWorkflowExecutionsRequest) returns (ListClosedWorkflowExecutionsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/workflows/closed"
+        };
     }
 
     // ListWorkflowExecutions is a visibility API to list workflow executions in a specific namespace.
     rpc ListWorkflowExecutions (ListWorkflowExecutionsRequest) returns (ListWorkflowExecutionsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/workflows"
+        };
     }
 
     // ListArchivedWorkflowExecutions is a visibility API to list archived workflow executions in a specific namespace.
