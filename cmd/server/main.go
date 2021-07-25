@@ -53,7 +53,7 @@ func buildCLI() *cli.App {
 			Flags:     []cli.Flag{},
 			Action: func(c *cli.Context) error {
 				s := server.NewServer()
-
+				defer s.Stop()
 				err := s.Start()
 				if err != nil {
 					return cli.NewExitError(fmt.Sprintf("Unable to start server: %v.", err), 1)

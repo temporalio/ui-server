@@ -27,7 +27,7 @@ import (
 
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
-	"github.com/temporalio/web-go/generated/api/workflowservice/v1"
+	"github.com/temporalio/web-go/server/generated/api/workflowservice/v1"
 	"github.com/temporalio/web-go/server/temporal"
 )
 
