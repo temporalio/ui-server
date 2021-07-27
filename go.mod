@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/coreos/go-oidc/v3 v3.0.0
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/gogo/gateway v1.1.0 // indirect
 	github.com/gogo/googleapis v1.4.0
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.4.3

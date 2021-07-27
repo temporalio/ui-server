@@ -26,6 +26,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/gogo/gateway"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -39,8 +40,19 @@ func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) error {
 	api := e.Group("/api")
 	api.GET("/me", getCurrentUser)
 
-	tMux := runtime.NewServeMux()
-	if err := workflowservice.RegisterWorkflowServiceHandler(context.TODO(), tMux, temporalClient.Connection); err != nil {
+	jsonpb := &gateway.JSONPb{
+		EmitDefaults: true,
+		Indent:       "  ",
+		OrigName:     true,
+	}
+
+	tMux := runtime.NewServeMux(
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),
+		// This is necessary to get error details properly
+		// marshalled in unary requests.
+		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
+	)
+	if err := workflowservice.RegisterWorkflowServiceHandler(context.Background(), tMux, temporalClient.Connection); err != nil {
 		return err
 	}
 
