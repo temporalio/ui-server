@@ -40,6 +40,12 @@ var webuiHTML []byte
 //go:embed generated/webui
 var webuiAssets embed.FS
 
+//go:embed generated/swagger-ui/index.html
+var swaggeruiHTML []byte
+
+//go:embed generated/swagger-ui
+var swaggeruiAssets embed.FS
+
 type (
 	// Server ui server.
 	Server struct {
@@ -63,6 +69,7 @@ func NewServer() *Server {
 	}
 	routes.SetAPIRoutes(e, tClient)
 	routes.SetAuthRoutes(e)
+	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
 	routes.SetWebUIRoutes(e, webuiHTML, webuiAssets)
 
 	s := &Server{
