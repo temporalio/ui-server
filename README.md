@@ -20,4 +20,4 @@ To start the server, execute
 Open http://localhost:8080/swagger-ui/ in the browser to explore HTTP API
 
 ## Debugging
-In VSCode start "Debug Server" launch script (or press F5)
+In VSCode launch "Debug Server" script (or press F5)
