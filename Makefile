@@ -27,7 +27,7 @@ SWAGGERUI_OUT := ./server/generated/swagger-ui
 WEBUI_OUT := ./server/generated/webui
 
 ##### Build #####
-build: build-webui build-grpc build-swaggerui build-server
+build: clean build-webui build-grpc build-swaggerui build-server
 
 build-webui:
 	(cd webui && yarn build)
@@ -47,6 +47,7 @@ build-grpc:
 	printf $(COLOR) "Compiling gRPC..."
 	rm -rf $(PROTO_OUT)/*
 	mkdir -p $(PROTO_OUT)
+	rm -rf $(SWAGGERUI_OUT)/*
 	mkdir -p $(SWAGGERUI_OUT)
 	$(foreach PROTO_DIR,$(PROTO_DIRS),\
 		protoc $(PROTO_IMPORTS) \
@@ -60,7 +61,7 @@ build-grpc:
 	mv -f $(PROTO_OUT)/temporal/api/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
 
 clean:
-	rm -rf $(SWAGGERUI_OUT) $(WEBUI_OUT)
+	rm -rf ./server/generated
 	(cd webui && rm -rf ./build)
 
 ##### Install dependencies #####
