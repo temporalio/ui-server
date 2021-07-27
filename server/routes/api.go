@@ -23,8 +23,10 @@
 package routes
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/temporalio/web-go/server/generated/api/workflowservice/v1"
@@ -32,32 +34,19 @@ import (
 )
 
 // SetAPIRoutes sets api routes
-func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) {
+func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) error {
+
 	api := e.Group("/api")
-	api.GET("/namespaces", listNamespaces(temporalClient))
-	api.GET("/namespaces/:namespace/workflows", listWorkflows(temporalClient))
 	api.GET("/me", getCurrentUser)
-}
 
-func listNamespaces(t *temporal.Client) func(echo.Context) error {
-	return func(c echo.Context) error {
-		req := workflowservice.ListNamespacesRequest{NextPageToken: nil, PageSize: 10}
-		res, _ := t.ListNamespaces(&req)
-		return c.JSON(http.StatusOK, res)
+	tMux := runtime.NewServeMux()
+	if err := workflowservice.RegisterWorkflowServiceHandler(context.TODO(), tMux, temporalClient.Connection); err != nil {
+		return err
 	}
-}
 
-func listWorkflows(t *temporal.Client) func(echo.Context) error {
-	return func(c echo.Context) error {
-		namespace := c.Param("namespace")
-		// reqOpen := workflowservice.ListOpenWorkflowExecutionsRequest{NextPageToken: nil, MaximumPageSize: 100, Namespace: "default"}
-		// resOpen, _ := t.ListOpenWorkflowExecutions(&reqOpen)
+	api.GET("/*", echo.WrapHandler(tMux))
 
-		reqClosed := workflowservice.ListClosedWorkflowExecutionsRequest{NextPageToken: nil, MaximumPageSize: 100, Namespace: namespace}
-		resClosed, _ := t.ListClosedWorkflowExecutions(&reqClosed)
-
-		return c.JSON(http.StatusOK, resClosed)
-	}
+	return nil
 }
 
 func getCurrentUser(c echo.Context) error {
