@@ -43,7 +43,7 @@ func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) error {
 	jsonpb := &gateway.JSONPb{
 		EmitDefaults: true,
 		Indent:       "  ",
-		OrigName:     true,
+		OrigName:     false,
 	}
 
 	tMux := runtime.NewServeMux(
