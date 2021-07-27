@@ -24,12 +24,12 @@ package temporal
 
 import (
 	"context"
-	"io"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/temporalio/web-go/server/generated/api/workflowservice/v1"
 	"github.com/temporalio/web-go/server/rpc"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -42,10 +42,10 @@ const (
 type (
 	// Client temporal frontend client
 	Client struct {
-		timeout          time.Duration
-		frontend         workflowservice.WorkflowServiceClient
-		connectionCloser io.Closer
-		logger           echo.Logger
+		timeout    time.Duration
+		frontend   workflowservice.WorkflowServiceClient
+		Connection *grpc.ClientConn
+		logger     echo.Logger
 	}
 )
 
@@ -56,16 +56,16 @@ func NewClient(
 ) (*Client, error) {
 	connection := rpc.CreateFrontendGRPCConnection(rpcAddress)
 	frontend := workflowservice.NewWorkflowServiceClient(connection)
-	client := Client{frontend: frontend, connectionCloser: connection, logger: logger, timeout: DefaultTimeout}
+	client := Client{frontend: frontend, Connection: connection, logger: logger, timeout: DefaultTimeout}
 	return &client, nil
 }
 
 // Close client and clean up underlying resources.
 func (c *Client) Close() {
-	if c.connectionCloser == nil {
+	if c.Connection == nil {
 		return
 	}
-	if err := c.connectionCloser.Close(); err != nil {
+	if err := c.Connection.Close(); err != nil {
 		c.logger.Warn(err)
 	}
 }
