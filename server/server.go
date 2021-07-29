@@ -74,7 +74,7 @@ func NewServer() *Server {
 	routes.SetAPIRoutes(e, tClient)
 	routes.SetAuthRoutes(e)
 	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
-	// routes.SetWebUIRoutes(e, webuiHTML, webuiAssets)
+	routes.SetWebUIRoutes(e, webuiHTML, webuiAssets)
 
 	s := &Server{
 		httpServer:     e,
