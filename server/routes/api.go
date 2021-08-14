@@ -64,14 +64,18 @@ func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) error {
 func getCurrentUser(c echo.Context) error {
 	sess, _ := session.Get("auth", c)
 	email := sess.Values["email"]
+	name := sess.Values["name"]
+	picture := sess.Values["picture"]
 
 	if email == nil {
 		return c.JSON(http.StatusOK, nil)
 	}
 
 	user := struct {
-		Email string
-	}{email.(string)}
+		Email   string
+		Name    string
+		Picture string
+	}{email.(string), name.(string), picture.(string)}
 
 	return c.JSON(http.StatusOK, user)
 }
