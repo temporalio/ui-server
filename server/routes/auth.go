@@ -132,7 +132,7 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.P
 			MaxAge:   7 * 24 * int(time.Hour.Seconds()),
 			HttpOnly: true,
 		}
-		// sess.Values["access-token"] = &user.OAuth2Token
+		sess.Values["access-token"] = &user.OAuth2Token.AccessToken
 		sess.Values["email"] = &user.IDToken.Email
 		sess.Values["picture"] = &user.IDToken.Picture
 		sess.Values["name"] = &user.IDToken.Name
@@ -176,8 +176,6 @@ func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 	if idToken.Nonce != nonce.Value {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, "Nonce did not match")
 	}
-
-	oauth2Token.AccessToken = "*REDACTED*" // TODO this shouldn't be stored in cookies. Change to server side store instead of cookies
 
 	var claims Claims
 
