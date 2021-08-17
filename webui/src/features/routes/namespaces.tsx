@@ -10,7 +10,7 @@ import {
 import { Workflows, NamespacesList } from "features/routes";
 
 interface Namespace {
-  namespace_info: { name: string } ;
+  namespaceInfo: { name: string } ;
 }
 
 interface Params {
@@ -24,7 +24,7 @@ function Namespaces() {
   const [namespaces, setNamespaces] = useState<Namespace[]>([]);
 
   const fetchNamespaces = async () => {
-    const res = await fetch("http://localhost:8080/api/namespaces");
+    const res = await fetch("http://localhost:8080/api/v1/namespaces");
     const body = await res.json();
     setNamespaces(body?.namespaces);
   };

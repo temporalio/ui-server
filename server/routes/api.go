@@ -40,20 +40,27 @@ import (
 func SetAPIRoutes(e *echo.Echo, temporalConn *grpc.ClientConn) error {
 	api := e.Group("/api")
 	api.GET("/me", getCurrentUser)
-
-	tMux, err := getTemporalClientMux(temporalConn)
-	if err != nil {
-		return err
-	}
-	api.GET("/*", echo.WrapHandler(tMux))
+	api.GET("/*", temporalAPIHandler(temporalConn))
 
 	return nil
 }
 
-func getTemporalClientMux(temporalConn *grpc.ClientConn) (*runtime.ServeMux, error) {
+func temporalAPIHandler(temporalConn *grpc.ClientConn) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		mux, err := getTemporalClientMux(c, temporalConn)
+		if err != nil {
+			return err
+		}
+
+		mux.ServeHTTP(c.Response(), c.Request())
+		return nil
+	}
+}
+
+func getTemporalClientMux(c echo.Context, temporalConn *grpc.ClientConn) (*runtime.ServeMux, error) {
 	tMux := runtime.NewServeMux(
 		withMarshaler(),
-		withAuth(),
+		withAuth(c),
 		// This is necessary to get error details properly
 		// marshalled in unary requests.
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
@@ -94,13 +101,16 @@ func withMarshaler() runtime.ServeMuxOption {
 	return runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb)
 }
 
-func withAuth() runtime.ServeMuxOption {
+func withAuth(c echo.Context) runtime.ServeMuxOption {
 	return runtime.WithMetadata(
-		func(c context.Context, req *http.Request) metadata.MD {
+		func(ctx context.Context, req *http.Request) metadata.MD {
 			md := metadata.MD{}
 
-			ctx := c.(echo.Context)
-			sess, _ := session.Get("auth", ctx)
+			sess, _ := session.Get("auth", c)
+
+			if sess == nil {
+				return md
+			}
 
 			token := sess.Values["access-token"]
 			if token != nil {
