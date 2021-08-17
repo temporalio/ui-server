@@ -23,13 +23,15 @@
 package routes
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/gogo/gateway"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc/metadata"
+
 	"github.com/temporalio/web-go/server/generated/api/workflowservice/v1"
 	"google.golang.org/grpc"
 )
@@ -38,26 +40,36 @@ import (
 func SetAPIRoutes(e *echo.Echo, temporalConn *grpc.ClientConn) error {
 	api := e.Group("/api")
 	api.GET("/me", getCurrentUser)
+	api.GET("/*", temporalAPIHandler(temporalConn))
 
-	jsonpb := &gateway.JSONPb{
-		EmitDefaults: true,
-		Indent:       "  ",
-		OrigName:     false,
+	return nil
+}
+
+func temporalAPIHandler(temporalConn *grpc.ClientConn) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		mux, err := getTemporalClientMux(c, temporalConn)
+		if err != nil {
+			return err
+		}
+
+		mux.ServeHTTP(c.Response(), c.Request())
+		return nil
 	}
+}
 
+func getTemporalClientMux(c echo.Context, temporalConn *grpc.ClientConn) (*runtime.ServeMux, error) {
 	tMux := runtime.NewServeMux(
-		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),
+		withMarshaler(),
+		withAuth(c),
 		// This is necessary to get error details properly
 		// marshalled in unary requests.
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
 	)
+
 	if err := workflowservice.RegisterWorkflowServiceHandler(context.Background(), tMux, temporalConn); err != nil {
-		return err
+		return nil, err
 	}
-
-	api.GET("/*", echo.WrapHandler(tMux))
-
-	return nil
+	return tMux, nil
 }
 
 func getCurrentUser(c echo.Context) error {
@@ -77,4 +89,41 @@ func getCurrentUser(c echo.Context) error {
 	}{email.(string), name.(string), picture.(string)}
 
 	return c.JSON(http.StatusOK, user)
+}
+
+func withMarshaler() runtime.ServeMuxOption {
+	jsonpb := &gateway.JSONPb{
+		EmitDefaults: true,
+		Indent:       "  ",
+		OrigName:     false,
+	}
+
+	return runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb)
+}
+
+func withAuth(c echo.Context) runtime.ServeMuxOption {
+	return runtime.WithMetadata(
+		func(ctx context.Context, req *http.Request) metadata.MD {
+			md := metadata.MD{}
+
+			sess, _ := session.Get("auth", c)
+
+			if sess == nil {
+				return md
+			}
+
+			token := sess.Values["access-token"]
+			if token != nil {
+				md.Append("authorization", "Bearer "+token.(string))
+			}
+
+			extras := sess.Values["authorization-extras"]
+			if extras != nil {
+				// ex. ID Token
+				md.Append("authorization-extras", extras.(string))
+			}
+
+			return md
+		},
+	)
 }

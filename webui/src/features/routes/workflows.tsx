@@ -16,7 +16,7 @@ function Workflows() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
 
   const fetchWorkflows = async () => {
-    const res = await fetch(`http://localhost:8080/api/namespaces/${namespace}/workflows`);
+    const res = await fetch(`http://localhost:8080/api/v1/namespaces/${namespace}/workflows`);
     const body = await res.json();
     setWorkflows(body.executions);
   };

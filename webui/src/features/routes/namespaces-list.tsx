@@ -2,7 +2,7 @@ import { useRouteMatch } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 interface NamespacesListProps {
-  namespaces: { namespace_info: { name: string } }[];
+  namespaces: { namespaceInfo: { name: string } }[];
 }
 
 function NamespacesList({ namespaces = [] }: NamespacesListProps) {
@@ -11,8 +11,8 @@ function NamespacesList({ namespaces = [] }: NamespacesListProps) {
     <ul>
       {namespaces.map((n) => (
         <li>
-          <Link to={`${url}/${n.namespace_info.name}/workflows`}>
-            {n.namespace_info.name}
+          <Link to={`${url}/${n.namespaceInfo.name}/workflows`}>
+            {n.namespaceInfo.name}
           </Link>
         </li>
       ))}
