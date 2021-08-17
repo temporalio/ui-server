@@ -88,10 +88,6 @@ func SetAuthRoutes(e *echo.Echo) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	oidcConfig := &oidc.Config{
-		ClientID: clientID,
-	}
-	verifier := provider.Verifier(oidcConfig)
 
 	config := oauth2.Config{
 		ClientID:     clientID,
@@ -103,7 +99,7 @@ func SetAuthRoutes(e *echo.Echo) {
 
 	api := e.Group("/auth")
 	api.GET("/sso", authenticate(&config))
-	api.GET("/sso/callback", authenticateCb(ctx, &config, provider, verifier))
+	api.GET("/sso/callback", authenticateCb(ctx, &config, provider))
 }
 
 func authenticate(config *oauth2.Config) func(echo.Context) error {
@@ -123,11 +119,9 @@ func authenticate(config *oauth2.Config) func(echo.Context) error {
 	}
 }
 
-func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.Provider,
-	verifier *oidc.IDTokenVerifier) func(echo.Context) error {
+func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.Provider) func(echo.Context) error {
 	return func(c echo.Context) error {
-		r := c.Request()
-		user, err := exchangeCode(ctx, r, config, provider, verifier)
+		user, err := exchangeCode(ctx, c.Request(), config, provider)
 		if err != nil {
 			return err
 		}
@@ -148,7 +142,7 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.P
 	}
 }
 
-func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, provider *oidc.Provider, verifier *oidc.IDTokenVerifier) (*User, error) {
+func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, provider *oidc.Provider) (*User, error) {
 	state, err := r.Cookie("state")
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, "State cookie is not set in request")
@@ -166,6 +160,10 @@ func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 	if !ok {
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, "No id_token field in oauth2 token.")
 	}
+	oidcConfig := &oidc.Config{
+		ClientID: clientID,
+	}
+	verifier := provider.Verifier(oidcConfig)
 	idToken, err := verifier.Verify(ctx, rawIDToken)
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Unable to verify ID Token: "+err.Error())
