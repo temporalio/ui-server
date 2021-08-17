@@ -30,8 +30,10 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"google.golang.org/grpc"
+
 	"github.com/temporalio/web-go/server/routes"
-	"github.com/temporalio/web-go/server/temporal"
+	"github.com/temporalio/web-go/server/rpc"
 )
 
 //go:embed generated/webui/index.html
@@ -49,8 +51,8 @@ var swaggeruiAssets embed.FS
 type (
 	// Server ui server.
 	Server struct {
-		httpServer     *echo.Echo
-		temporalClient *temporal.Client
+		httpServer   *echo.Echo
+		temporalConn *grpc.ClientConn
 	}
 )
 
@@ -67,18 +69,15 @@ func NewServer() *Server {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
-	tClient, err := temporal.NewClient("127.0.0.1:7233", e.Logger)
-	if err != nil {
-		e.Logger.Fatal(err)
-	}
-	routes.SetAPIRoutes(e, tClient)
+	conn := rpc.CreateFrontendGRPCConnection("127.0.0.1:7233")
+	routes.SetAPIRoutes(e, conn)
 	routes.SetAuthRoutes(e)
 	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
 	routes.SetWebUIRoutes(e, webuiHTML, webuiAssets)
 
 	s := &Server{
-		httpServer:     e,
-		temporalClient: tClient,
+		httpServer:   e,
+		temporalConn: conn,
 	}
 	return s
 }
@@ -96,5 +95,5 @@ func (s *Server) Stop() {
 	if err := s.httpServer.Close(); err != nil {
 		s.httpServer.Logger.Warn(err)
 	}
-	s.temporalClient.Close()
+	s.temporalConn.Close()
 }

@@ -31,12 +31,11 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/temporalio/web-go/server/generated/api/workflowservice/v1"
-	"github.com/temporalio/web-go/server/temporal"
+	"google.golang.org/grpc"
 )
 
 // SetAPIRoutes sets api routes
-func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) error {
-
+func SetAPIRoutes(e *echo.Echo, temporalConn *grpc.ClientConn) error {
 	api := e.Group("/api")
 	api.GET("/me", getCurrentUser)
 
@@ -52,7 +51,7 @@ func SetAPIRoutes(e *echo.Echo, temporalClient *temporal.Client) error {
 		// marshalled in unary requests.
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
 	)
-	if err := workflowservice.RegisterWorkflowServiceHandler(context.Background(), tMux, temporalClient.Connection); err != nil {
+	if err := workflowservice.RegisterWorkflowServiceHandler(context.Background(), tMux, temporalConn); err != nil {
 		return err
 	}
 
