@@ -25,7 +25,6 @@ package routes
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -47,9 +46,15 @@ const (
 )
 
 type User struct {
-	OAuth2Token   *oauth2.Token
-	IDTokenClaims *json.RawMessage
-	UserInfo      *oidc.UserInfo
+	OAuth2Token *oauth2.Token
+	IDToken     *Claims
+}
+
+type Claims struct {
+	Email         string `json:"email"`
+	EmailVerified bool   `json:"email_verified"`
+	Name          string `json:"name"`
+	Picture       string `json:"picture"`
 }
 
 func randString(nByte int) (string, error) {
@@ -134,8 +139,9 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.P
 			HttpOnly: true,
 		}
 		// sess.Values["access-token"] = &user.OAuth2Token
-		sess.Values["email"] = &user.UserInfo.Email
-		// sess.Values["claims"] = &user.IDTokenClaims
+		sess.Values["email"] = &user.IDToken.Email
+		sess.Values["picture"] = &user.IDToken.Picture
+		sess.Values["name"] = &user.IDToken.Name
 		sess.Save(c.Request(), c.Response())
 
 		return c.Redirect(http.StatusSeeOther, "/")
@@ -154,11 +160,6 @@ func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 	oauth2Token, err := config.Exchange(ctx, r.URL.Query().Get("code"))
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Unable to exchange token: "+err.Error())
-	}
-
-	userInfo, err := provider.UserInfo(ctx, oauth2.StaticTokenSource(oauth2Token))
-	if err != nil {
-		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Unable to get user info: "+err.Error())
 	}
 
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
@@ -180,19 +181,16 @@ func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 
 	oauth2Token.AccessToken = "*REDACTED*" // TODO this shouldn't be stored in cookies. Change to server side store instead of cookies
 
-	user := User{
-		OAuth2Token:   oauth2Token,
-		IDTokenClaims: new(json.RawMessage),
-		UserInfo:      userInfo,
-	}
+	var claims Claims
 
-	if err := idToken.Claims(&user.IDTokenClaims); err != nil {
+	if err := idToken.Claims(&claims); err != nil {
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	// data, err := json.MarshalIndent(resp, "", "    ")
-	// if err != nil {
-	// 	return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	// }
+
+	user := User{
+		OAuth2Token: oauth2Token,
+		IDToken:     &claims,
+	}
 
 	return &user, nil
 }

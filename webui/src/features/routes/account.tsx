@@ -35,6 +35,11 @@ function Account() {
     <div>
       {user && (
         <div>
+          <img
+            src={user.picture}
+            alt={user.email}
+            style={{ height: "25px", width: "25px" }}
+          />
           <p>{user.name}</p>
           <p>{user.email}</p>
         </div>
