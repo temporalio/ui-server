@@ -4,6 +4,7 @@
 # Development
 Pre-requirements:
  - Go v1.16 or later installed on your development machine
+ - Protobuf installed on your development machine (`brew install protobuf`)
 
 For first run, execute from the project folder:
 ``` bash
