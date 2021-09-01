@@ -30,7 +30,7 @@ import (
 
 type (
 	ServerOptions struct {
-		config *config.Config
+		Config *config.Config
 	}
 )
 
