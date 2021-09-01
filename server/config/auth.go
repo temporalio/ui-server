@@ -28,42 +28,40 @@ import (
 	"errors"
 )
 
-type (
-	// Config contains the configuration for the UI server
-	Config struct {
-		TemporalGRPCAddress string   `yaml:"temporalGrpcAddress"`
-		Port                int      `yaml:"port"`
-		UIRootPath          string   `yaml:"uiRootPath"`
-		SessionSecrets      []string `yaml:"sessionSecrets"`
-		Auth                Auth     `yaml:"auth"`
+// Validate validates the persistence config
+func (c *Auth) Validate() error {
+	if c == nil {
+		return nil
 	}
 
-	Auth struct {
-		Enabled   bool           `yaml:"enabled"`
-		Providers []AuthProvider `yaml:"providers"`
+	if !c.Enabled {
+		return nil
 	}
 
-	AuthProvider struct {
-		Label           string `yaml:"label"`
-		Type            string `yaml:"type"`
-		ProviderUrl     string `yaml:"providerUrl"`
-		ClientID        string `yaml:"clientId"`
-		ClientSecret    string `yaml:"clientSecret"`
-		Scope           string `yaml:"scope"`
-		Audience        string `yaml:"audience"`
-		CallbackBaseURL string `yaml:"callbackBaseUrl"`
-		PassIDToken     bool   `yaml:"passIdToken"`
-	}
-)
-
-// Validate validates this config
-func (c *Config) Validate() error {
-	if c.TemporalGRPCAddress == "" {
-		return errors.New("temporal frontend gRPC address is not set")
+	for _, p := range c.Providers {
+		if err := p.validate(); err != nil {
+			return err
+		}
 	}
 
-	if err := c.Auth.Validate(); err != nil {
-		return err
+	return nil
+}
+
+func (c *AuthProvider) validate() error {
+	if c == nil {
+		return nil
+	}
+
+	if c.ProviderUrl == "" {
+		return errors.New("auth provider url is not")
+	}
+
+	if c.ClientID == "" {
+		return errors.New("auth client id is not set")
+	}
+
+	if c.CallbackBaseURL == "" {
+		return errors.New("auth callback url is not set")
 	}
 
 	return nil

@@ -2,3 +2,15 @@ temporalGrpcAddress: 127.0.0.1:7233
 port: 8080
 uiRootPath: /
 sessionSecrets:
+auth:
+  enabled: false
+  providers:
+    - label: google # for internal use; in future may expose as button text
+      type: oidc # for futureproofing; only oidc is supported today
+      providerUrl: https://accounts.google.com
+      clientId:
+      clientSecret:
+      scope: openid profile email
+      audience: 
+      callbackBaseUrl: http://localhost:8080
+      passIdToken: false
