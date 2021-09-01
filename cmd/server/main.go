@@ -25,8 +25,11 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/temporalio/web-go/server"
+	"github.com/temporalio/web-go/server/config"
+	"github.com/temporalio/web-go/server/server_options"
 	"github.com/urfave/cli/v2"
 )
 
@@ -43,7 +46,28 @@ func buildCLI() *cli.App {
 	app.Usage = "Temporal Web"
 	app.Version = "0.1.0"
 	app.ArgsUsage = " "
-	app.Flags = []cli.Flag{}
+	app.Flags = []cli.Flag{
+		&cli.StringFlag{
+			Name:    "root",
+			Aliases: []string{"r"},
+			Value:   ".",
+			Usage:   "root directory of execution environment",
+			EnvVars: []string{config.EnvKeyRoot},
+		},
+		&cli.StringFlag{
+			Name:    "config",
+			Aliases: []string{"c"},
+			Value:   "config",
+			Usage:   "config dir path relative to root",
+			EnvVars: []string{config.EnvKeyConfigDir},
+		},
+		&cli.StringFlag{
+			Name:    "env",
+			Aliases: []string{"e"},
+			Value:   "development",
+			Usage:   "runtime environment",
+			EnvVars: []string{config.EnvKeyEnvironment},
+		}}
 
 	app.Commands = []*cli.Command{
 		{
@@ -52,9 +76,19 @@ func buildCLI() *cli.App {
 			ArgsUsage: " ",
 			Flags:     []cli.Flag{},
 			Action: func(c *cli.Context) error {
-				s := server.NewServer()
+				env := c.String("env")
+				configDir := path.Join(c.String("root"), c.String("config"))
+
+				cfg, err := config.LoadConfig(configDir, env)
+				if err != nil {
+					return cli.Exit(fmt.Sprintf("Unable to load configuration: %v.", err), 1)
+				}
+
+				s := server.NewServer(
+					server_options.WithConfig(cfg),
+				)
 				defer s.Stop()
-				err := s.Start()
+				err = s.Start()
 				if err != nil {
 					return cli.NewExitError(fmt.Sprintf("Unable to start server: %v.", err), 1)
 				}

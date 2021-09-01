@@ -23,5 +23,6 @@ require (
 	golang.org/x/oauth2 v0.0.0-20210323180902-22b0adad7558
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	google.golang.org/grpc v1.35.0
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/validator.v2 v2.0.0-20210331031555-b37d688a7fb0
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
