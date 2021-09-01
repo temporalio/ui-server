@@ -34,6 +34,7 @@ import (
 
 	"github.com/temporalio/web-go/server/routes"
 	"github.com/temporalio/web-go/server/rpc"
+	"github.com/temporalio/web-go/server/server_options"
 )
 
 //go:embed generated/webui/index.html
@@ -53,11 +54,12 @@ type (
 	Server struct {
 		httpServer   *echo.Echo
 		temporalConn *grpc.ClientConn
+		options      *server_options.ServerOptions
 	}
 )
 
 // NewServer returns a new instance of server that serves one or many services.
-func NewServer() *Server {
+func NewServer(opts ...server_options.ServerOption) *Server {
 	e := echo.New()
 
 	// Middleware
@@ -78,6 +80,7 @@ func NewServer() *Server {
 	s := &Server{
 		httpServer:   e,
 		temporalConn: conn,
+		options:      server_options.NewServerOptions(opts),
 	}
 	return s
 }
