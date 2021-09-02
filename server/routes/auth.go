@@ -34,15 +34,9 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
+	"github.com/temporalio/web-go/server/config"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
-)
-
-const (
-	enabled      = false
-	clientID     = ""
-	clientSecret = ""
-	providerUrl  = ""
 )
 
 type User struct {
@@ -77,24 +71,30 @@ func setCallbackCookie(c echo.Context, name, value string) {
 }
 
 // SetAuthRoutes sets routes used by auth
-func SetAuthRoutes(e *echo.Echo) {
+func SetAuthRoutes(e *echo.Echo, cfg *config.Auth) {
 	ctx := context.Background()
 
-	if enabled == false {
+	if !cfg.Enabled {
 		return
 	}
 
-	provider, err := oidc.NewProvider(ctx, providerUrl)
+	if len(cfg.Providers) == 0 {
+		log.Fatal(`auth providers configuration is empty. Configure an auth provider or disable auth`)
+	}
+
+	providerCfg := cfg.Providers[0] // only single provider is currently supported
+
+	provider, err := oidc.NewProvider(ctx, providerCfg.ProviderUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	config := oauth2.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
+		ClientID:     providerCfg.ClientID,
+		ClientSecret: providerCfg.ClientSecret,
 		Endpoint:     provider.Endpoint(),
-		RedirectURL:  "http://localhost:8080/auth/sso/callback",
-		Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
+		RedirectURL:  providerCfg.CallbackURL,
+		Scopes:       providerCfg.Scopes,
 	}
 
 	api := e.Group("/auth")
@@ -161,7 +161,7 @@ func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, "No id_token field in oauth2 token.")
 	}
 	oidcConfig := &oidc.Config{
-		ClientID: clientID,
+		ClientID: config.ClientID,
 	}
 	verifier := provider.Verifier(oidcConfig)
 	idToken, err := verifier.Verify(ctx, rawIDToken)

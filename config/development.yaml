@@ -5,12 +5,15 @@ sessionSecrets:
 auth:
   enabled: false
   providers:
-    - label: google # for internal use; in future may expose as button text
+    - label: google oidc # for internal use; in future may expose as button text
       type: oidc # for futureproofing; only oidc is supported today
       providerUrl: https://accounts.google.com
-      clientId:
-      clientSecret:
-      scope: openid profile email
+      clientId: xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
+      clientSecret: xxxxxxxxxxxxxxxxxxxxxxx
+      scopes:
+        - openid
+        - profile
+        - email
       audience: 
-      callbackBaseUrl: http://localhost:8080
+      callbackUrl: http://localhost:8080/auth/sso/callback
       passIdToken: false
