@@ -25,6 +25,7 @@ package server
 import (
 	"embed"
 	"fmt"
+	"strconv"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -60,6 +61,8 @@ type (
 
 // NewServer returns a new instance of server that serves one or many services.
 func NewServer(opts ...server_options.ServerOption) *Server {
+	serverOptions := server_options.NewServerOptions(opts)
+
 	e := echo.New()
 
 	// Middleware
@@ -71,7 +74,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
-	conn := rpc.CreateFrontendGRPCConnection("127.0.0.1:7233")
+	conn := rpc.CreateFrontendGRPCConnection(serverOptions.Config.TemporalGRPCAddress)
 	routes.SetAPIRoutes(e, conn)
 	routes.SetAuthRoutes(e)
 	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
@@ -80,7 +83,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	s := &Server{
 		httpServer:   e,
 		temporalConn: conn,
-		options:      server_options.NewServerOptions(opts),
+		options:      serverOptions,
 	}
 	return s
 }
@@ -88,7 +91,8 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 // Start web ui server.
 func (s *Server) Start() error {
 	fmt.Println("Starting web server...")
-	s.httpServer.Logger.Fatal(s.httpServer.Start(":8080"))
+	port := s.options.Config.Port
+	s.httpServer.Logger.Fatal(s.httpServer.Start(":" + strconv.Itoa(port)))
 	return nil
 }
 

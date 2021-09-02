@@ -34,6 +34,6 @@ type (
 
 func WithConfig(cfg *config.Config) ServerOption {
 	return newApplyFuncContainer(func(s *ServerOptions) {
-		s.config = cfg
+		s.Config = cfg
 	})
 }
