@@ -60,7 +60,7 @@ func (c *AuthProvider) validate() error {
 		return errors.New("auth client id is not set")
 	}
 
-	if c.CallbackBaseURL == "" {
+	if c.CallbackURL == "" {
 		return errors.New("auth callback url is not set")
 	}
 
