@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -61,29 +62,34 @@ type (
 
 // NewServer returns a new instance of server that serves one or many services.
 func NewServer(opts ...server_options.ServerOption) *Server {
-	serverOptions := server_options.NewServerOptions(opts)
+	serverOpts := server_options.NewServerOptions(opts)
 
 	e := echo.New()
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
+
+	e.Use(session.Middleware(sessions.NewCookieStore(
+		securecookie.GenerateRandomKey(32),
+		securecookie.GenerateRandomKey(32),
+	)))
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3000", "https://localhost:3000"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
-	conn := rpc.CreateFrontendGRPCConnection(serverOptions.Config.TemporalGRPCAddress)
+	conn := rpc.CreateFrontendGRPCConnection(serverOpts.Config.TemporalGRPCAddress)
 	routes.SetAPIRoutes(e, conn)
-	routes.SetAuthRoutes(e, &serverOptions.Config.Auth)
+	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
 	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
 	routes.SetWebUIRoutes(e, webuiHTML, webuiAssets)
 
 	s := &Server{
 		httpServer:   e,
 		temporalConn: conn,
-		options:      serverOptions,
+		options:      serverOpts,
 	}
 	return s
 }
