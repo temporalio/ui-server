@@ -31,11 +31,10 @@ import (
 type (
 	// Config contains the configuration for the UI server
 	Config struct {
-		TemporalGRPCAddress string   `yaml:"temporalGrpcAddress"`
-		Port                int      `yaml:"port"`
-		UIRootPath          string   `yaml:"uiRootPath"`
-		SessionSecrets      []string `yaml:"sessionSecrets"`
-		Auth                Auth     `yaml:"auth"`
+		TemporalGRPCAddress string `yaml:"temporalGrpcAddress"`
+		Port                int    `yaml:"port"`
+		UIRootPath          string `yaml:"uiRootPath"`
+		Auth                Auth   `yaml:"auth"`
 	}
 
 	Auth struct {
