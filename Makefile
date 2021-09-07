@@ -24,15 +24,15 @@ PROTO_IMPORTS := \
 	-I proto/dependencies/
 PROTO_REFS := Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api
 SWAGGERUI_OUT := ./server/generated/swagger-ui
-WEBUI_OUT := ./server/generated/webui
+UI_OUT := ./server/generated/ui
 
 ##### Build #####
-build: clean build-webui build-grpc build-swaggerui build-server
+build: clean build-ui build-grpc build-swaggerui build-server
 
-build-webui:
-	(cd webui && yarn build)
-	mkdir -p $(WEBUI_OUT)
-	mv webui/build/* $(WEBUI_OUT)
+build-ui:
+	(cd ui && npm run build:local)
+	mkdir -p $(UI_OUT)
+	mv ui/build-local/* $(UI_OUT)
 
 build-swaggerui:
 	mkdir -p $(SWAGGERUI_OUT)
@@ -62,10 +62,10 @@ build-grpc:
 
 clean:
 	rm -rf ./server/generated
-	(cd webui && rm -rf ./build)
+	(cd ui && rm -rf ./build-local ./build-cloud)
 
 ##### Install dependencies #####
-install: install-utils install-webui
+install: install-submodules install-utils install-ui
 
 install-utils:
 	go get \
@@ -73,5 +73,9 @@ install-utils:
 		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway \
 		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger \
 
-install-webui:
-	(cd webui && yarn install)
+install-submodules:
+	printf $(COLOR) "fetching submudules..."
+	git submodule update --init
+
+install-ui:
+	(cd ui && npm install)
