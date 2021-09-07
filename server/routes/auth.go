@@ -23,14 +23,14 @@
 package routes
 
 import (
-	"crypto/rand"
 	"encoding/base64"
-	"io"
+	"errors"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -49,25 +49,6 @@ type Claims struct {
 	EmailVerified bool   `json:"email_verified"`
 	Name          string `json:"name"`
 	Picture       string `json:"picture"`
-}
-
-func randString(nByte int) (string, error) {
-	b := make([]byte, nByte)
-	if _, err := io.ReadFull(rand.Reader, b); err != nil {
-		return "", err
-	}
-	return base64.RawURLEncoding.EncodeToString(b), nil
-}
-
-func setCallbackCookie(c echo.Context, name, value string) {
-	cookie := &http.Cookie{
-		Name:     name,
-		Value:    value,
-		MaxAge:   int(time.Hour.Seconds()),
-		Secure:   c.Request().TLS != nil,
-		HttpOnly: true,
-	}
-	c.SetCookie(cookie)
 }
 
 // SetAuthRoutes sets routes used by auth
@@ -104,13 +85,13 @@ func SetAuthRoutes(e *echo.Echo, cfg *config.Auth) {
 
 func authenticate(config *oauth2.Config) func(echo.Context) error {
 	return func(c echo.Context) error {
-		state, err := randString(16)
+		state, err := randString()
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal error")
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
-		nonce, err := randString(16)
+		nonce, err := randString()
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal error")
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
 		setCallbackCookie(c, "state", state)
 		setCallbackCookie(c, "nonce", nonce)
@@ -189,4 +170,24 @@ func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 	}
 
 	return &user, nil
+}
+
+func setCallbackCookie(c echo.Context, name, value string) {
+	cookie := &http.Cookie{
+		Name:     name,
+		Value:    value,
+		MaxAge:   int(time.Hour.Seconds()),
+		Secure:   c.Request().TLS != nil,
+		HttpOnly: true,
+	}
+	c.SetCookie(cookie)
+}
+
+func randString() (string, error) {
+	b := securecookie.GenerateRandomKey(16)
+	if b == nil {
+		return "", errors.New("unable to generate rand string for auth")
+	}
+
+	return base64.RawURLEncoding.EncodeToString(b), nil
 }
