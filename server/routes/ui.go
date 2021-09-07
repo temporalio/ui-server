@@ -23,7 +23,6 @@
 package routes
 
 import (
-	"bytes"
 	"embed"
 	"io/fs"
 	"net/http"
@@ -31,28 +30,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// SetAPIRoutes sets api routes
-func SetWebUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
-	assetsHandler := buildWebUIAssetsHander(assets)
-	e.GET("/static/*", assetsHandler)
-	e.GET("/favicon.ico", assetsHandler)
-	e.GET("/manifest.json", assetsHandler)
-	e.GET("/asset-manifest.json", assetsHandler)
-	e.GET("/logo192.png", assetsHandler)
-	e.GET("/logo512.png", assetsHandler)
-	e.GET("/robots.txt", assetsHandler)
-	e.GET("/*", buildWebUIHander(indexHTML))
+// SetUIRoutes sets UI routes
+func SetUIRoutes(e *echo.Echo, assets embed.FS) {
+	assetsHandler := buildAssetsHander(assets)
+	e.GET("/*", assetsHandler)
 }
 
-func buildWebUIHander(indexHTML []byte) echo.HandlerFunc {
-	return func(c echo.Context) (err error) {
-		return c.Stream(200, "text/html", bytes.NewBuffer(indexHTML))
-	}
-}
-
-func buildWebUIAssetsHander(assets embed.FS) echo.HandlerFunc {
+func buildAssetsHander(assets embed.FS) echo.HandlerFunc {
 	stream := fs.FS(assets)
-	stream, _ = fs.Sub(stream, "generated/webui")
+	stream, _ = fs.Sub(stream, "generated/ui")
 	handler := http.FileServer(http.FS(stream))
 	return echo.WrapHandler(handler)
 }

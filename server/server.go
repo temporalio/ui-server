@@ -39,11 +39,8 @@ import (
 	"github.com/temporalio/web-go/server/server_options"
 )
 
-//go:embed generated/webui/index.html
-var webuiHTML []byte
-
-//go:embed generated/webui
-var webuiAssets embed.FS
+//go:embed generated/ui
+var uiAssets embed.FS
 
 //go:embed generated/swagger-ui/index.html
 var swaggeruiHTML []byte
@@ -84,7 +81,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	routes.SetAPIRoutes(e, conn)
 	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
 	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
-	routes.SetWebUIRoutes(e, webuiHTML, webuiAssets)
+	routes.SetUIRoutes(e, uiAssets)
 
 	s := &Server{
 		httpServer:   e,
@@ -94,17 +91,17 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	return s
 }
 
-// Start web ui server.
+// Start UI server.
 func (s *Server) Start() error {
-	fmt.Println("Starting web server...")
+	fmt.Println("Starting UI server...")
 	port := s.options.Config.Port
 	s.httpServer.Logger.Fatal(s.httpServer.Start(":" + strconv.Itoa(port)))
 	return nil
 }
 
-// Stop web ui server.
+// Stop UI server.
 func (s *Server) Stop() {
-	fmt.Println("Stopping web server...")
+	fmt.Println("Stopping UI server...")
 	if err := s.httpServer.Close(); err != nil {
 		s.httpServer.Logger.Warn(err)
 	}
