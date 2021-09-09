@@ -1,7 +1,7 @@
 .ONESHELL:
 .PHONY:
 
-all: clean install build
+all: install build
 
 ##### Variables ######
 ifndef GOPATH
@@ -19,25 +19,30 @@ PROTO_DIRS = $(sort $(dir $(PROTO_FILES)))
 PROTO_OUT := ./server/generated/api
 PROTO_IMPORTS := \
 	-I $(PROTO_ROOT) \
-	-I proto/dependencies/github.com/grpc-ecosystem/grpc-gateway/ \
-	-I proto/dependencies/github.com/gogo/googleapis/ \
-	-I proto/dependencies/
+	-I ./proto/dependencies/github.com/grpc-ecosystem/grpc-gateway/ \
+	-I ./proto/dependencies/github.com/gogo/googleapis/ \
+	-I ./proto/dependencies/
 PROTO_REFS := Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api
 SWAGGERUI_OUT := ./server/generated/swagger-ui
 UI_OUT := ./server/generated/ui
 
 ##### Build #####
-build: clean build-ui build-grpc build-swaggerui build-server
+build: build-ui build-api build-server
 
 build-ui:
-	(cd ui && npm run build:local)
+	(cd ./ui && rm -rf ./build-local ./build-cloud)
+	(cd ./ui && npm run build:local)
+	rm -rf $(UI_OUT)
 	mkdir -p $(UI_OUT)
-	mv ui/build-local/* $(UI_OUT)
+	cp -r ./ui/build-local/* $(UI_OUT)
 
-build-swaggerui:
+
+build-api: build-grpc
 	mkdir -p $(SWAGGERUI_OUT)
-	cp -r third_party/OpenAPI/* $(SWAGGERUI_OUT)
+	cp -r ./third_party/OpenAPI/* $(SWAGGERUI_OUT)
 	cp $(SWAGGERUI_OUT)/temporal/api/workflowservice/v1/service.swagger.json $(SWAGGERUI_OUT)
+	mkdir -p $(SWAGGERUI_OUT)
+	rm -rf $(SWAGGERUI_OUT)/temporal
 
 build-server:
 	go mod tidy
@@ -60,10 +65,6 @@ build-grpc:
 	printf $(COLOR) "Fixing gRPC output paths"
 	mv -f $(PROTO_OUT)/temporal/api/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
 
-clean:
-	rm -rf ./server/generated
-	(cd ui && rm -rf ./build-local ./build-cloud)
-
 ##### Install dependencies #####
 install: install-submodules install-utils install-ui
 
@@ -77,5 +78,9 @@ install-submodules:
 	printf $(COLOR) "fetching submudules..."
 	git submodule update --init
 
+update-submodules:
+	printf $(COLOR) "updating submudules..."
+	git submodule update --force --remote ui
+
 install-ui:
-	(cd ui && npm install)
+	(cd ./ui && npm install)

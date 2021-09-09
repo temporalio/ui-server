@@ -1,0 +1,4243 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "temporal/api/workflowservice/v1/service.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/cluster": {
+      "get": {
+        "summary": "GetClusterInfo returns information about temporal cluster",
+        "operationId": "WorkflowService_GetClusterInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetClusterInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces": {
+      "get": {
+        "summary": "ListNamespaces returns the information and configuration for all namespaces.",
+        "operationId": "WorkflowService_ListNamespaces",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListNamespacesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "next_page_token",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      },
+      "post": {
+        "summary": "RegisterNamespace creates a new namespace which can be used as a container for all resources.  Namespace is a top level\nentity within Temporal, used as a container for all resources like workflow executions, task queues, etc.  Namespace\nacts as a sandbox and provides isolation for all resources within the namespace.  All resources belongs to exactly one\nnamespace.",
+        "operationId": "WorkflowService_RegisterNamespace",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RegisterNamespaceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RegisterNamespaceRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}": {
+      "get": {
+        "summary": "DescribeNamespace returns the information and configuration for a registered namespace.",
+        "operationId": "WorkflowService_DescribeNamespace",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DescribeNamespaceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      },
+      "delete": {
+        "summary": "DeprecateNamespace is used to update state of a registered namespace to DEPRECATED.  Once the namespace is deprecated\nit cannot be used to start new workflow executions.  Existing workflow executions will continue to run on\ndeprecated namespaces.",
+        "operationId": "WorkflowService_DeprecateNamespace",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeprecateNamespaceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "security_token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      },
+      "put": {
+        "summary": "(-- api-linter: core::0134::method-signature=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)\n(-- api-linter: core::0134::response-message-name=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)\nUpdateNamespace is used to update the information and configuration for a registered namespace.",
+        "operationId": "WorkflowService_UpdateNamespace",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateNamespaceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UpdateNamespaceRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/task-queues/{task_queue.name}": {
+      "get": {
+        "summary": "DescribeTaskQueue returns information about the target task queue, right now this API returns the\npollers which polled this task queue in last few minutes.",
+        "operationId": "WorkflowService_DescribeTaskQueue",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DescribeTaskQueueResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "task_queue.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "task_queue.kind",
+            "description": "Default: TASK_QUEUE_KIND_NORMAL.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "TASK_QUEUE_KIND_UNSPECIFIED",
+              "TASK_QUEUE_KIND_NORMAL",
+              "TASK_QUEUE_KIND_STICKY"
+            ],
+            "default": "TASK_QUEUE_KIND_UNSPECIFIED"
+          },
+          {
+            "name": "task_queue_type",
+            "description": " - TASK_QUEUE_TYPE_WORKFLOW: Workflow type of task queue.\n - TASK_QUEUE_TYPE_ACTIVITY: Activity type of task queue.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "TASK_QUEUE_TYPE_UNSPECIFIED",
+              "TASK_QUEUE_TYPE_WORKFLOW",
+              "TASK_QUEUE_TYPE_ACTIVITY"
+            ],
+            "default": "TASK_QUEUE_TYPE_UNSPECIFIED"
+          },
+          {
+            "name": "include_task_queue_status",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows": {
+      "get": {
+        "summary": "ListWorkflowExecutions is a visibility API to list workflow executions in a specific namespace.",
+        "operationId": "WorkflowService_ListWorkflowExecutions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListWorkflowExecutionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "next_page_token",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/archived": {
+      "get": {
+        "summary": "ListArchivedWorkflowExecutions is a visibility API to list archived workflow executions in a specific namespace.",
+        "operationId": "WorkflowService_ListArchivedWorkflowExecutions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListArchivedWorkflowExecutionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "next_page_token",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/closed": {
+      "get": {
+        "summary": "ListClosedWorkflowExecutions is a visibility API to list the closed executions in a specific namespace.",
+        "operationId": "WorkflowService_ListClosedWorkflowExecutions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListClosedWorkflowExecutionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maximum_page_size",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "next_page_token",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "start_time_filter.earliest_time",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "start_time_filter.latest_time",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "execution_filter.workflow_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "execution_filter.run_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type_filter.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status_filter.status",
+            "description": " - WORKFLOW_EXECUTION_STATUS_RUNNING: Value 1 is hardcoded in SQL persistence.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "WORKFLOW_EXECUTION_STATUS_UNSPECIFIED",
+              "WORKFLOW_EXECUTION_STATUS_RUNNING",
+              "WORKFLOW_EXECUTION_STATUS_COMPLETED",
+              "WORKFLOW_EXECUTION_STATUS_FAILED",
+              "WORKFLOW_EXECUTION_STATUS_CANCELED",
+              "WORKFLOW_EXECUTION_STATUS_TERMINATED",
+              "WORKFLOW_EXECUTION_STATUS_CONTINUED_AS_NEW",
+              "WORKFLOW_EXECUTION_STATUS_TIMED_OUT"
+            ],
+            "default": "WORKFLOW_EXECUTION_STATUS_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/open": {
+      "get": {
+        "summary": "ListOpenWorkflowExecutions is a visibility API to list the open executions in a specific namespace.",
+        "operationId": "WorkflowService_ListOpenWorkflowExecutions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListOpenWorkflowExecutionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maximum_page_size",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "next_page_token",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "start_time_filter.earliest_time",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "start_time_filter.latest_time",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "execution_filter.workflow_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "execution_filter.run_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type_filter.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}": {
+      "get": {
+        "summary": "DescribeWorkflowExecution returns information about the specified workflow execution.",
+        "operationId": "WorkflowService_DescribeWorkflowExecution",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DescribeWorkflowExecutionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "execution.workflow_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "execution.run_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}/events": {
+      "get": {
+        "summary": "GetWorkflowExecutionHistory returns the history of specified workflow execution.  It fails with 'NotFoundFailure' if specified workflow\nexecution in unknown to the service.",
+        "operationId": "WorkflowService_GetWorkflowExecutionHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetWorkflowExecutionHistoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "execution.workflow_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "execution.run_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maximum_page_size",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "next_page_token",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "wait_new_event",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "history_event_filter_type",
+            "description": "Default: HISTORY_EVENT_FILTER_TYPE_ALL_EVENT.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "HISTORY_EVENT_FILTER_TYPE_UNSPECIFIED",
+              "HISTORY_EVENT_FILTER_TYPE_ALL_EVENT",
+              "HISTORY_EVENT_FILTER_TYPE_CLOSE_EVENT"
+            ],
+            "default": "HISTORY_EVENT_FILTER_TYPE_UNSPECIFIED"
+          },
+          {
+            "name": "skip_archival",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}:query": {
+      "post": {
+        "summary": "QueryWorkflow returns query result for a specified workflow execution",
+        "operationId": "WorkflowService_QueryWorkflow",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1QueryWorkflowResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "execution.workflow_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "execution.run_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1QueryWorkflowRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/executions/{workflow_execution.run_id}:cancel": {
+      "post": {
+        "summary": "RequestCancelWorkflowExecution is called by application worker when it wants to request cancellation of a workflow instance.\nIt will result in a new 'WorkflowExecutionCancelRequested' event being written to the workflow history and a new WorkflowTask\ncreated for the workflow instance so new commands could be made. It fails with 'NotFoundFailure' if the workflow is not valid\nanymore due to completion or doesn't exist.",
+        "operationId": "WorkflowService_RequestCancelWorkflowExecution",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RequestCancelWorkflowExecutionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflow_execution.workflow_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflow_execution.run_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RequestCancelWorkflowExecutionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/executions/{workflow_execution.run_id}:reset": {
+      "post": {
+        "summary": "ResetWorkflowExecution reset an existing workflow execution to WorkflowTaskCompleted event(exclusive).\nAnd it will immediately terminating the current execution instance.",
+        "operationId": "WorkflowService_ResetWorkflowExecution",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ResetWorkflowExecutionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflow_execution.workflow_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflow_execution.run_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ResetWorkflowExecutionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/executions/{workflow_execution.run_id}:terminate": {
+      "post": {
+        "summary": "TerminateWorkflowExecution terminates an existing workflow execution by recording WorkflowExecutionTerminated event\nin the history and immediately terminating the execution instance.",
+        "operationId": "WorkflowService_TerminateWorkflowExecution",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1TerminateWorkflowExecutionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflow_execution.workflow_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflow_execution.run_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1TerminateWorkflowExecutionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/{workflow_id}:start": {
+      "post": {
+        "summary": "StartWorkflowExecution starts a new long running workflow instance.  It will create the instance with\n'WorkflowExecutionStarted' event in history and also schedule the first WorkflowTask for the worker to make the\nfirst command for this instance.  It will return 'WorkflowExecutionAlreadyStartedFailure', if an instance already\nexists with same workflowId.",
+        "operationId": "WorkflowService_StartWorkflowExecution",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StartWorkflowExecutionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflow_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1StartWorkflowExecutionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows:count": {
+      "get": {
+        "summary": "CountWorkflowExecutions is a visibility API to count of workflow executions in a specific namespace.",
+        "operationId": "WorkflowService_CountWorkflowExecutions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CountWorkflowExecutionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/search-attributes": {
+      "get": {
+        "summary": "GetSearchAttributes is a visibility API to get all legal keys that could be used in list APIs",
+        "operationId": "WorkflowService_GetSearchAttributes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetSearchAttributesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1ActivityFailureInfo": {
+      "type": "object",
+      "properties": {
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "activity_type": {
+          "$ref": "#/definitions/v1ActivityType"
+        },
+        "activity_id": {
+          "type": "string"
+        },
+        "retry_state": {
+          "$ref": "#/definitions/v1RetryState"
+        }
+      }
+    },
+    "v1ActivityTaskCancelRequestedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1ActivityTaskCanceledEventAttributes": {
+      "type": "object",
+      "properties": {
+        "details": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "latest_cancel_requested_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identity": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ActivityTaskCompletedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identity": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ActivityTaskFailedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "failure": {
+          "$ref": "#/definitions/v1Failure"
+        },
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "retry_state": {
+          "$ref": "#/definitions/v1RetryState"
+        }
+      }
+    },
+    "v1ActivityTaskScheduledEventAttributes": {
+      "type": "object",
+      "properties": {
+        "activity_id": {
+          "type": "string"
+        },
+        "activity_type": {
+          "$ref": "#/definitions/v1ActivityType"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "schedule_to_close_timeout": {
+          "type": "string",
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nIndicates how long the caller is willing to wait for an activity completion.\nLimits for how long retries are happening. Either this or start_to_close_timeout_seconds must be specified."
+        },
+        "schedule_to_start_timeout": {
+          "type": "string",
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nLimits time an activity task can stay in a task queue before a worker picks it up.\nThis timeout is always non retryable as all a retry would achieve is to put it back into the same queue.\nDefaults to schedule_to_close_timeout_seconds or workflow execution timeout if not specified."
+        },
+        "start_to_close_timeout": {
+          "type": "string",
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nMaximum time an activity is allowed to execute after a pick up by a worker.\nThis timeout is always retryable. Either this or schedule_to_close_timeout_seconds must be specified."
+        },
+        "heartbeat_timeout": {
+          "type": "string",
+          "description": "Maximum time between successful worker heartbeats."
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "retry_policy": {
+          "$ref": "#/definitions/v1RetryPolicy",
+          "description": "Activities are provided by a default retry policy controlled through the service dynamic configuration.\nRetries are happening up to schedule_to_close_timeout.\nTo disable retries set retry_policy.maximum_attempts to 1."
+        }
+      }
+    },
+    "v1ActivityTaskStartedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "attempt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "last_failure": {
+          "$ref": "#/definitions/v1Failure"
+        }
+      }
+    },
+    "v1ActivityTaskTimedOutEventAttributes": {
+      "type": "object",
+      "properties": {
+        "failure": {
+          "$ref": "#/definitions/v1Failure",
+          "description": "For retry activity, it may have a failure before timeout. It is stored as `cause` in `failure`."
+        },
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "retry_state": {
+          "$ref": "#/definitions/v1RetryState"
+        }
+      }
+    },
+    "v1ActivityType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1Alert": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/definitions/v1Severity"
+        }
+      },
+      "description": "Alert contains notification and severity."
+    },
+    "v1ApplicationFailureInfo": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "non_retryable": {
+          "type": "boolean"
+        },
+        "details": {
+          "$ref": "#/definitions/v1Payloads"
+        }
+      }
+    },
+    "v1ArchivalState": {
+      "type": "string",
+      "enum": [
+        "ARCHIVAL_STATE_UNSPECIFIED",
+        "ARCHIVAL_STATE_DISABLED",
+        "ARCHIVAL_STATE_ENABLED"
+      ],
+      "default": "ARCHIVAL_STATE_UNSPECIFIED"
+    },
+    "v1BadBinaries": {
+      "type": "object",
+      "properties": {
+        "binaries": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1BadBinaryInfo"
+          }
+        }
+      }
+    },
+    "v1BadBinaryInfo": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "operator": {
+          "type": "string"
+        },
+        "create_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1CancelExternalWorkflowExecutionFailedCause": {
+      "type": "string",
+      "enum": [
+        "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED",
+        "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_EXTERNAL_WORKFLOW_EXECUTION_NOT_FOUND"
+      ],
+      "default": "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED"
+    },
+    "v1CancelTimerCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "timer_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CancelWorkflowExecutionCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "details": {
+          "$ref": "#/definitions/v1Payloads"
+        }
+      }
+    },
+    "v1CanceledFailureInfo": {
+      "type": "object",
+      "properties": {
+        "details": {
+          "$ref": "#/definitions/v1Payloads"
+        }
+      }
+    },
+    "v1ChildWorkflowExecutionCanceledEventAttributes": {
+      "type": "object",
+      "properties": {
+        "details": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1ChildWorkflowExecutionCompletedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1ChildWorkflowExecutionFailedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "failure": {
+          "$ref": "#/definitions/v1Failure"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "retry_state": {
+          "$ref": "#/definitions/v1RetryState"
+        }
+      }
+    },
+    "v1ChildWorkflowExecutionFailureInfo": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "retry_state": {
+          "$ref": "#/definitions/v1RetryState"
+        }
+      }
+    },
+    "v1ChildWorkflowExecutionStartedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        }
+      }
+    },
+    "v1ChildWorkflowExecutionTerminatedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1ChildWorkflowExecutionTimedOutEventAttributes": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "retry_state": {
+          "$ref": "#/definitions/v1RetryState"
+        }
+      }
+    },
+    "v1ClusterReplicationConfig": {
+      "type": "object",
+      "properties": {
+        "cluster_name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1Command": {
+      "type": "object",
+      "properties": {
+        "command_type": {
+          "$ref": "#/definitions/v1CommandType"
+        },
+        "schedule_activity_task_command_attributes": {
+          "$ref": "#/definitions/v1ScheduleActivityTaskCommandAttributes"
+        },
+        "start_timer_command_attributes": {
+          "$ref": "#/definitions/v1StartTimerCommandAttributes"
+        },
+        "complete_workflow_execution_command_attributes": {
+          "$ref": "#/definitions/v1CompleteWorkflowExecutionCommandAttributes"
+        },
+        "fail_workflow_execution_command_attributes": {
+          "$ref": "#/definitions/v1FailWorkflowExecutionCommandAttributes"
+        },
+        "request_cancel_activity_task_command_attributes": {
+          "$ref": "#/definitions/v1RequestCancelActivityTaskCommandAttributes"
+        },
+        "cancel_timer_command_attributes": {
+          "$ref": "#/definitions/v1CancelTimerCommandAttributes"
+        },
+        "cancel_workflow_execution_command_attributes": {
+          "$ref": "#/definitions/v1CancelWorkflowExecutionCommandAttributes"
+        },
+        "request_cancel_external_workflow_execution_command_attributes": {
+          "$ref": "#/definitions/v1RequestCancelExternalWorkflowExecutionCommandAttributes"
+        },
+        "record_marker_command_attributes": {
+          "$ref": "#/definitions/v1RecordMarkerCommandAttributes"
+        },
+        "continue_as_new_workflow_execution_command_attributes": {
+          "$ref": "#/definitions/v1ContinueAsNewWorkflowExecutionCommandAttributes"
+        },
+        "start_child_workflow_execution_command_attributes": {
+          "$ref": "#/definitions/v1StartChildWorkflowExecutionCommandAttributes"
+        },
+        "signal_external_workflow_execution_command_attributes": {
+          "$ref": "#/definitions/v1SignalExternalWorkflowExecutionCommandAttributes"
+        },
+        "upsert_workflow_search_attributes_command_attributes": {
+          "$ref": "#/definitions/v1UpsertWorkflowSearchAttributesCommandAttributes"
+        }
+      }
+    },
+    "v1CommandType": {
+      "type": "string",
+      "enum": [
+        "COMMAND_TYPE_UNSPECIFIED",
+        "COMMAND_TYPE_SCHEDULE_ACTIVITY_TASK",
+        "COMMAND_TYPE_REQUEST_CANCEL_ACTIVITY_TASK",
+        "COMMAND_TYPE_START_TIMER",
+        "COMMAND_TYPE_COMPLETE_WORKFLOW_EXECUTION",
+        "COMMAND_TYPE_FAIL_WORKFLOW_EXECUTION",
+        "COMMAND_TYPE_CANCEL_TIMER",
+        "COMMAND_TYPE_CANCEL_WORKFLOW_EXECUTION",
+        "COMMAND_TYPE_REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION",
+        "COMMAND_TYPE_RECORD_MARKER",
+        "COMMAND_TYPE_CONTINUE_AS_NEW_WORKFLOW_EXECUTION",
+        "COMMAND_TYPE_START_CHILD_WORKFLOW_EXECUTION",
+        "COMMAND_TYPE_SIGNAL_EXTERNAL_WORKFLOW_EXECUTION",
+        "COMMAND_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES"
+      ],
+      "default": "COMMAND_TYPE_UNSPECIFIED",
+      "description": "Whenever this list of command types is changed do change the function shouldBufferEvent in mutableStateBuilder.go to make sure to do the correct event ordering."
+    },
+    "v1CompleteWorkflowExecutionCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/v1Payloads"
+        }
+      }
+    },
+    "v1ContinueAsNewInitiator": {
+      "type": "string",
+      "enum": [
+        "CONTINUE_AS_NEW_INITIATOR_UNSPECIFIED",
+        "CONTINUE_AS_NEW_INITIATOR_WORKFLOW",
+        "CONTINUE_AS_NEW_INITIATOR_RETRY",
+        "CONTINUE_AS_NEW_INITIATOR_CRON_SCHEDULE"
+      ],
+      "default": "CONTINUE_AS_NEW_INITIATOR_UNSPECIFIED"
+    },
+    "v1ContinueAsNewWorkflowExecutionCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "workflow_run_timeout": {
+          "type": "string",
+          "description": "workflow_execution_timeout is omitted as it shouldn'be overridden from within a workflow.\nTimeout of a single workflow run."
+        },
+        "workflow_task_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow task."
+        },
+        "backoff_start_interval": {
+          "type": "string"
+        },
+        "retry_policy": {
+          "$ref": "#/definitions/v1RetryPolicy"
+        },
+        "initiator": {
+          "$ref": "#/definitions/v1ContinueAsNewInitiator"
+        },
+        "failure": {
+          "$ref": "#/definitions/v1Failure"
+        },
+        "last_completion_result": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "cron_schedule": {
+          "type": "string"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        },
+        "memo": {
+          "$ref": "#/definitions/v1Memo"
+        },
+        "search_attributes": {
+          "$ref": "#/definitions/v1SearchAttributes"
+        }
+      }
+    },
+    "v1CountWorkflowExecutionsResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1DataBlob": {
+      "type": "object",
+      "properties": {
+        "encoding_type": {
+          "$ref": "#/definitions/v1EncodingType"
+        },
+        "data": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "v1DeprecateNamespaceResponse": {
+      "type": "object"
+    },
+    "v1DescribeNamespaceResponse": {
+      "type": "object",
+      "properties": {
+        "namespace_info": {
+          "$ref": "#/definitions/v1NamespaceInfo"
+        },
+        "config": {
+          "$ref": "#/definitions/v1NamespaceConfig"
+        },
+        "replication_config": {
+          "$ref": "#/definitions/v1NamespaceReplicationConfig"
+        },
+        "failover_version": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_global_namespace": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1DescribeTaskQueueResponse": {
+      "type": "object",
+      "properties": {
+        "pollers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1PollerInfo"
+          }
+        },
+        "task_queue_status": {
+          "$ref": "#/definitions/v1TaskQueueStatus"
+        }
+      }
+    },
+    "v1DescribeWorkflowExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "execution_config": {
+          "$ref": "#/definitions/v1WorkflowExecutionConfig"
+        },
+        "workflow_execution_info": {
+          "$ref": "#/definitions/v1WorkflowExecutionInfo"
+        },
+        "pending_activities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1PendingActivityInfo"
+          }
+        },
+        "pending_children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1PendingChildExecutionInfo"
+          }
+        }
+      }
+    },
+    "v1EncodingType": {
+      "type": "string",
+      "enum": [
+        "ENCODING_TYPE_UNSPECIFIED",
+        "ENCODING_TYPE_PROTO3",
+        "ENCODING_TYPE_JSON"
+      ],
+      "default": "ENCODING_TYPE_UNSPECIFIED"
+    },
+    "v1EventType": {
+      "type": "string",
+      "enum": [
+        "EVENT_TYPE_UNSPECIFIED",
+        "EVENT_TYPE_WORKFLOW_EXECUTION_STARTED",
+        "EVENT_TYPE_WORKFLOW_EXECUTION_COMPLETED",
+        "EVENT_TYPE_WORKFLOW_EXECUTION_FAILED",
+        "EVENT_TYPE_WORKFLOW_EXECUTION_TIMED_OUT",
+        "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+        "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+        "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+        "EVENT_TYPE_WORKFLOW_TASK_TIMED_OUT",
+        "EVENT_TYPE_WORKFLOW_TASK_FAILED",
+        "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+        "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+        "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+        "EVENT_TYPE_ACTIVITY_TASK_FAILED",
+        "EVENT_TYPE_ACTIVITY_TASK_TIMED_OUT",
+        "EVENT_TYPE_ACTIVITY_TASK_CANCEL_REQUESTED",
+        "EVENT_TYPE_ACTIVITY_TASK_CANCELED",
+        "EVENT_TYPE_TIMER_STARTED",
+        "EVENT_TYPE_TIMER_FIRED",
+        "EVENT_TYPE_TIMER_CANCELED",
+        "EVENT_TYPE_WORKFLOW_EXECUTION_CANCEL_REQUESTED",
+        "EVENT_TYPE_WORKFLOW_EXECUTION_CANCELED",
+        "EVENT_TYPE_REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_INITIATED",
+        "EVENT_TYPE_REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED",
+        "EVENT_TYPE_EXTERNAL_WORKFLOW_EXECUTION_CANCEL_REQUESTED",
+        "EVENT_TYPE_MARKER_RECORDED",
+        "EVENT_TYPE_WORKFLOW_EXECUTION_SIGNALED",
+        "EVENT_TYPE_WORKFLOW_EXECUTION_TERMINATED",
+        "EVENT_TYPE_WORKFLOW_EXECUTION_CONTINUED_AS_NEW",
+        "EVENT_TYPE_START_CHILD_WORKFLOW_EXECUTION_INITIATED",
+        "EVENT_TYPE_START_CHILD_WORKFLOW_EXECUTION_FAILED",
+        "EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_STARTED",
+        "EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_COMPLETED",
+        "EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_FAILED",
+        "EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_CANCELED",
+        "EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_TIMED_OUT",
+        "EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_TERMINATED",
+        "EVENT_TYPE_SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_INITIATED",
+        "EVENT_TYPE_SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED",
+        "EVENT_TYPE_EXTERNAL_WORKFLOW_EXECUTION_SIGNALED",
+        "EVENT_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES"
+      ],
+      "default": "EVENT_TYPE_UNSPECIFIED",
+      "description": "Whenever this list of events is changed do change the function shouldBufferEvent in mutableStateBuilder.go to make sure to do the correct event ordering."
+    },
+    "v1ExternalWorkflowExecutionCancelRequestedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        }
+      }
+    },
+    "v1ExternalWorkflowExecutionSignaledEventAttributes": {
+      "type": "object",
+      "properties": {
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "control": {
+          "type": "string"
+        }
+      }
+    },
+    "v1FailWorkflowExecutionCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "failure": {
+          "$ref": "#/definitions/v1Failure"
+        }
+      }
+    },
+    "v1Failure": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "stack_trace": {
+          "type": "string"
+        },
+        "cause": {
+          "$ref": "#/definitions/v1Failure"
+        },
+        "application_failure_info": {
+          "$ref": "#/definitions/v1ApplicationFailureInfo"
+        },
+        "timeout_failure_info": {
+          "$ref": "#/definitions/v1TimeoutFailureInfo"
+        },
+        "canceled_failure_info": {
+          "$ref": "#/definitions/v1CanceledFailureInfo"
+        },
+        "terminated_failure_info": {
+          "$ref": "#/definitions/v1TerminatedFailureInfo"
+        },
+        "server_failure_info": {
+          "$ref": "#/definitions/v1ServerFailureInfo"
+        },
+        "reset_workflow_failure_info": {
+          "$ref": "#/definitions/v1ResetWorkflowFailureInfo"
+        },
+        "activity_failure_info": {
+          "$ref": "#/definitions/v1ActivityFailureInfo"
+        },
+        "child_workflow_execution_failure_info": {
+          "$ref": "#/definitions/v1ChildWorkflowExecutionFailureInfo"
+        }
+      }
+    },
+    "v1GetClusterInfoResponse": {
+      "type": "object",
+      "properties": {
+        "supported_clients": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Key is client name i.e \"temporal-go\", \"temporal-java\", or \"temporal-cli\".\nValue is ranges of supported versions of this client i.e \"\u003e1.1.1 \u003c=1.4.0 || ^5.0.0\"."
+        },
+        "server_version": {
+          "type": "string"
+        },
+        "cluster_id": {
+          "type": "string"
+        },
+        "version_info": {
+          "$ref": "#/definitions/v1VersionInfo"
+        },
+        "cluster_name": {
+          "type": "string"
+        },
+        "history_shard_count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "description": "GetClusterInfoResponse contains information about Temporal cluster."
+    },
+    "v1GetSearchAttributesResponse": {
+      "type": "object",
+      "properties": {
+        "keys": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1IndexedValueType"
+          }
+        }
+      }
+    },
+    "v1GetWorkflowExecutionHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "history": {
+          "$ref": "#/definitions/v1History"
+        },
+        "raw_history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1DataBlob"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "format": "byte"
+        },
+        "archived": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1Header": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1Payload"
+          }
+        }
+      }
+    },
+    "v1History": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1HistoryEvent"
+          }
+        }
+      }
+    },
+    "v1HistoryEvent": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "event_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "event_type": {
+          "$ref": "#/definitions/v1EventType"
+        },
+        "version": {
+          "type": "string",
+          "format": "int64"
+        },
+        "task_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "workflow_execution_started_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowExecutionStartedEventAttributes"
+        },
+        "workflow_execution_completed_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowExecutionCompletedEventAttributes"
+        },
+        "workflow_execution_failed_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowExecutionFailedEventAttributes"
+        },
+        "workflow_execution_timed_out_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowExecutionTimedOutEventAttributes"
+        },
+        "workflow_task_scheduled_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowTaskScheduledEventAttributes"
+        },
+        "workflow_task_started_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowTaskStartedEventAttributes"
+        },
+        "workflow_task_completed_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowTaskCompletedEventAttributes"
+        },
+        "workflow_task_timed_out_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowTaskTimedOutEventAttributes"
+        },
+        "workflow_task_failed_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowTaskFailedEventAttributes"
+        },
+        "activity_task_scheduled_event_attributes": {
+          "$ref": "#/definitions/v1ActivityTaskScheduledEventAttributes"
+        },
+        "activity_task_started_event_attributes": {
+          "$ref": "#/definitions/v1ActivityTaskStartedEventAttributes"
+        },
+        "activity_task_completed_event_attributes": {
+          "$ref": "#/definitions/v1ActivityTaskCompletedEventAttributes"
+        },
+        "activity_task_failed_event_attributes": {
+          "$ref": "#/definitions/v1ActivityTaskFailedEventAttributes"
+        },
+        "activity_task_timed_out_event_attributes": {
+          "$ref": "#/definitions/v1ActivityTaskTimedOutEventAttributes"
+        },
+        "timer_started_event_attributes": {
+          "$ref": "#/definitions/v1TimerStartedEventAttributes"
+        },
+        "timer_fired_event_attributes": {
+          "$ref": "#/definitions/v1TimerFiredEventAttributes"
+        },
+        "activity_task_cancel_requested_event_attributes": {
+          "$ref": "#/definitions/v1ActivityTaskCancelRequestedEventAttributes"
+        },
+        "activity_task_canceled_event_attributes": {
+          "$ref": "#/definitions/v1ActivityTaskCanceledEventAttributes"
+        },
+        "timer_canceled_event_attributes": {
+          "$ref": "#/definitions/v1TimerCanceledEventAttributes"
+        },
+        "marker_recorded_event_attributes": {
+          "$ref": "#/definitions/v1MarkerRecordedEventAttributes"
+        },
+        "workflow_execution_signaled_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowExecutionSignaledEventAttributes"
+        },
+        "workflow_execution_terminated_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowExecutionTerminatedEventAttributes"
+        },
+        "workflow_execution_cancel_requested_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowExecutionCancelRequestedEventAttributes"
+        },
+        "workflow_execution_canceled_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowExecutionCanceledEventAttributes"
+        },
+        "request_cancel_external_workflow_execution_initiated_event_attributes": {
+          "$ref": "#/definitions/v1RequestCancelExternalWorkflowExecutionInitiatedEventAttributes"
+        },
+        "request_cancel_external_workflow_execution_failed_event_attributes": {
+          "$ref": "#/definitions/v1RequestCancelExternalWorkflowExecutionFailedEventAttributes"
+        },
+        "external_workflow_execution_cancel_requested_event_attributes": {
+          "$ref": "#/definitions/v1ExternalWorkflowExecutionCancelRequestedEventAttributes"
+        },
+        "workflow_execution_continued_as_new_event_attributes": {
+          "$ref": "#/definitions/v1WorkflowExecutionContinuedAsNewEventAttributes"
+        },
+        "start_child_workflow_execution_initiated_event_attributes": {
+          "$ref": "#/definitions/v1StartChildWorkflowExecutionInitiatedEventAttributes"
+        },
+        "start_child_workflow_execution_failed_event_attributes": {
+          "$ref": "#/definitions/v1StartChildWorkflowExecutionFailedEventAttributes"
+        },
+        "child_workflow_execution_started_event_attributes": {
+          "$ref": "#/definitions/v1ChildWorkflowExecutionStartedEventAttributes"
+        },
+        "child_workflow_execution_completed_event_attributes": {
+          "$ref": "#/definitions/v1ChildWorkflowExecutionCompletedEventAttributes"
+        },
+        "child_workflow_execution_failed_event_attributes": {
+          "$ref": "#/definitions/v1ChildWorkflowExecutionFailedEventAttributes"
+        },
+        "child_workflow_execution_canceled_event_attributes": {
+          "$ref": "#/definitions/v1ChildWorkflowExecutionCanceledEventAttributes"
+        },
+        "child_workflow_execution_timed_out_event_attributes": {
+          "$ref": "#/definitions/v1ChildWorkflowExecutionTimedOutEventAttributes"
+        },
+        "child_workflow_execution_terminated_event_attributes": {
+          "$ref": "#/definitions/v1ChildWorkflowExecutionTerminatedEventAttributes"
+        },
+        "signal_external_workflow_execution_initiated_event_attributes": {
+          "$ref": "#/definitions/v1SignalExternalWorkflowExecutionInitiatedEventAttributes"
+        },
+        "signal_external_workflow_execution_failed_event_attributes": {
+          "$ref": "#/definitions/v1SignalExternalWorkflowExecutionFailedEventAttributes"
+        },
+        "external_workflow_execution_signaled_event_attributes": {
+          "$ref": "#/definitions/v1ExternalWorkflowExecutionSignaledEventAttributes"
+        },
+        "upsert_workflow_search_attributes_event_attributes": {
+          "$ref": "#/definitions/v1UpsertWorkflowSearchAttributesEventAttributes"
+        }
+      }
+    },
+    "v1HistoryEventFilterType": {
+      "type": "string",
+      "enum": [
+        "HISTORY_EVENT_FILTER_TYPE_UNSPECIFIED",
+        "HISTORY_EVENT_FILTER_TYPE_ALL_EVENT",
+        "HISTORY_EVENT_FILTER_TYPE_CLOSE_EVENT"
+      ],
+      "default": "HISTORY_EVENT_FILTER_TYPE_UNSPECIFIED"
+    },
+    "v1IndexedValueType": {
+      "type": "string",
+      "enum": [
+        "INDEXED_VALUE_TYPE_UNSPECIFIED",
+        "INDEXED_VALUE_TYPE_STRING",
+        "INDEXED_VALUE_TYPE_KEYWORD",
+        "INDEXED_VALUE_TYPE_INT",
+        "INDEXED_VALUE_TYPE_DOUBLE",
+        "INDEXED_VALUE_TYPE_BOOL",
+        "INDEXED_VALUE_TYPE_DATETIME"
+      ],
+      "default": "INDEXED_VALUE_TYPE_UNSPECIFIED"
+    },
+    "v1ListArchivedWorkflowExecutionsResponse": {
+      "type": "object",
+      "properties": {
+        "executions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1WorkflowExecutionInfo"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "v1ListClosedWorkflowExecutionsResponse": {
+      "type": "object",
+      "properties": {
+        "executions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1WorkflowExecutionInfo"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "v1ListNamespacesResponse": {
+      "type": "object",
+      "properties": {
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1DescribeNamespaceResponse"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "v1ListOpenWorkflowExecutionsResponse": {
+      "type": "object",
+      "properties": {
+        "executions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1WorkflowExecutionInfo"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "v1ListTaskQueuePartitionsResponse": {
+      "type": "object",
+      "properties": {
+        "activity_task_queue_partitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1TaskQueuePartitionMetadata"
+          }
+        },
+        "workflow_task_queue_partitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1TaskQueuePartitionMetadata"
+          }
+        }
+      }
+    },
+    "v1ListWorkflowExecutionsResponse": {
+      "type": "object",
+      "properties": {
+        "executions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1WorkflowExecutionInfo"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "v1MarkerRecordedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "marker_name": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1Payloads"
+          }
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        },
+        "failure": {
+          "$ref": "#/definitions/v1Failure"
+        }
+      }
+    },
+    "v1Memo": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1Payload"
+          }
+        }
+      }
+    },
+    "v1NamespaceConfig": {
+      "type": "object",
+      "properties": {
+        "workflow_execution_retention_ttl": {
+          "type": "string"
+        },
+        "bad_binaries": {
+          "$ref": "#/definitions/v1BadBinaries"
+        },
+        "history_archival_state": {
+          "$ref": "#/definitions/v1ArchivalState",
+          "description": "If unspecified (ARCHIVAL_STATE_UNSPECIFIED) then default server configuration is used."
+        },
+        "history_archival_uri": {
+          "type": "string"
+        },
+        "visibility_archival_state": {
+          "$ref": "#/definitions/v1ArchivalState",
+          "description": "If unspecified (ARCHIVAL_STATE_UNSPECIFIED) then default server configuration is used."
+        },
+        "visibility_archival_uri": {
+          "type": "string"
+        }
+      }
+    },
+    "v1NamespaceInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/definitions/v1NamespaceState"
+        },
+        "description": {
+          "type": "string"
+        },
+        "owner_email": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "A key-value map for any customized purpose."
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1NamespaceReplicationConfig": {
+      "type": "object",
+      "properties": {
+        "active_cluster_name": {
+          "type": "string"
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ClusterReplicationConfig"
+          }
+        }
+      }
+    },
+    "v1NamespaceState": {
+      "type": "string",
+      "enum": [
+        "NAMESPACE_STATE_UNSPECIFIED",
+        "NAMESPACE_STATE_REGISTERED",
+        "NAMESPACE_STATE_DEPRECATED",
+        "NAMESPACE_STATE_DELETED"
+      ],
+      "default": "NAMESPACE_STATE_UNSPECIFIED"
+    },
+    "v1ParentClosePolicy": {
+      "type": "string",
+      "enum": [
+        "PARENT_CLOSE_POLICY_UNSPECIFIED",
+        "PARENT_CLOSE_POLICY_TERMINATE",
+        "PARENT_CLOSE_POLICY_ABANDON",
+        "PARENT_CLOSE_POLICY_REQUEST_CANCEL"
+      ],
+      "default": "PARENT_CLOSE_POLICY_UNSPECIFIED",
+      "description": " - PARENT_CLOSE_POLICY_TERMINATE: Terminate means terminating the child workflow.\n - PARENT_CLOSE_POLICY_ABANDON: Abandon means not doing anything on the child workflow.\n - PARENT_CLOSE_POLICY_REQUEST_CANCEL: Cancel means requesting cancellation on the child workflow."
+    },
+    "v1Payload": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "byte"
+          }
+        },
+        "data": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "v1Payloads": {
+      "type": "object",
+      "properties": {
+        "payloads": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Payload"
+          }
+        }
+      }
+    },
+    "v1PendingActivityInfo": {
+      "type": "object",
+      "properties": {
+        "activity_id": {
+          "type": "string"
+        },
+        "activity_type": {
+          "$ref": "#/definitions/v1ActivityType"
+        },
+        "state": {
+          "$ref": "#/definitions/v1PendingActivityState"
+        },
+        "heartbeat_details": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "last_heartbeat_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_started_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "attempt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maximum_attempts": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "scheduled_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiration_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_failure": {
+          "$ref": "#/definitions/v1Failure"
+        },
+        "last_worker_identity": {
+          "type": "string"
+        }
+      }
+    },
+    "v1PendingActivityState": {
+      "type": "string",
+      "enum": [
+        "PENDING_ACTIVITY_STATE_UNSPECIFIED",
+        "PENDING_ACTIVITY_STATE_SCHEDULED",
+        "PENDING_ACTIVITY_STATE_STARTED",
+        "PENDING_ACTIVITY_STATE_CANCEL_REQUESTED"
+      ],
+      "default": "PENDING_ACTIVITY_STATE_UNSPECIFIED"
+    },
+    "v1PendingChildExecutionInfo": {
+      "type": "object",
+      "properties": {
+        "workflow_id": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "workflow_type_name": {
+          "type": "string"
+        },
+        "initiated_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "parent_close_policy": {
+          "$ref": "#/definitions/v1ParentClosePolicy",
+          "description": "Default: PARENT_CLOSE_POLICY_TERMINATE."
+        }
+      }
+    },
+    "v1PollActivityTaskQueueResponse": {
+      "type": "object",
+      "properties": {
+        "task_token": {
+          "type": "string",
+          "format": "byte"
+        },
+        "workflow_namespace": {
+          "type": "string"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "activity_type": {
+          "$ref": "#/definitions/v1ActivityType"
+        },
+        "activity_id": {
+          "type": "string"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "heartbeat_details": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "scheduled_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "current_attempt_scheduled_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "started_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "attempt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "schedule_to_close_timeout": {
+          "type": "string",
+          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+        },
+        "start_to_close_timeout": {
+          "type": "string",
+          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+        },
+        "heartbeat_timeout": {
+          "type": "string"
+        },
+        "retry_policy": {
+          "$ref": "#/definitions/v1RetryPolicy",
+          "description": "This is an actual retry policy the service uses.\nIt can be different from the one provided (or not) during activity scheduling\nas the service can override the provided one in case its values are not specified\nor exceed configured system limits."
+        }
+      }
+    },
+    "v1PollWorkflowTaskQueueResponse": {
+      "type": "object",
+      "properties": {
+        "task_token": {
+          "type": "string",
+          "format": "byte"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "previous_started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "attempt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "backlog_count_hint": {
+          "type": "string",
+          "format": "int64"
+        },
+        "history": {
+          "$ref": "#/definitions/v1History"
+        },
+        "next_page_token": {
+          "type": "string",
+          "format": "byte"
+        },
+        "query": {
+          "$ref": "#/definitions/v1WorkflowQuery"
+        },
+        "workflow_execution_task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "scheduled_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "started_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "queries": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1WorkflowQuery"
+          }
+        }
+      }
+    },
+    "v1PollerInfo": {
+      "type": "object",
+      "properties": {
+        "last_access_time": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Unix Nano"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "rate_per_second": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "v1QueryRejectCondition": {
+      "type": "string",
+      "enum": [
+        "QUERY_REJECT_CONDITION_UNSPECIFIED",
+        "QUERY_REJECT_CONDITION_NONE",
+        "QUERY_REJECT_CONDITION_NOT_OPEN",
+        "QUERY_REJECT_CONDITION_NOT_COMPLETED_CLEANLY"
+      ],
+      "default": "QUERY_REJECT_CONDITION_UNSPECIFIED",
+      "description": " - QUERY_REJECT_CONDITION_NONE: None indicates that query should not be rejected.\n - QUERY_REJECT_CONDITION_NOT_OPEN: NotOpen indicates that query should be rejected if workflow is not open.\n - QUERY_REJECT_CONDITION_NOT_COMPLETED_CLEANLY: NotCompletedCleanly indicates that query should be rejected if workflow did not complete cleanly."
+    },
+    "v1QueryRejected": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1WorkflowExecutionStatus"
+        }
+      }
+    },
+    "v1QueryResultType": {
+      "type": "string",
+      "enum": [
+        "QUERY_RESULT_TYPE_UNSPECIFIED",
+        "QUERY_RESULT_TYPE_ANSWERED",
+        "QUERY_RESULT_TYPE_FAILED"
+      ],
+      "default": "QUERY_RESULT_TYPE_UNSPECIFIED"
+    },
+    "v1QueryWorkflowRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "query": {
+          "$ref": "#/definitions/v1WorkflowQuery"
+        },
+        "query_reject_condition": {
+          "$ref": "#/definitions/v1QueryRejectCondition",
+          "description": "QueryRejectCondition can used to reject the query if workflow state does not satisfy condition.\nDefault: QUERY_REJECT_CONDITION_NONE."
+        }
+      }
+    },
+    "v1QueryWorkflowResponse": {
+      "type": "object",
+      "properties": {
+        "query_result": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "query_rejected": {
+          "$ref": "#/definitions/v1QueryRejected"
+        }
+      }
+    },
+    "v1RecordActivityTaskHeartbeatByIdResponse": {
+      "type": "object",
+      "properties": {
+        "cancel_requested": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1RecordActivityTaskHeartbeatResponse": {
+      "type": "object",
+      "properties": {
+        "cancel_requested": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1RecordMarkerCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "marker_name": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1Payloads"
+          }
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        },
+        "failure": {
+          "$ref": "#/definitions/v1Failure"
+        }
+      }
+    },
+    "v1RegisterNamespaceRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "owner_email": {
+          "type": "string"
+        },
+        "workflow_execution_retention_period": {
+          "type": "string"
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ClusterReplicationConfig"
+          }
+        },
+        "active_cluster_name": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "A key-value map for any customized purpose."
+        },
+        "security_token": {
+          "type": "string"
+        },
+        "is_global_namespace": {
+          "type": "boolean"
+        },
+        "history_archival_state": {
+          "$ref": "#/definitions/v1ArchivalState",
+          "description": "If unspecified (ARCHIVAL_STATE_UNSPECIFIED) then default server configuration is used."
+        },
+        "history_archival_uri": {
+          "type": "string"
+        },
+        "visibility_archival_state": {
+          "$ref": "#/definitions/v1ArchivalState",
+          "description": "If unspecified (ARCHIVAL_STATE_UNSPECIFIED) then default server configuration is used."
+        },
+        "visibility_archival_uri": {
+          "type": "string"
+        }
+      }
+    },
+    "v1RegisterNamespaceResponse": {
+      "type": "object"
+    },
+    "v1ReleaseInfo": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "release_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "description": "ReleaseInfo contains information about specific version of temporal."
+    },
+    "v1RequestCancelActivityTaskCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1RequestCancelExternalWorkflowExecutionCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_id": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "control": {
+          "type": "string"
+        },
+        "child_workflow_only": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1RequestCancelExternalWorkflowExecutionFailedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "cause": {
+          "$ref": "#/definitions/v1CancelExternalWorkflowExecutionFailedCause"
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "control": {
+          "type": "string"
+        }
+      }
+    },
+    "v1RequestCancelExternalWorkflowExecutionInitiatedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "control": {
+          "type": "string"
+        },
+        "child_workflow_only": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1RequestCancelWorkflowExecutionRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "first_execution_run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1RequestCancelWorkflowExecutionResponse": {
+      "type": "object"
+    },
+    "v1ResetPointInfo": {
+      "type": "object",
+      "properties": {
+        "binary_checksum": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "first_workflow_task_completed_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "create_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expire_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "(-- api-linter: core::0214::resource-expiry=disabled\n    aip.dev/not-precedent: TTL is not defined for ResetPointInfo. --)\nThe time that the run is deleted due to retention."
+        },
+        "resettable": {
+          "type": "boolean",
+          "description": "false if the reset point has pending childWFs/reqCancels/signalExternals."
+        }
+      }
+    },
+    "v1ResetPoints": {
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ResetPointInfo"
+          }
+        }
+      }
+    },
+    "v1ResetStickyTaskQueueResponse": {
+      "type": "object"
+    },
+    "v1ResetWorkflowExecutionRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "workflow_task_finish_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "request_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ResetWorkflowExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ResetWorkflowFailureInfo": {
+      "type": "object",
+      "properties": {
+        "last_heartbeat_details": {
+          "$ref": "#/definitions/v1Payloads"
+        }
+      }
+    },
+    "v1RespondActivityTaskCanceledByIdResponse": {
+      "type": "object"
+    },
+    "v1RespondActivityTaskCanceledResponse": {
+      "type": "object"
+    },
+    "v1RespondActivityTaskCompletedByIdResponse": {
+      "type": "object"
+    },
+    "v1RespondActivityTaskCompletedResponse": {
+      "type": "object"
+    },
+    "v1RespondActivityTaskFailedByIdResponse": {
+      "type": "object"
+    },
+    "v1RespondActivityTaskFailedResponse": {
+      "type": "object"
+    },
+    "v1RespondQueryTaskCompletedResponse": {
+      "type": "object"
+    },
+    "v1RespondWorkflowTaskCompletedResponse": {
+      "type": "object",
+      "properties": {
+        "workflow_task": {
+          "$ref": "#/definitions/v1PollWorkflowTaskQueueResponse"
+        }
+      }
+    },
+    "v1RespondWorkflowTaskFailedResponse": {
+      "type": "object"
+    },
+    "v1RetryPolicy": {
+      "type": "object",
+      "properties": {
+        "initial_interval": {
+          "type": "string",
+          "description": "Interval of the first retry. If retryBackoffCoefficient is 1.0 then it is used for all retries."
+        },
+        "backoff_coefficient": {
+          "type": "number",
+          "format": "double",
+          "description": "Coefficient used to calculate the next retry interval.\nThe next retry interval is previous interval multiplied by the coefficient.\nMust be 1 or larger."
+        },
+        "maximum_interval": {
+          "type": "string",
+          "description": "Maximum interval between retries. Exponential backoff leads to interval increase.\nThis value is the cap of the increase. Default is 100x of the initial interval."
+        },
+        "maximum_attempts": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Maximum number of attempts. When exceeded the retries stop even if not expired yet.\n1 disables retries. 0 means unlimited (up to the timeouts)"
+        },
+        "non_retryable_error_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Non-Retryable errors types. Will stop retrying if error type matches this list."
+        }
+      }
+    },
+    "v1RetryState": {
+      "type": "string",
+      "enum": [
+        "RETRY_STATE_UNSPECIFIED",
+        "RETRY_STATE_IN_PROGRESS",
+        "RETRY_STATE_NON_RETRYABLE_FAILURE",
+        "RETRY_STATE_TIMEOUT",
+        "RETRY_STATE_MAXIMUM_ATTEMPTS_REACHED",
+        "RETRY_STATE_RETRY_POLICY_NOT_SET",
+        "RETRY_STATE_INTERNAL_SERVER_ERROR",
+        "RETRY_STATE_CANCEL_REQUESTED"
+      ],
+      "default": "RETRY_STATE_UNSPECIFIED"
+    },
+    "v1ScanWorkflowExecutionsResponse": {
+      "type": "object",
+      "properties": {
+        "executions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1WorkflowExecutionInfo"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "v1ScheduleActivityTaskCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "activity_id": {
+          "type": "string"
+        },
+        "activity_type": {
+          "$ref": "#/definitions/v1ActivityType"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "schedule_to_close_timeout": {
+          "type": "string",
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nIndicates how long the caller is willing to wait for an activity completion.\nLimits for how long retries are happening. Either this or start_to_close_timeout_seconds must be specified.\nWhen not specified defaults to the workflow execution timeout."
+        },
+        "schedule_to_start_timeout": {
+          "type": "string",
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nLimits time an activity task can stay in a task queue before a worker picks it up.\nThis timeout is always non retryable as all a retry would achieve is to put it back into the same queue.\nDefaults to schedule_to_close_timeout_seconds or workflow execution timeout if not specified."
+        },
+        "start_to_close_timeout": {
+          "type": "string",
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nMaximum time an activity is allowed to execute after a pick up by a worker.\nThis timeout is always retryable. Either this or schedule_to_close_timeout_seconds must be specified."
+        },
+        "heartbeat_timeout": {
+          "type": "string",
+          "description": "Maximum time between successful worker heartbeats."
+        },
+        "retry_policy": {
+          "$ref": "#/definitions/v1RetryPolicy",
+          "description": "Activities are provided by a default retry policy controlled through the service dynamic configuration.\nRetries are happening up to schedule_to_close_timeout.\nTo disable retries set retry_policy.maximum_attempts to 1."
+        }
+      }
+    },
+    "v1SearchAttributes": {
+      "type": "object",
+      "properties": {
+        "indexed_fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1Payload"
+          }
+        }
+      }
+    },
+    "v1ServerFailureInfo": {
+      "type": "object",
+      "properties": {
+        "non_retryable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1Severity": {
+      "type": "string",
+      "enum": [
+        "SEVERITY_UNSPECIFIED",
+        "SEVERITY_HIGH",
+        "SEVERITY_MEDIUM",
+        "SEVERITY_LOW"
+      ],
+      "default": "SEVERITY_UNSPECIFIED"
+    },
+    "v1SignalExternalWorkflowExecutionCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "signal_name": {
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "control": {
+          "type": "string"
+        },
+        "child_workflow_only": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1SignalExternalWorkflowExecutionFailedCause": {
+      "type": "string",
+      "enum": [
+        "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED",
+        "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_EXTERNAL_WORKFLOW_EXECUTION_NOT_FOUND"
+      ],
+      "default": "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED"
+    },
+    "v1SignalExternalWorkflowExecutionFailedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "cause": {
+          "$ref": "#/definitions/v1SignalExternalWorkflowExecutionFailedCause"
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "control": {
+          "type": "string"
+        }
+      }
+    },
+    "v1SignalExternalWorkflowExecutionInitiatedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "signal_name": {
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "control": {
+          "type": "string"
+        },
+        "child_workflow_only": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1SignalWithStartWorkflowExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1SignalWorkflowExecutionResponse": {
+      "type": "object"
+    },
+    "v1StartChildWorkflowExecutionCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_id": {
+          "type": "string"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "workflow_execution_timeout": {
+          "type": "string",
+          "description": "Total workflow execution timeout including retries and continue as new."
+        },
+        "workflow_run_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow run."
+        },
+        "workflow_task_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow task."
+        },
+        "parent_close_policy": {
+          "$ref": "#/definitions/v1ParentClosePolicy",
+          "description": "Default: PARENT_CLOSE_POLICY_TERMINATE."
+        },
+        "control": {
+          "type": "string"
+        },
+        "workflow_id_reuse_policy": {
+          "$ref": "#/definitions/v1WorkflowIdReusePolicy",
+          "description": "Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE."
+        },
+        "retry_policy": {
+          "$ref": "#/definitions/v1RetryPolicy"
+        },
+        "cron_schedule": {
+          "type": "string"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        },
+        "memo": {
+          "$ref": "#/definitions/v1Memo"
+        },
+        "search_attributes": {
+          "$ref": "#/definitions/v1SearchAttributes"
+        }
+      }
+    },
+    "v1StartChildWorkflowExecutionFailedCause": {
+      "type": "string",
+      "enum": [
+        "START_CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED",
+        "START_CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_WORKFLOW_ALREADY_EXISTS"
+      ],
+      "default": "START_CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED"
+    },
+    "v1StartChildWorkflowExecutionFailedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_id": {
+          "type": "string"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "cause": {
+          "$ref": "#/definitions/v1StartChildWorkflowExecutionFailedCause"
+        },
+        "control": {
+          "type": "string"
+        },
+        "initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1StartChildWorkflowExecutionInitiatedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_id": {
+          "type": "string"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "workflow_execution_timeout": {
+          "type": "string",
+          "description": "Total workflow execution timeout including retries and continue as new."
+        },
+        "workflow_run_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow run."
+        },
+        "workflow_task_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow task."
+        },
+        "parent_close_policy": {
+          "$ref": "#/definitions/v1ParentClosePolicy",
+          "description": "Default: PARENT_CLOSE_POLICY_TERMINATE."
+        },
+        "control": {
+          "type": "string"
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "workflow_id_reuse_policy": {
+          "$ref": "#/definitions/v1WorkflowIdReusePolicy",
+          "description": "Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE."
+        },
+        "retry_policy": {
+          "$ref": "#/definitions/v1RetryPolicy"
+        },
+        "cron_schedule": {
+          "type": "string"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        },
+        "memo": {
+          "$ref": "#/definitions/v1Memo"
+        },
+        "search_attributes": {
+          "$ref": "#/definitions/v1SearchAttributes"
+        }
+      }
+    },
+    "v1StartTimeFilter": {
+      "type": "object",
+      "properties": {
+        "earliest_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "latest_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1StartTimerCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "timer_id": {
+          "type": "string"
+        },
+        "start_to_fire_timeout": {
+          "type": "string",
+          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+        }
+      }
+    },
+    "v1StartWorkflowExecutionRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_id": {
+          "type": "string"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "workflow_execution_timeout": {
+          "type": "string",
+          "description": "Total workflow execution timeout including retries and continue as new."
+        },
+        "workflow_run_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow run."
+        },
+        "workflow_task_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow task."
+        },
+        "identity": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "workflow_id_reuse_policy": {
+          "$ref": "#/definitions/v1WorkflowIdReusePolicy",
+          "description": "Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE."
+        },
+        "retry_policy": {
+          "$ref": "#/definitions/v1RetryPolicy",
+          "description": "Retries up to workflow_execution_timeout_seconds."
+        },
+        "cron_schedule": {
+          "type": "string"
+        },
+        "memo": {
+          "$ref": "#/definitions/v1Memo"
+        },
+        "search_attributes": {
+          "$ref": "#/definitions/v1SearchAttributes"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        }
+      }
+    },
+    "v1StartWorkflowExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1StatusFilter": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1WorkflowExecutionStatus"
+        }
+      }
+    },
+    "v1StickyExecutionAttributes": {
+      "type": "object",
+      "properties": {
+        "worker_task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "schedule_to_start_timeout": {
+          "type": "string",
+          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+        }
+      }
+    },
+    "v1TaskIdBlock": {
+      "type": "object",
+      "properties": {
+        "start_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "end_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1TaskQueue": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/definitions/v1TaskQueueKind",
+          "description": "Default: TASK_QUEUE_KIND_NORMAL."
+        }
+      }
+    },
+    "v1TaskQueueKind": {
+      "type": "string",
+      "enum": [
+        "TASK_QUEUE_KIND_UNSPECIFIED",
+        "TASK_QUEUE_KIND_NORMAL",
+        "TASK_QUEUE_KIND_STICKY"
+      ],
+      "default": "TASK_QUEUE_KIND_UNSPECIFIED"
+    },
+    "v1TaskQueueMetadata": {
+      "type": "object",
+      "properties": {
+        "max_tasks_per_second": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "v1TaskQueuePartitionMetadata": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "owner_host_name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1TaskQueueStatus": {
+      "type": "object",
+      "properties": {
+        "backlog_count_hint": {
+          "type": "string",
+          "format": "int64"
+        },
+        "read_level": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ack_level": {
+          "type": "string",
+          "format": "int64"
+        },
+        "rate_per_second": {
+          "type": "number",
+          "format": "double"
+        },
+        "task_id_block": {
+          "$ref": "#/definitions/v1TaskIdBlock"
+        }
+      }
+    },
+    "v1TaskQueueType": {
+      "type": "string",
+      "enum": [
+        "TASK_QUEUE_TYPE_UNSPECIFIED",
+        "TASK_QUEUE_TYPE_WORKFLOW",
+        "TASK_QUEUE_TYPE_ACTIVITY"
+      ],
+      "default": "TASK_QUEUE_TYPE_UNSPECIFIED",
+      "description": " - TASK_QUEUE_TYPE_WORKFLOW: Workflow type of task queue.\n - TASK_QUEUE_TYPE_ACTIVITY: Activity type of task queue."
+    },
+    "v1TerminateWorkflowExecutionRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "details": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "first_execution_run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1TerminateWorkflowExecutionResponse": {
+      "type": "object"
+    },
+    "v1TerminatedFailureInfo": {
+      "type": "object"
+    },
+    "v1TimeoutFailureInfo": {
+      "type": "object",
+      "properties": {
+        "timeout_type": {
+          "$ref": "#/definitions/v1TimeoutType"
+        },
+        "last_heartbeat_details": {
+          "$ref": "#/definitions/v1Payloads"
+        }
+      }
+    },
+    "v1TimeoutType": {
+      "type": "string",
+      "enum": [
+        "TIMEOUT_TYPE_UNSPECIFIED",
+        "TIMEOUT_TYPE_START_TO_CLOSE",
+        "TIMEOUT_TYPE_SCHEDULE_TO_START",
+        "TIMEOUT_TYPE_SCHEDULE_TO_CLOSE",
+        "TIMEOUT_TYPE_HEARTBEAT"
+      ],
+      "default": "TIMEOUT_TYPE_UNSPECIFIED"
+    },
+    "v1TimerCanceledEventAttributes": {
+      "type": "object",
+      "properties": {
+        "timer_id": {
+          "type": "string"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identity": {
+          "type": "string"
+        }
+      }
+    },
+    "v1TimerFiredEventAttributes": {
+      "type": "object",
+      "properties": {
+        "timer_id": {
+          "type": "string"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1TimerStartedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "timer_id": {
+          "type": "string"
+        },
+        "start_to_fire_timeout": {
+          "type": "string",
+          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1UpdateNamespaceInfo": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "owner_email": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "A key-value map for any customized purpose."
+        }
+      }
+    },
+    "v1UpdateNamespaceRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "update_info": {
+          "$ref": "#/definitions/v1UpdateNamespaceInfo"
+        },
+        "config": {
+          "$ref": "#/definitions/v1NamespaceConfig"
+        },
+        "replication_config": {
+          "$ref": "#/definitions/v1NamespaceReplicationConfig"
+        },
+        "security_token": {
+          "type": "string"
+        },
+        "delete_bad_binary": {
+          "type": "string"
+        }
+      },
+      "title": "(-- api-linter: core::0134::request-mask-required=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)\n(-- api-linter: core::0134::request-resource-required=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)"
+    },
+    "v1UpdateNamespaceResponse": {
+      "type": "object",
+      "properties": {
+        "namespace_info": {
+          "$ref": "#/definitions/v1NamespaceInfo"
+        },
+        "config": {
+          "$ref": "#/definitions/v1NamespaceConfig"
+        },
+        "replication_config": {
+          "$ref": "#/definitions/v1NamespaceReplicationConfig"
+        },
+        "failover_version": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_global_namespace": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1UpsertWorkflowSearchAttributesCommandAttributes": {
+      "type": "object",
+      "properties": {
+        "search_attributes": {
+          "$ref": "#/definitions/v1SearchAttributes"
+        }
+      }
+    },
+    "v1UpsertWorkflowSearchAttributesEventAttributes": {
+      "type": "object",
+      "properties": {
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "search_attributes": {
+          "$ref": "#/definitions/v1SearchAttributes"
+        }
+      }
+    },
+    "v1VersionInfo": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "$ref": "#/definitions/v1ReleaseInfo"
+        },
+        "recommended": {
+          "$ref": "#/definitions/v1ReleaseInfo"
+        },
+        "instructions": {
+          "type": "string"
+        },
+        "alerts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Alert"
+          }
+        },
+        "last_update_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "VersionInfo contains details about current and recommended release versions as well as alerts and upgrade instructions."
+    },
+    "v1WorkflowExecution": {
+      "type": "object",
+      "properties": {
+        "workflow_id": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowExecutionCancelRequestedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "cause": {
+          "type": "string"
+        },
+        "external_initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "identity": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowExecutionCanceledEventAttributes": {
+      "type": "object",
+      "properties": {
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "details": {
+          "$ref": "#/definitions/v1Payloads"
+        }
+      }
+    },
+    "v1WorkflowExecutionCompletedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1WorkflowExecutionConfig": {
+      "type": "object",
+      "properties": {
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "workflow_execution_timeout": {
+          "type": "string"
+        },
+        "workflow_run_timeout": {
+          "type": "string"
+        },
+        "default_workflow_task_timeout": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowExecutionContinuedAsNewEventAttributes": {
+      "type": "object",
+      "properties": {
+        "new_execution_run_id": {
+          "type": "string"
+        },
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "workflow_run_timeout": {
+          "type": "string",
+          "description": "workflow_execution_timeout is omitted as it shouldn'be overridden from within a workflow.\nTimeout of a single workflow run."
+        },
+        "workflow_task_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow task."
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "backoff_start_interval": {
+          "type": "string"
+        },
+        "initiator": {
+          "$ref": "#/definitions/v1ContinueAsNewInitiator"
+        },
+        "failure": {
+          "$ref": "#/definitions/v1Failure"
+        },
+        "last_completion_result": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        },
+        "memo": {
+          "$ref": "#/definitions/v1Memo"
+        },
+        "search_attributes": {
+          "$ref": "#/definitions/v1SearchAttributes"
+        }
+      }
+    },
+    "v1WorkflowExecutionFailedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "failure": {
+          "$ref": "#/definitions/v1Failure"
+        },
+        "retry_state": {
+          "$ref": "#/definitions/v1RetryState"
+        },
+        "workflow_task_completed_event_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1WorkflowExecutionFilter": {
+      "type": "object",
+      "properties": {
+        "workflow_id": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowExecutionInfo": {
+      "type": "object",
+      "properties": {
+        "execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "close_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "$ref": "#/definitions/v1WorkflowExecutionStatus"
+        },
+        "history_length": {
+          "type": "string",
+          "format": "int64"
+        },
+        "parent_namespace_id": {
+          "type": "string"
+        },
+        "parent_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "execution_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "memo": {
+          "$ref": "#/definitions/v1Memo"
+        },
+        "search_attributes": {
+          "$ref": "#/definitions/v1SearchAttributes"
+        },
+        "auto_reset_points": {
+          "$ref": "#/definitions/v1ResetPoints"
+        },
+        "task_queue": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowExecutionSignaledEventAttributes": {
+      "type": "object",
+      "properties": {
+        "signal_name": {
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "identity": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowExecutionStartedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "workflow_type": {
+          "$ref": "#/definitions/v1WorkflowType"
+        },
+        "parent_workflow_namespace": {
+          "type": "string"
+        },
+        "parent_workflow_execution": {
+          "$ref": "#/definitions/v1WorkflowExecution"
+        },
+        "parent_initiated_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "workflow_execution_timeout": {
+          "type": "string",
+          "description": "Total workflow execution timeout including retries and continue as new."
+        },
+        "workflow_run_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow run."
+        },
+        "workflow_task_timeout": {
+          "type": "string",
+          "description": "Timeout of a single workflow task."
+        },
+        "continued_execution_run_id": {
+          "type": "string"
+        },
+        "initiator": {
+          "$ref": "#/definitions/v1ContinueAsNewInitiator"
+        },
+        "continued_failure": {
+          "$ref": "#/definitions/v1Failure"
+        },
+        "last_completion_result": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "original_execution_run_id": {
+          "type": "string",
+          "description": "This is the runId when the WorkflowExecutionStarted event is written."
+        },
+        "identity": {
+          "type": "string"
+        },
+        "first_execution_run_id": {
+          "type": "string",
+          "description": "This is the very first runId along the chain of ContinueAsNew and Reset."
+        },
+        "retry_policy": {
+          "$ref": "#/definitions/v1RetryPolicy"
+        },
+        "attempt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "workflow_execution_expiration_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The absolute time at which workflow is timed out.\nThis time is passed without change to the next run/retry of a workflow."
+        },
+        "cron_schedule": {
+          "type": "string"
+        },
+        "first_workflow_task_backoff": {
+          "type": "string"
+        },
+        "memo": {
+          "$ref": "#/definitions/v1Memo"
+        },
+        "search_attributes": {
+          "$ref": "#/definitions/v1SearchAttributes"
+        },
+        "prev_auto_reset_points": {
+          "$ref": "#/definitions/v1ResetPoints"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
+        }
+      }
+    },
+    "v1WorkflowExecutionStatus": {
+      "type": "string",
+      "enum": [
+        "WORKFLOW_EXECUTION_STATUS_UNSPECIFIED",
+        "WORKFLOW_EXECUTION_STATUS_RUNNING",
+        "WORKFLOW_EXECUTION_STATUS_COMPLETED",
+        "WORKFLOW_EXECUTION_STATUS_FAILED",
+        "WORKFLOW_EXECUTION_STATUS_CANCELED",
+        "WORKFLOW_EXECUTION_STATUS_TERMINATED",
+        "WORKFLOW_EXECUTION_STATUS_CONTINUED_AS_NEW",
+        "WORKFLOW_EXECUTION_STATUS_TIMED_OUT"
+      ],
+      "default": "WORKFLOW_EXECUTION_STATUS_UNSPECIFIED",
+      "description": "- WORKFLOW_EXECUTION_STATUS_RUNNING: Value 1 is hardcoded in SQL persistence.",
+      "title": "(-- api-linter: core::0216::synonyms=disabled\n    aip.dev/not-precedent: There is WorkflowExecutionState already in another package. --)"
+    },
+    "v1WorkflowExecutionTerminatedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "details": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "identity": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowExecutionTimedOutEventAttributes": {
+      "type": "object",
+      "properties": {
+        "retry_state": {
+          "$ref": "#/definitions/v1RetryState"
+        }
+      }
+    },
+    "v1WorkflowIdReusePolicy": {
+      "type": "string",
+      "enum": [
+        "WORKFLOW_ID_REUSE_POLICY_UNSPECIFIED",
+        "WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE",
+        "WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY",
+        "WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE"
+      ],
+      "default": "WORKFLOW_ID_REUSE_POLICY_UNSPECIFIED",
+      "description": " - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE: Allow start a workflow execution using the same workflow Id, when workflow not running.\n - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY: Allow start a workflow execution using the same workflow Id, when workflow not running, and the last execution close state is in\n[terminated, cancelled, timed out, failed].\n - WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE: Do not allow start a workflow execution using the same workflow Id at all."
+    },
+    "v1WorkflowQuery": {
+      "type": "object",
+      "properties": {
+        "query_type": {
+          "type": "string"
+        },
+        "query_args": {
+          "$ref": "#/definitions/v1Payloads"
+        }
+      }
+    },
+    "v1WorkflowQueryResult": {
+      "type": "object",
+      "properties": {
+        "result_type": {
+          "$ref": "#/definitions/v1QueryResultType"
+        },
+        "answer": {
+          "$ref": "#/definitions/v1Payloads"
+        },
+        "error_message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowTaskCompletedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "binary_checksum": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowTaskFailedCause": {
+      "type": "string",
+      "enum": [
+        "WORKFLOW_TASK_FAILED_CAUSE_UNSPECIFIED",
+        "WORKFLOW_TASK_FAILED_CAUSE_UNHANDLED_COMMAND",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_SCHEDULE_ACTIVITY_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_REQUEST_CANCEL_ACTIVITY_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_START_TIMER_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_CANCEL_TIMER_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_RECORD_MARKER_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_COMPLETE_WORKFLOW_EXECUTION_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_FAIL_WORKFLOW_EXECUTION_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_CANCEL_WORKFLOW_EXECUTION_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_CONTINUE_AS_NEW_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_START_TIMER_DUPLICATE_ID",
+        "WORKFLOW_TASK_FAILED_CAUSE_RESET_STICKY_TASK_QUEUE",
+        "WORKFLOW_TASK_FAILED_CAUSE_WORKFLOW_WORKER_UNHANDLED_FAILURE",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_SIGNAL_WORKFLOW_EXECUTION_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_START_CHILD_EXECUTION_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_FORCE_CLOSE_COMMAND",
+        "WORKFLOW_TASK_FAILED_CAUSE_FAILOVER_CLOSE_COMMAND",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_SIGNAL_INPUT_SIZE",
+        "WORKFLOW_TASK_FAILED_CAUSE_RESET_WORKFLOW",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_BINARY",
+        "WORKFLOW_TASK_FAILED_CAUSE_SCHEDULE_ACTIVITY_DUPLICATE_ID",
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_SEARCH_ATTRIBUTES"
+      ],
+      "default": "WORKFLOW_TASK_FAILED_CAUSE_UNSPECIFIED"
+    },
+    "v1WorkflowTaskFailedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cause": {
+          "$ref": "#/definitions/v1WorkflowTaskFailedCause"
+        },
+        "failure": {
+          "$ref": "#/definitions/v1Failure"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "base_run_id": {
+          "type": "string",
+          "description": "For reset workflow."
+        },
+        "new_run_id": {
+          "type": "string"
+        },
+        "fork_event_version": {
+          "type": "string",
+          "format": "int64"
+        },
+        "binary_checksum": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowTaskScheduledEventAttributes": {
+      "type": "object",
+      "properties": {
+        "task_queue": {
+          "$ref": "#/definitions/v1TaskQueue"
+        },
+        "start_to_close_timeout": {
+          "type": "string",
+          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+        },
+        "attempt": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1WorkflowTaskStartedEventAttributes": {
+      "type": "object",
+      "properties": {
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identity": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowTaskTimedOutEventAttributes": {
+      "type": "object",
+      "properties": {
+        "scheduled_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_event_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "timeout_type": {
+          "$ref": "#/definitions/v1TimeoutType"
+        }
+      }
+    },
+    "v1WorkflowType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WorkflowTypeFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
