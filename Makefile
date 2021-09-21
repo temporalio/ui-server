@@ -66,7 +66,7 @@ build-grpc:
 	mv -f $(PROTO_OUT)/temporal/api/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
 
 ##### Install dependencies #####
-install: install-submodules install-utils install-ui
+install: install-submodules install-utils
 
 install-utils:
 	go get \
@@ -84,3 +84,22 @@ update-submodules:
 
 install-ui:
 	(cd ./ui && npm install)
+
+##### Test #####
+TEST_TIMEOUT := 10m
+ALL_SRC         := $(shell find . -name "*.go")
+TEST_DIRS       := $(sort $(dir $(filter %_test.go,$(ALL_SRC))))
+
+ifdef TEST_TAG
+override TEST_TAG := -tags $(TEST_TAG)
+endif
+
+test: clean-test-results
+	@printf $(COLOR) "Running unit tests..."
+	$(foreach TEST_DIRS,$(TEST_DIRS),\
+		@go test $(TEST_DIRS) -timeout=$(TEST_TIMEOUT) $(TEST_TAG) -race \
+	$(NEWLINE))
+
+clean-test-results:
+	@rm -f test.log
+	@go clean -testcache
