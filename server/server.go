@@ -39,8 +39,8 @@ import (
 	"github.com/temporalio/web-go/server/server_options"
 )
 
-//go:embed generated/ui
-var uiAssets embed.FS
+// // go:embed generated/ui
+// var uiAssets embed.FS
 
 //go:embed generated/swagger-ui/index.html
 var swaggeruiHTML []byte
@@ -81,7 +81,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	routes.SetAPIRoutes(e, conn)
 	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
 	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
-	routes.SetUIRoutes(e, uiAssets)
+	// routes.SetUIRoutes(e, uiAssets)
 
 	s := &Server{
 		httpServer:   e,
