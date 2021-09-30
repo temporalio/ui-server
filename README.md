@@ -1,5 +1,4 @@
-
-
+[![build](https://github.com/temporalio/ui-server/actions/workflows/ci.yml/badge.svg)](https://github.com/temporalio/ui-server/actions/workflows/ci.yml)
 
 # Development
 Pre-requirements:
