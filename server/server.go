@@ -39,8 +39,11 @@ import (
 	"github.com/temporalio/web-go/server/server_options"
 )
 
-// // go:embed generated/ui
-// var uiAssets embed.FS
+// TODO resolving one of these two issues may allow to clean the embed string
+// https://github.com/golang/go/issues/43854
+// https://github.com/sveltejs/kit/pull/1370#issuecomment-853306453
+//go:embed generated/ui/* generated/ui/_app/assets/pages/* generated/ui/_app/chunks/* generated/ui/_app/pages/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/queues/\[queue\]/*  generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/activities/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/events/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\] generated/ui/_app/pages/namespaces/\[namespace\]/queues/\[queue\]/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/activities/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/events/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/* generated/ui/_app/pages/namespaces/\[namespace\]/*
+var uiAssets embed.FS
 
 //go:embed generated/swagger-ui/index.html
 var swaggeruiHTML []byte
@@ -81,7 +84,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	routes.SetAPIRoutes(e, conn)
 	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
 	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
-	// routes.SetUIRoutes(e, uiAssets)
+	routes.SetUIRoutes(e, uiAssets)
 
 	s := &Server{
 		httpServer:   e,

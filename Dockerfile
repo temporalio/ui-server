@@ -14,8 +14,8 @@ WORKDIR /home/ui-builder
 # pre-build dependecies to improve subsequent build times
 COPY go.mod go.sum ./
 RUN go mod download
-# COPY ./ui/package*.json ./ui/ TODO: uncomment as http://github.com/temporalio/ui `build:local` script is fixed
-# RUN (cd ./ui && npm install)
+COPY ./ui/package*.json ./ui/
+RUN (cd ./ui && npm install)
 
 COPY . .
 RUN make build-server

@@ -27,7 +27,7 @@ SWAGGERUI_OUT := ./server/generated/swagger-ui
 UI_OUT := ./server/generated/ui
 
 ##### Build #####
-build: build-api build-server
+build: build-ui build-api build-server
 
 build-ui:
 	(cd ./ui && rm -rf ./build-local ./build-cloud)
@@ -35,7 +35,6 @@ build-ui:
 	rm -rf $(UI_OUT)
 	mkdir -p $(UI_OUT)
 	cp -r ./ui/build-local/* $(UI_OUT)
-
 
 build-api: build-grpc
 	mkdir -p $(SWAGGERUI_OUT)
