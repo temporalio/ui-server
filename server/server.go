@@ -39,6 +39,9 @@ import (
 	"github.com/temporalio/web-go/server/server_options"
 )
 
+//go:embed generated/ui/index.html
+var uiHTML []byte
+
 // TODO resolving one of these two issues may allow to clean the embed string
 // https://github.com/golang/go/issues/43854
 // https://github.com/sveltejs/kit/pull/1370#issuecomment-853306453
@@ -84,7 +87,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	routes.SetAPIRoutes(e, conn)
 	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
 	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
-	routes.SetUIRoutes(e, uiAssets)
+	routes.SetUIRoutes(e, uiHTML, uiAssets)
 
 	s := &Server{
 		httpServer:   e,

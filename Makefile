@@ -65,7 +65,7 @@ build-grpc:
 	mv -f $(PROTO_OUT)/temporal/api/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
 
 ##### Install dependencies #####
-install: install-submodules install-utils
+install: install-submodules install-utils install-ui
 
 install-utils:
 	go get \

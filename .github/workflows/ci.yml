@@ -19,6 +19,9 @@ jobs:
         uses: arduino/setup-protoc@v1
         with:
           version: '3.x'
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
       - name: build
         run: make install build
       - name: test
