@@ -40,8 +40,7 @@ import (
 func SetAPIRoutes(e *echo.Echo, temporalConn *grpc.ClientConn) error {
 	api := e.Group("/api")
 	api.GET("/v1/me", getCurrentUser)
-	api.GET("/*", temporalAPIHandler(temporalConn))
-
+	api.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", temporalAPIHandler(temporalConn))
 	return nil
 }
 
