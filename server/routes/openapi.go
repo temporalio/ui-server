@@ -33,8 +33,8 @@ import (
 
 // SetAPIRoutes sets api routes
 func SetSwaggerUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
-	e.GET("/swagger-ui", buildSwaggerUIHandler(indexHTML))
-	e.GET("/swagger-ui/*", buildSwaggerUIAssetsHander(assets))
+	e.GET("/openapi", buildSwaggerUIHandler(indexHTML))
+	e.GET("/openapi/*", buildSwaggerUIAssetsHander(assets))
 }
 
 func buildSwaggerUIHandler(indexHTML []byte) echo.HandlerFunc {
