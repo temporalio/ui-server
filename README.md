@@ -17,7 +17,8 @@ To start the server, execute
 ./web-go start
 ```
 
-Open http://localhost:8080/swagger-ui/ in the browser to explore HTTP API
+- Open http://localhost:8080/ in the browser to explore the UI
+- Open http://localhost:8080/openapi/ in the browser to explore HTTP API
 
 ## Debugging
 In VSCode launch "Debug Server" script (or press F5)
