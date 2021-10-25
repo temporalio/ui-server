@@ -4,6 +4,11 @@
     "title": "temporal/api/workflowservice/v1/service.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "WorkflowService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],
@@ -25,7 +30,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -48,20 +53,20 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
         "parameters": [
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "next_page_token",
+            "name": "nextPageToken",
             "in": "query",
             "required": false,
             "type": "string",
@@ -85,7 +90,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -96,39 +101,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/v1RegisterNamespaceRequest"
-            }
-          }
-        ],
-        "tags": [
-          "WorkflowService"
-        ]
-      }
-    },
-    "/api/v1/namespaces/workflows/start": {
-      "post": {
-        "summary": "StartWorkflowExecution starts a new long running workflow instance.  It will create the instance with\n'WorkflowExecutionStarted' event in history and also schedule the first WorkflowTask for the worker to make the\nfirst command for this instance.  It will return 'WorkflowExecutionAlreadyStartedFailure', if an instance already\nexists with same workflowId.",
-        "operationId": "WorkflowService_StartWorkflowExecution",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1StartWorkflowExecutionResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/runtimeError"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1StartWorkflowExecutionRequest"
             }
           }
         ],
@@ -151,7 +123,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -186,7 +158,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -198,7 +170,7 @@
             "type": "string"
           },
           {
-            "name": "security_token",
+            "name": "securityToken",
             "in": "query",
             "required": false,
             "type": "string"
@@ -221,7 +193,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -237,7 +209,25 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1UpdateNamespaceRequest"
+              "type": "object",
+              "properties": {
+                "updateInfo": {
+                  "$ref": "#/definitions/v1UpdateNamespaceInfo"
+                },
+                "config": {
+                  "$ref": "#/definitions/v1NamespaceConfig"
+                },
+                "replicationConfig": {
+                  "$ref": "#/definitions/v1NamespaceReplicationConfig"
+                },
+                "securityToken": {
+                  "type": "string"
+                },
+                "deleteBadBinary": {
+                  "type": "string"
+                }
+              },
+              "title": "(-- api-linter: core::0134::request-mask-required=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)\n(-- api-linter: core::0134::request-resource-required=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)"
             }
           }
         ],
@@ -246,7 +236,7 @@
         ]
       }
     },
-    "/api/v1/namespaces/{namespace}/task-queues/{task_queue.name}": {
+    "/api/v1/namespaces/{namespace}/task-queues/{taskQueue.name}": {
       "get": {
         "summary": "DescribeTaskQueue returns information about the target task queue, right now this API returns the\npollers which polled this task queue in last few minutes.",
         "operationId": "WorkflowService_DescribeTaskQueue",
@@ -260,7 +250,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -272,13 +262,13 @@
             "type": "string"
           },
           {
-            "name": "task_queue.name",
+            "name": "taskQueue.name",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "task_queue.kind",
+            "name": "taskQueue.kind",
             "description": "Default: TASK_QUEUE_KIND_NORMAL.",
             "in": "query",
             "required": false,
@@ -291,7 +281,7 @@
             "default": "TASK_QUEUE_KIND_UNSPECIFIED"
           },
           {
-            "name": "task_queue_type",
+            "name": "taskQueueType",
             "description": " - TASK_QUEUE_TYPE_WORKFLOW: Workflow type of task queue.\n - TASK_QUEUE_TYPE_ACTIVITY: Activity type of task queue.",
             "in": "query",
             "required": false,
@@ -304,7 +294,7 @@
             "default": "TASK_QUEUE_TYPE_UNSPECIFIED"
           },
           {
-            "name": "include_task_queue_status",
+            "name": "includeTaskQueueStatus",
             "in": "query",
             "required": false,
             "type": "boolean"
@@ -329,7 +319,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -341,14 +331,14 @@
             "type": "string"
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "next_page_token",
+            "name": "nextPageToken",
             "in": "query",
             "required": false,
             "type": "string",
@@ -380,7 +370,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -392,14 +382,14 @@
             "type": "string"
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "next_page_token",
+            "name": "nextPageToken",
             "in": "query",
             "required": false,
             "type": "string",
@@ -431,7 +421,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -443,53 +433,53 @@
             "type": "string"
           },
           {
-            "name": "maximum_page_size",
+            "name": "maximumPageSize",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "next_page_token",
+            "name": "nextPageToken",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "byte"
           },
           {
-            "name": "start_time_filter.earliest_time",
+            "name": "startTimeFilter.earliestTime",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "date-time"
           },
           {
-            "name": "start_time_filter.latest_time",
+            "name": "startTimeFilter.latestTime",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "date-time"
           },
           {
-            "name": "execution_filter.workflow_id",
+            "name": "executionFilter.workflowId",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "execution_filter.run_id",
+            "name": "executionFilter.runId",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "type_filter.name",
+            "name": "typeFilter.name",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "status_filter.status",
+            "name": "statusFilter.status",
             "description": " - WORKFLOW_EXECUTION_STATUS_RUNNING: Value 1 is hardcoded in SQL persistence.",
             "in": "query",
             "required": false,
@@ -526,7 +516,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -563,7 +553,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -575,47 +565,47 @@
             "type": "string"
           },
           {
-            "name": "maximum_page_size",
+            "name": "maximumPageSize",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "next_page_token",
+            "name": "nextPageToken",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "byte"
           },
           {
-            "name": "start_time_filter.earliest_time",
+            "name": "startTimeFilter.earliestTime",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "date-time"
           },
           {
-            "name": "start_time_filter.latest_time",
+            "name": "startTimeFilter.latestTime",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "date-time"
           },
           {
-            "name": "execution_filter.workflow_id",
+            "name": "executionFilter.workflowId",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "execution_filter.run_id",
+            "name": "executionFilter.runId",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "type_filter.name",
+            "name": "typeFilter.name",
             "in": "query",
             "required": false,
             "type": "string"
@@ -626,7 +616,7 @@
         ]
       }
     },
-    "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}": {
+    "/api/v1/namespaces/{namespace}/workflows/{execution.workflowId}/executions/{execution.runId}": {
       "get": {
         "summary": "DescribeWorkflowExecution returns information about the specified workflow execution.",
         "operationId": "WorkflowService_DescribeWorkflowExecution",
@@ -640,7 +630,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -652,13 +642,13 @@
             "type": "string"
           },
           {
-            "name": "execution.workflow_id",
+            "name": "execution.workflowId",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "execution.run_id",
+            "name": "execution.runId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -669,7 +659,7 @@
         ]
       }
     },
-    "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}/events": {
+    "/api/v1/namespaces/{namespace}/workflows/{execution.workflowId}/executions/{execution.runId}/events": {
       "get": {
         "summary": "GetWorkflowExecutionHistory returns the history of specified workflow execution.  It fails with 'NotFoundFailure' if specified workflow\nexecution in unknown to the service.",
         "operationId": "WorkflowService_GetWorkflowExecutionHistory",
@@ -683,7 +673,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -695,39 +685,39 @@
             "type": "string"
           },
           {
-            "name": "execution.workflow_id",
+            "name": "execution.workflowId",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "execution.run_id",
+            "name": "execution.runId",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "maximum_page_size",
+            "name": "maximumPageSize",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "next_page_token",
+            "name": "nextPageToken",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "byte"
           },
           {
-            "name": "wait_new_event",
+            "name": "waitNewEvent",
             "in": "query",
             "required": false,
             "type": "boolean"
           },
           {
-            "name": "history_event_filter_type",
+            "name": "historyEventFilterType",
             "description": "Default: HISTORY_EVENT_FILTER_TYPE_ALL_EVENT.",
             "in": "query",
             "required": false,
@@ -740,7 +730,7 @@
             "default": "HISTORY_EVENT_FILTER_TYPE_UNSPECIFIED"
           },
           {
-            "name": "skip_archival",
+            "name": "skipArchival",
             "in": "query",
             "required": false,
             "type": "boolean"
@@ -751,7 +741,7 @@
         ]
       }
     },
-    "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}/query": {
+    "/api/v1/namespaces/{namespace}/workflows/{execution.workflowId}/executions/{execution.runId}/query": {
       "post": {
         "summary": "QueryWorkflow returns query result for a specified workflow execution",
         "operationId": "WorkflowService_QueryWorkflow",
@@ -765,7 +755,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -777,13 +767,13 @@
             "type": "string"
           },
           {
-            "name": "execution.workflow_id",
+            "name": "execution.workflowId",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "execution.run_id",
+            "name": "execution.runId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -793,7 +783,19 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1QueryWorkflowRequest"
+              "type": "object",
+              "properties": {
+                "execution": {
+                  "$ref": "#/definitions/v1WorkflowExecution"
+                },
+                "query": {
+                  "$ref": "#/definitions/v1WorkflowQuery"
+                },
+                "queryRejectCondition": {
+                  "$ref": "#/definitions/v1QueryRejectCondition",
+                  "description": "QueryRejectCondition can used to reject the query if workflow state does not satisfy condition.\nDefault: QUERY_REJECT_CONDITION_NONE."
+                }
+              }
             }
           }
         ],
@@ -802,7 +804,7 @@
         ]
       }
     },
-    "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/executions/{workflow_execution.run_id}/cancel": {
+    "/api/v1/namespaces/{namespace}/workflows/{workflowExecution.workflowId}/executions/{workflowExecution.runId}/cancel": {
       "post": {
         "summary": "RequestCancelWorkflowExecution is called by application worker when it wants to request cancellation of a workflow instance.\nIt will result in a new 'WorkflowExecutionCancelRequested' event being written to the workflow history and a new WorkflowTask\ncreated for the workflow instance so new commands could be made. It fails with 'NotFoundFailure' if the workflow is not valid\nanymore due to completion or doesn't exist.",
         "operationId": "WorkflowService_RequestCancelWorkflowExecution",
@@ -816,7 +818,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -828,13 +830,13 @@
             "type": "string"
           },
           {
-            "name": "workflow_execution.workflow_id",
+            "name": "workflowExecution.workflowId",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "workflow_execution.run_id",
+            "name": "workflowExecution.runId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -844,7 +846,21 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1RequestCancelWorkflowExecutionRequest"
+              "type": "object",
+              "properties": {
+                "workflowExecution": {
+                  "$ref": "#/definitions/v1WorkflowExecution"
+                },
+                "identity": {
+                  "type": "string"
+                },
+                "requestId": {
+                  "type": "string"
+                },
+                "firstExecutionRunId": {
+                  "type": "string"
+                }
+              }
             }
           }
         ],
@@ -853,7 +869,7 @@
         ]
       }
     },
-    "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/executions/{workflow_execution.run_id}/reset": {
+    "/api/v1/namespaces/{namespace}/workflows/{workflowExecution.workflowId}/executions/{workflowExecution.runId}/reset": {
       "post": {
         "summary": "ResetWorkflowExecution reset an existing workflow execution to WorkflowTaskCompleted event(exclusive).\nAnd it will immediately terminating the current execution instance.",
         "operationId": "WorkflowService_ResetWorkflowExecution",
@@ -867,7 +883,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -879,13 +895,13 @@
             "type": "string"
           },
           {
-            "name": "workflow_execution.workflow_id",
+            "name": "workflowExecution.workflowId",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "workflow_execution.run_id",
+            "name": "workflowExecution.runId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -895,7 +911,22 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1ResetWorkflowExecutionRequest"
+              "type": "object",
+              "properties": {
+                "workflowExecution": {
+                  "$ref": "#/definitions/v1WorkflowExecution"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "workflowTaskFinishEventId": {
+                  "type": "string",
+                  "format": "int64"
+                },
+                "requestId": {
+                  "type": "string"
+                }
+              }
             }
           }
         ],
@@ -904,7 +935,7 @@
         ]
       }
     },
-    "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/executions/{workflow_execution.run_id}/terminate": {
+    "/api/v1/namespaces/{namespace}/workflows/{workflowExecution.workflowId}/executions/{workflowExecution.runId}/terminate": {
       "post": {
         "summary": "TerminateWorkflowExecution terminates an existing workflow execution by recording WorkflowExecutionTerminated event\nin the history and immediately terminating the execution instance.",
         "operationId": "WorkflowService_TerminateWorkflowExecution",
@@ -918,7 +949,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -930,13 +961,13 @@
             "type": "string"
           },
           {
-            "name": "workflow_execution.workflow_id",
+            "name": "workflowExecution.workflowId",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "workflow_execution.run_id",
+            "name": "workflowExecution.runId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -946,7 +977,118 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1TerminateWorkflowExecutionRequest"
+              "type": "object",
+              "properties": {
+                "workflowExecution": {
+                  "$ref": "#/definitions/v1WorkflowExecution"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "details": {
+                  "$ref": "#/definitions/v1Payloads"
+                },
+                "identity": {
+                  "type": "string"
+                },
+                "firstExecutionRunId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/{workflowId}/start": {
+      "post": {
+        "summary": "StartWorkflowExecution starts a new long running workflow instance.  It will create the instance with\n'WorkflowExecutionStarted' event in history and also schedule the first WorkflowTask for the worker to make the\nfirst command for this instance.  It will return 'WorkflowExecutionAlreadyStartedFailure', if an instance already\nexists with same workflowId.",
+        "operationId": "WorkflowService_StartWorkflowExecution",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StartWorkflowExecutionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflowId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "workflowType": {
+                  "$ref": "#/definitions/v1WorkflowType"
+                },
+                "taskQueue": {
+                  "$ref": "#/definitions/v1TaskQueue"
+                },
+                "input": {
+                  "$ref": "#/definitions/v1Payloads"
+                },
+                "workflowExecutionTimeout": {
+                  "type": "string",
+                  "description": "Total workflow execution timeout including retries and continue as new."
+                },
+                "workflowRunTimeout": {
+                  "type": "string",
+                  "description": "Timeout of a single workflow run."
+                },
+                "workflowTaskTimeout": {
+                  "type": "string",
+                  "description": "Timeout of a single workflow task."
+                },
+                "identity": {
+                  "type": "string"
+                },
+                "requestId": {
+                  "type": "string"
+                },
+                "workflowIdReusePolicy": {
+                  "$ref": "#/definitions/v1WorkflowIdReusePolicy",
+                  "description": "Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE."
+                },
+                "retryPolicy": {
+                  "$ref": "#/definitions/v1RetryPolicy",
+                  "description": "Retries up to workflow_execution_timeout_seconds."
+                },
+                "cronSchedule": {
+                  "type": "string"
+                },
+                "memo": {
+                  "$ref": "#/definitions/v1Memo"
+                },
+                "searchAttributes": {
+                  "$ref": "#/definitions/v1SearchAttributes"
+                },
+                "header": {
+                  "$ref": "#/definitions/v1Header"
+                }
+              }
             }
           }
         ],
@@ -969,7 +1111,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/runtimeError"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -983,21 +1125,15 @@
     "protobufAny": {
       "type": "object",
       "properties": {
-        "type_url": {
+        "@type": {
           "type": "string"
-        },
-        "value": {
-          "type": "string",
-          "format": "byte"
         }
-      }
+      },
+      "additionalProperties": {}
     },
-    "runtimeError": {
+    "rpcStatus": {
       "type": "object",
       "properties": {
-        "error": {
-          "type": "string"
-        },
         "code": {
           "type": "integer",
           "format": "int32"
@@ -1016,24 +1152,24 @@
     "v1ActivityFailureInfo": {
       "type": "object",
       "properties": {
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
         "identity": {
           "type": "string"
         },
-        "activity_type": {
+        "activityType": {
           "$ref": "#/definitions/v1ActivityType"
         },
-        "activity_id": {
+        "activityId": {
           "type": "string"
         },
-        "retry_state": {
+        "retryState": {
           "$ref": "#/definitions/v1RetryState"
         }
       }
@@ -1041,11 +1177,11 @@
     "v1ActivityTaskCancelRequestedEventAttributes": {
       "type": "object",
       "properties": {
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -1057,15 +1193,15 @@
         "details": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "latest_cancel_requested_event_id": {
+        "latestCancelRequestedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
@@ -1080,11 +1216,11 @@
         "result": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
@@ -1099,18 +1235,18 @@
         "failure": {
           "$ref": "#/definitions/v1Failure"
         },
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
         "identity": {
           "type": "string"
         },
-        "retry_state": {
+        "retryState": {
           "$ref": "#/definitions/v1RetryState"
         }
       }
@@ -1118,16 +1254,16 @@
     "v1ActivityTaskScheduledEventAttributes": {
       "type": "object",
       "properties": {
-        "activity_id": {
+        "activityId": {
           "type": "string"
         },
-        "activity_type": {
+        "activityType": {
           "$ref": "#/definitions/v1ActivityType"
         },
         "namespace": {
           "type": "string"
         },
-        "task_queue": {
+        "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
         "header": {
@@ -1136,27 +1272,27 @@
         "input": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "schedule_to_close_timeout": {
+        "scheduleToCloseTimeout": {
           "type": "string",
           "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nIndicates how long the caller is willing to wait for an activity completion.\nLimits for how long retries are happening. Either this or start_to_close_timeout_seconds must be specified."
         },
-        "schedule_to_start_timeout": {
+        "scheduleToStartTimeout": {
           "type": "string",
           "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nLimits time an activity task can stay in a task queue before a worker picks it up.\nThis timeout is always non retryable as all a retry would achieve is to put it back into the same queue.\nDefaults to schedule_to_close_timeout_seconds or workflow execution timeout if not specified."
         },
-        "start_to_close_timeout": {
+        "startToCloseTimeout": {
           "type": "string",
           "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nMaximum time an activity is allowed to execute after a pick up by a worker.\nThis timeout is always retryable. Either this or schedule_to_close_timeout_seconds must be specified."
         },
-        "heartbeat_timeout": {
+        "heartbeatTimeout": {
           "type": "string",
           "description": "Maximum time between successful worker heartbeats."
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "retry_policy": {
+        "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy",
           "description": "Activities are provided by a default retry policy controlled through the service dynamic configuration.\nRetries are happening up to schedule_to_close_timeout.\nTo disable retries set retry_policy.maximum_attempts to 1."
         }
@@ -1165,21 +1301,21 @@
     "v1ActivityTaskStartedEventAttributes": {
       "type": "object",
       "properties": {
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
         "identity": {
           "type": "string"
         },
-        "request_id": {
+        "requestId": {
           "type": "string"
         },
         "attempt": {
           "type": "integer",
           "format": "int32"
         },
-        "last_failure": {
+        "lastFailure": {
           "$ref": "#/definitions/v1Failure"
         }
       }
@@ -1191,15 +1327,15 @@
           "$ref": "#/definitions/v1Failure",
           "description": "For retry activity, it may have a failure before timeout. It is stored as `cause` in `failure`."
         },
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "retry_state": {
+        "retryState": {
           "$ref": "#/definitions/v1RetryState"
         }
       }
@@ -1230,7 +1366,7 @@
         "type": {
           "type": "string"
         },
-        "non_retryable": {
+        "nonRetryable": {
           "type": "boolean"
         },
         "details": {
@@ -1267,7 +1403,7 @@
         "operator": {
           "type": "string"
         },
-        "create_time": {
+        "createTime": {
           "type": "string",
           "format": "date-time"
         }
@@ -1284,7 +1420,7 @@
     "v1CancelTimerCommandAttributes": {
       "type": "object",
       "properties": {
-        "timer_id": {
+        "timerId": {
           "type": "string"
         }
       }
@@ -1314,17 +1450,17 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -1339,17 +1475,17 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -1364,21 +1500,21 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "retry_state": {
+        "retryState": {
           "$ref": "#/definitions/v1RetryState"
         }
       }
@@ -1389,21 +1525,21 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "retry_state": {
+        "retryState": {
           "$ref": "#/definitions/v1RetryState"
         }
       }
@@ -1414,14 +1550,14 @@
         "namespace": {
           "type": "string"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
         "header": {
@@ -1435,17 +1571,17 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -1457,21 +1593,21 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "retry_state": {
+        "retryState": {
           "$ref": "#/definitions/v1RetryState"
         }
       }
@@ -1479,7 +1615,7 @@
     "v1ClusterReplicationConfig": {
       "type": "object",
       "properties": {
-        "cluster_name": {
+        "clusterName": {
           "type": "string"
         }
       }
@@ -1487,46 +1623,46 @@
     "v1Command": {
       "type": "object",
       "properties": {
-        "command_type": {
+        "commandType": {
           "$ref": "#/definitions/v1CommandType"
         },
-        "schedule_activity_task_command_attributes": {
+        "scheduleActivityTaskCommandAttributes": {
           "$ref": "#/definitions/v1ScheduleActivityTaskCommandAttributes"
         },
-        "start_timer_command_attributes": {
+        "startTimerCommandAttributes": {
           "$ref": "#/definitions/v1StartTimerCommandAttributes"
         },
-        "complete_workflow_execution_command_attributes": {
+        "completeWorkflowExecutionCommandAttributes": {
           "$ref": "#/definitions/v1CompleteWorkflowExecutionCommandAttributes"
         },
-        "fail_workflow_execution_command_attributes": {
+        "failWorkflowExecutionCommandAttributes": {
           "$ref": "#/definitions/v1FailWorkflowExecutionCommandAttributes"
         },
-        "request_cancel_activity_task_command_attributes": {
+        "requestCancelActivityTaskCommandAttributes": {
           "$ref": "#/definitions/v1RequestCancelActivityTaskCommandAttributes"
         },
-        "cancel_timer_command_attributes": {
+        "cancelTimerCommandAttributes": {
           "$ref": "#/definitions/v1CancelTimerCommandAttributes"
         },
-        "cancel_workflow_execution_command_attributes": {
+        "cancelWorkflowExecutionCommandAttributes": {
           "$ref": "#/definitions/v1CancelWorkflowExecutionCommandAttributes"
         },
-        "request_cancel_external_workflow_execution_command_attributes": {
+        "requestCancelExternalWorkflowExecutionCommandAttributes": {
           "$ref": "#/definitions/v1RequestCancelExternalWorkflowExecutionCommandAttributes"
         },
-        "record_marker_command_attributes": {
+        "recordMarkerCommandAttributes": {
           "$ref": "#/definitions/v1RecordMarkerCommandAttributes"
         },
-        "continue_as_new_workflow_execution_command_attributes": {
+        "continueAsNewWorkflowExecutionCommandAttributes": {
           "$ref": "#/definitions/v1ContinueAsNewWorkflowExecutionCommandAttributes"
         },
-        "start_child_workflow_execution_command_attributes": {
+        "startChildWorkflowExecutionCommandAttributes": {
           "$ref": "#/definitions/v1StartChildWorkflowExecutionCommandAttributes"
         },
-        "signal_external_workflow_execution_command_attributes": {
+        "signalExternalWorkflowExecutionCommandAttributes": {
           "$ref": "#/definitions/v1SignalExternalWorkflowExecutionCommandAttributes"
         },
-        "upsert_workflow_search_attributes_command_attributes": {
+        "upsertWorkflowSearchAttributesCommandAttributes": {
           "$ref": "#/definitions/v1UpsertWorkflowSearchAttributesCommandAttributes"
         }
       }
@@ -1573,27 +1709,27 @@
     "v1ContinueAsNewWorkflowExecutionCommandAttributes": {
       "type": "object",
       "properties": {
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "task_queue": {
+        "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
         "input": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "workflow_run_timeout": {
+        "workflowRunTimeout": {
           "type": "string",
           "description": "workflow_execution_timeout is omitted as it shouldn'be overridden from within a workflow.\nTimeout of a single workflow run."
         },
-        "workflow_task_timeout": {
+        "workflowTaskTimeout": {
           "type": "string",
           "description": "Timeout of a single workflow task."
         },
-        "backoff_start_interval": {
+        "backoffStartInterval": {
           "type": "string"
         },
-        "retry_policy": {
+        "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy"
         },
         "initiator": {
@@ -1602,10 +1738,10 @@
         "failure": {
           "$ref": "#/definitions/v1Failure"
         },
-        "last_completion_result": {
+        "lastCompletionResult": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "cron_schedule": {
+        "cronSchedule": {
           "type": "string"
         },
         "header": {
@@ -1614,7 +1750,7 @@
         "memo": {
           "$ref": "#/definitions/v1Memo"
         },
-        "search_attributes": {
+        "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
         }
       }
@@ -1631,7 +1767,7 @@
     "v1DataBlob": {
       "type": "object",
       "properties": {
-        "encoding_type": {
+        "encodingType": {
           "$ref": "#/definitions/v1EncodingType"
         },
         "data": {
@@ -1646,20 +1782,20 @@
     "v1DescribeNamespaceResponse": {
       "type": "object",
       "properties": {
-        "namespace_info": {
+        "namespaceInfo": {
           "$ref": "#/definitions/v1NamespaceInfo"
         },
         "config": {
           "$ref": "#/definitions/v1NamespaceConfig"
         },
-        "replication_config": {
+        "replicationConfig": {
           "$ref": "#/definitions/v1NamespaceReplicationConfig"
         },
-        "failover_version": {
+        "failoverVersion": {
           "type": "string",
           "format": "int64"
         },
-        "is_global_namespace": {
+        "isGlobalNamespace": {
           "type": "boolean"
         }
       }
@@ -1673,7 +1809,7 @@
             "$ref": "#/definitions/v1PollerInfo"
           }
         },
-        "task_queue_status": {
+        "taskQueueStatus": {
           "$ref": "#/definitions/v1TaskQueueStatus"
         }
       }
@@ -1681,19 +1817,19 @@
     "v1DescribeWorkflowExecutionResponse": {
       "type": "object",
       "properties": {
-        "execution_config": {
+        "executionConfig": {
           "$ref": "#/definitions/v1WorkflowExecutionConfig"
         },
-        "workflow_execution_info": {
+        "workflowExecutionInfo": {
           "$ref": "#/definitions/v1WorkflowExecutionInfo"
         },
-        "pending_activities": {
+        "pendingActivities": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/v1PendingActivityInfo"
           }
         },
-        "pending_children": {
+        "pendingChildren": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/v1PendingChildExecutionInfo"
@@ -1761,14 +1897,14 @@
     "v1ExternalWorkflowExecutionCancelRequestedEventAttributes": {
       "type": "object",
       "properties": {
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         }
       }
@@ -1776,14 +1912,14 @@
     "v1ExternalWorkflowExecutionSignaledEventAttributes": {
       "type": "object",
       "properties": {
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "control": {
@@ -1808,34 +1944,34 @@
         "source": {
           "type": "string"
         },
-        "stack_trace": {
+        "stackTrace": {
           "type": "string"
         },
         "cause": {
           "$ref": "#/definitions/v1Failure"
         },
-        "application_failure_info": {
+        "applicationFailureInfo": {
           "$ref": "#/definitions/v1ApplicationFailureInfo"
         },
-        "timeout_failure_info": {
+        "timeoutFailureInfo": {
           "$ref": "#/definitions/v1TimeoutFailureInfo"
         },
-        "canceled_failure_info": {
+        "canceledFailureInfo": {
           "$ref": "#/definitions/v1CanceledFailureInfo"
         },
-        "terminated_failure_info": {
+        "terminatedFailureInfo": {
           "$ref": "#/definitions/v1TerminatedFailureInfo"
         },
-        "server_failure_info": {
+        "serverFailureInfo": {
           "$ref": "#/definitions/v1ServerFailureInfo"
         },
-        "reset_workflow_failure_info": {
+        "resetWorkflowFailureInfo": {
           "$ref": "#/definitions/v1ResetWorkflowFailureInfo"
         },
-        "activity_failure_info": {
+        "activityFailureInfo": {
           "$ref": "#/definitions/v1ActivityFailureInfo"
         },
-        "child_workflow_execution_failure_info": {
+        "childWorkflowExecutionFailureInfo": {
           "$ref": "#/definitions/v1ChildWorkflowExecutionFailureInfo"
         }
       }
@@ -1843,26 +1979,26 @@
     "v1GetClusterInfoResponse": {
       "type": "object",
       "properties": {
-        "supported_clients": {
+        "supportedClients": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           },
           "description": "Key is client name i.e \"temporal-go\", \"temporal-java\", or \"temporal-cli\".\nValue is ranges of supported versions of this client i.e \"\u003e1.1.1 \u003c=1.4.0 || ^5.0.0\"."
         },
-        "server_version": {
+        "serverVersion": {
           "type": "string"
         },
-        "cluster_id": {
+        "clusterId": {
           "type": "string"
         },
-        "version_info": {
+        "versionInfo": {
           "$ref": "#/definitions/v1VersionInfo"
         },
-        "cluster_name": {
+        "clusterName": {
           "type": "string"
         },
-        "history_shard_count": {
+        "historyShardCount": {
           "type": "integer",
           "format": "int32"
         }
@@ -1886,13 +2022,13 @@
         "history": {
           "$ref": "#/definitions/v1History"
         },
-        "raw_history": {
+        "rawHistory": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/v1DataBlob"
           }
         },
-        "next_page_token": {
+        "nextPageToken": {
           "type": "string",
           "format": "byte"
         },
@@ -1926,143 +2062,143 @@
     "v1HistoryEvent": {
       "type": "object",
       "properties": {
-        "event_id": {
+        "eventId": {
           "type": "string",
           "format": "int64"
         },
-        "event_time": {
+        "eventTime": {
           "type": "string",
           "format": "date-time"
         },
-        "event_type": {
+        "eventType": {
           "$ref": "#/definitions/v1EventType"
         },
         "version": {
           "type": "string",
           "format": "int64"
         },
-        "task_id": {
+        "taskId": {
           "type": "string",
           "format": "int64"
         },
-        "workflow_execution_started_event_attributes": {
+        "workflowExecutionStartedEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionStartedEventAttributes"
         },
-        "workflow_execution_completed_event_attributes": {
+        "workflowExecutionCompletedEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionCompletedEventAttributes"
         },
-        "workflow_execution_failed_event_attributes": {
+        "workflowExecutionFailedEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionFailedEventAttributes"
         },
-        "workflow_execution_timed_out_event_attributes": {
+        "workflowExecutionTimedOutEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionTimedOutEventAttributes"
         },
-        "workflow_task_scheduled_event_attributes": {
+        "workflowTaskScheduledEventAttributes": {
           "$ref": "#/definitions/v1WorkflowTaskScheduledEventAttributes"
         },
-        "workflow_task_started_event_attributes": {
+        "workflowTaskStartedEventAttributes": {
           "$ref": "#/definitions/v1WorkflowTaskStartedEventAttributes"
         },
-        "workflow_task_completed_event_attributes": {
+        "workflowTaskCompletedEventAttributes": {
           "$ref": "#/definitions/v1WorkflowTaskCompletedEventAttributes"
         },
-        "workflow_task_timed_out_event_attributes": {
+        "workflowTaskTimedOutEventAttributes": {
           "$ref": "#/definitions/v1WorkflowTaskTimedOutEventAttributes"
         },
-        "workflow_task_failed_event_attributes": {
+        "workflowTaskFailedEventAttributes": {
           "$ref": "#/definitions/v1WorkflowTaskFailedEventAttributes"
         },
-        "activity_task_scheduled_event_attributes": {
+        "activityTaskScheduledEventAttributes": {
           "$ref": "#/definitions/v1ActivityTaskScheduledEventAttributes"
         },
-        "activity_task_started_event_attributes": {
+        "activityTaskStartedEventAttributes": {
           "$ref": "#/definitions/v1ActivityTaskStartedEventAttributes"
         },
-        "activity_task_completed_event_attributes": {
+        "activityTaskCompletedEventAttributes": {
           "$ref": "#/definitions/v1ActivityTaskCompletedEventAttributes"
         },
-        "activity_task_failed_event_attributes": {
+        "activityTaskFailedEventAttributes": {
           "$ref": "#/definitions/v1ActivityTaskFailedEventAttributes"
         },
-        "activity_task_timed_out_event_attributes": {
+        "activityTaskTimedOutEventAttributes": {
           "$ref": "#/definitions/v1ActivityTaskTimedOutEventAttributes"
         },
-        "timer_started_event_attributes": {
+        "timerStartedEventAttributes": {
           "$ref": "#/definitions/v1TimerStartedEventAttributes"
         },
-        "timer_fired_event_attributes": {
+        "timerFiredEventAttributes": {
           "$ref": "#/definitions/v1TimerFiredEventAttributes"
         },
-        "activity_task_cancel_requested_event_attributes": {
+        "activityTaskCancelRequestedEventAttributes": {
           "$ref": "#/definitions/v1ActivityTaskCancelRequestedEventAttributes"
         },
-        "activity_task_canceled_event_attributes": {
+        "activityTaskCanceledEventAttributes": {
           "$ref": "#/definitions/v1ActivityTaskCanceledEventAttributes"
         },
-        "timer_canceled_event_attributes": {
+        "timerCanceledEventAttributes": {
           "$ref": "#/definitions/v1TimerCanceledEventAttributes"
         },
-        "marker_recorded_event_attributes": {
+        "markerRecordedEventAttributes": {
           "$ref": "#/definitions/v1MarkerRecordedEventAttributes"
         },
-        "workflow_execution_signaled_event_attributes": {
+        "workflowExecutionSignaledEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionSignaledEventAttributes"
         },
-        "workflow_execution_terminated_event_attributes": {
+        "workflowExecutionTerminatedEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionTerminatedEventAttributes"
         },
-        "workflow_execution_cancel_requested_event_attributes": {
+        "workflowExecutionCancelRequestedEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionCancelRequestedEventAttributes"
         },
-        "workflow_execution_canceled_event_attributes": {
+        "workflowExecutionCanceledEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionCanceledEventAttributes"
         },
-        "request_cancel_external_workflow_execution_initiated_event_attributes": {
+        "requestCancelExternalWorkflowExecutionInitiatedEventAttributes": {
           "$ref": "#/definitions/v1RequestCancelExternalWorkflowExecutionInitiatedEventAttributes"
         },
-        "request_cancel_external_workflow_execution_failed_event_attributes": {
+        "requestCancelExternalWorkflowExecutionFailedEventAttributes": {
           "$ref": "#/definitions/v1RequestCancelExternalWorkflowExecutionFailedEventAttributes"
         },
-        "external_workflow_execution_cancel_requested_event_attributes": {
+        "externalWorkflowExecutionCancelRequestedEventAttributes": {
           "$ref": "#/definitions/v1ExternalWorkflowExecutionCancelRequestedEventAttributes"
         },
-        "workflow_execution_continued_as_new_event_attributes": {
+        "workflowExecutionContinuedAsNewEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionContinuedAsNewEventAttributes"
         },
-        "start_child_workflow_execution_initiated_event_attributes": {
+        "startChildWorkflowExecutionInitiatedEventAttributes": {
           "$ref": "#/definitions/v1StartChildWorkflowExecutionInitiatedEventAttributes"
         },
-        "start_child_workflow_execution_failed_event_attributes": {
+        "startChildWorkflowExecutionFailedEventAttributes": {
           "$ref": "#/definitions/v1StartChildWorkflowExecutionFailedEventAttributes"
         },
-        "child_workflow_execution_started_event_attributes": {
+        "childWorkflowExecutionStartedEventAttributes": {
           "$ref": "#/definitions/v1ChildWorkflowExecutionStartedEventAttributes"
         },
-        "child_workflow_execution_completed_event_attributes": {
+        "childWorkflowExecutionCompletedEventAttributes": {
           "$ref": "#/definitions/v1ChildWorkflowExecutionCompletedEventAttributes"
         },
-        "child_workflow_execution_failed_event_attributes": {
+        "childWorkflowExecutionFailedEventAttributes": {
           "$ref": "#/definitions/v1ChildWorkflowExecutionFailedEventAttributes"
         },
-        "child_workflow_execution_canceled_event_attributes": {
+        "childWorkflowExecutionCanceledEventAttributes": {
           "$ref": "#/definitions/v1ChildWorkflowExecutionCanceledEventAttributes"
         },
-        "child_workflow_execution_timed_out_event_attributes": {
+        "childWorkflowExecutionTimedOutEventAttributes": {
           "$ref": "#/definitions/v1ChildWorkflowExecutionTimedOutEventAttributes"
         },
-        "child_workflow_execution_terminated_event_attributes": {
+        "childWorkflowExecutionTerminatedEventAttributes": {
           "$ref": "#/definitions/v1ChildWorkflowExecutionTerminatedEventAttributes"
         },
-        "signal_external_workflow_execution_initiated_event_attributes": {
+        "signalExternalWorkflowExecutionInitiatedEventAttributes": {
           "$ref": "#/definitions/v1SignalExternalWorkflowExecutionInitiatedEventAttributes"
         },
-        "signal_external_workflow_execution_failed_event_attributes": {
+        "signalExternalWorkflowExecutionFailedEventAttributes": {
           "$ref": "#/definitions/v1SignalExternalWorkflowExecutionFailedEventAttributes"
         },
-        "external_workflow_execution_signaled_event_attributes": {
+        "externalWorkflowExecutionSignaledEventAttributes": {
           "$ref": "#/definitions/v1ExternalWorkflowExecutionSignaledEventAttributes"
         },
-        "upsert_workflow_search_attributes_event_attributes": {
+        "upsertWorkflowSearchAttributesEventAttributes": {
           "$ref": "#/definitions/v1UpsertWorkflowSearchAttributesEventAttributes"
         }
       }
@@ -2098,7 +2234,7 @@
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
-        "next_page_token": {
+        "nextPageToken": {
           "type": "string",
           "format": "byte"
         }
@@ -2113,7 +2249,7 @@
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
-        "next_page_token": {
+        "nextPageToken": {
           "type": "string",
           "format": "byte"
         }
@@ -2128,7 +2264,7 @@
             "$ref": "#/definitions/v1DescribeNamespaceResponse"
           }
         },
-        "next_page_token": {
+        "nextPageToken": {
           "type": "string",
           "format": "byte"
         }
@@ -2143,7 +2279,7 @@
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
-        "next_page_token": {
+        "nextPageToken": {
           "type": "string",
           "format": "byte"
         }
@@ -2152,13 +2288,13 @@
     "v1ListTaskQueuePartitionsResponse": {
       "type": "object",
       "properties": {
-        "activity_task_queue_partitions": {
+        "activityTaskQueuePartitions": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/v1TaskQueuePartitionMetadata"
           }
         },
-        "workflow_task_queue_partitions": {
+        "workflowTaskQueuePartitions": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/v1TaskQueuePartitionMetadata"
@@ -2175,7 +2311,7 @@
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
-        "next_page_token": {
+        "nextPageToken": {
           "type": "string",
           "format": "byte"
         }
@@ -2184,7 +2320,7 @@
     "v1MarkerRecordedEventAttributes": {
       "type": "object",
       "properties": {
-        "marker_name": {
+        "markerName": {
           "type": "string"
         },
         "details": {
@@ -2193,7 +2329,7 @@
             "$ref": "#/definitions/v1Payloads"
           }
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
@@ -2219,24 +2355,24 @@
     "v1NamespaceConfig": {
       "type": "object",
       "properties": {
-        "workflow_execution_retention_ttl": {
+        "workflowExecutionRetentionTtl": {
           "type": "string"
         },
-        "bad_binaries": {
+        "badBinaries": {
           "$ref": "#/definitions/v1BadBinaries"
         },
-        "history_archival_state": {
+        "historyArchivalState": {
           "$ref": "#/definitions/v1ArchivalState",
           "description": "If unspecified (ARCHIVAL_STATE_UNSPECIFIED) then default server configuration is used."
         },
-        "history_archival_uri": {
+        "historyArchivalUri": {
           "type": "string"
         },
-        "visibility_archival_state": {
+        "visibilityArchivalState": {
           "$ref": "#/definitions/v1ArchivalState",
           "description": "If unspecified (ARCHIVAL_STATE_UNSPECIFIED) then default server configuration is used."
         },
-        "visibility_archival_uri": {
+        "visibilityArchivalUri": {
           "type": "string"
         }
       }
@@ -2253,7 +2389,7 @@
         "description": {
           "type": "string"
         },
-        "owner_email": {
+        "ownerEmail": {
           "type": "string"
         },
         "data": {
@@ -2271,7 +2407,7 @@
     "v1NamespaceReplicationConfig": {
       "type": "object",
       "properties": {
-        "active_cluster_name": {
+        "activeClusterName": {
           "type": "string"
         },
         "clusters": {
@@ -2333,23 +2469,23 @@
     "v1PendingActivityInfo": {
       "type": "object",
       "properties": {
-        "activity_id": {
+        "activityId": {
           "type": "string"
         },
-        "activity_type": {
+        "activityType": {
           "$ref": "#/definitions/v1ActivityType"
         },
         "state": {
           "$ref": "#/definitions/v1PendingActivityState"
         },
-        "heartbeat_details": {
+        "heartbeatDetails": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "last_heartbeat_time": {
+        "lastHeartbeatTime": {
           "type": "string",
           "format": "date-time"
         },
-        "last_started_time": {
+        "lastStartedTime": {
           "type": "string",
           "format": "date-time"
         },
@@ -2357,22 +2493,22 @@
           "type": "integer",
           "format": "int32"
         },
-        "maximum_attempts": {
+        "maximumAttempts": {
           "type": "integer",
           "format": "int32"
         },
-        "scheduled_time": {
+        "scheduledTime": {
           "type": "string",
           "format": "date-time"
         },
-        "expiration_time": {
+        "expirationTime": {
           "type": "string",
           "format": "date-time"
         },
-        "last_failure": {
+        "lastFailure": {
           "$ref": "#/definitions/v1Failure"
         },
-        "last_worker_identity": {
+        "lastWorkerIdentity": {
           "type": "string"
         }
       }
@@ -2390,20 +2526,20 @@
     "v1PendingChildExecutionInfo": {
       "type": "object",
       "properties": {
-        "workflow_id": {
+        "workflowId": {
           "type": "string"
         },
-        "run_id": {
+        "runId": {
           "type": "string"
         },
-        "workflow_type_name": {
+        "workflowTypeName": {
           "type": "string"
         },
-        "initiated_id": {
+        "initiatedId": {
           "type": "string",
           "format": "int64"
         },
-        "parent_close_policy": {
+        "parentClosePolicy": {
           "$ref": "#/definitions/v1ParentClosePolicy",
           "description": "Default: PARENT_CLOSE_POLICY_TERMINATE."
         }
@@ -2412,23 +2548,23 @@
     "v1PollActivityTaskQueueResponse": {
       "type": "object",
       "properties": {
-        "task_token": {
+        "taskToken": {
           "type": "string",
           "format": "byte"
         },
-        "workflow_namespace": {
+        "workflowNamespace": {
           "type": "string"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "activity_type": {
+        "activityType": {
           "$ref": "#/definitions/v1ActivityType"
         },
-        "activity_id": {
+        "activityId": {
           "type": "string"
         },
         "header": {
@@ -2437,18 +2573,18 @@
         "input": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "heartbeat_details": {
+        "heartbeatDetails": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "scheduled_time": {
+        "scheduledTime": {
           "type": "string",
           "format": "date-time"
         },
-        "current_attempt_scheduled_time": {
+        "currentAttemptScheduledTime": {
           "type": "string",
           "format": "date-time"
         },
-        "started_time": {
+        "startedTime": {
           "type": "string",
           "format": "date-time"
         },
@@ -2456,18 +2592,18 @@
           "type": "integer",
           "format": "int32"
         },
-        "schedule_to_close_timeout": {
+        "scheduleToCloseTimeout": {
           "type": "string",
           "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         },
-        "start_to_close_timeout": {
+        "startToCloseTimeout": {
           "type": "string",
           "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         },
-        "heartbeat_timeout": {
+        "heartbeatTimeout": {
           "type": "string"
         },
-        "retry_policy": {
+        "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy",
           "description": "This is an actual retry policy the service uses.\nIt can be different from the one provided (or not) during activity scheduling\nas the service can override the provided one in case its values are not specified\nor exceed configured system limits."
         }
@@ -2476,21 +2612,21 @@
     "v1PollWorkflowTaskQueueResponse": {
       "type": "object",
       "properties": {
-        "task_token": {
+        "taskToken": {
           "type": "string",
           "format": "byte"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "previous_started_event_id": {
+        "previousStartedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
@@ -2498,28 +2634,28 @@
           "type": "integer",
           "format": "int32"
         },
-        "backlog_count_hint": {
+        "backlogCountHint": {
           "type": "string",
           "format": "int64"
         },
         "history": {
           "$ref": "#/definitions/v1History"
         },
-        "next_page_token": {
+        "nextPageToken": {
           "type": "string",
           "format": "byte"
         },
         "query": {
           "$ref": "#/definitions/v1WorkflowQuery"
         },
-        "workflow_execution_task_queue": {
+        "workflowExecutionTaskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
-        "scheduled_time": {
+        "scheduledTime": {
           "type": "string",
           "format": "date-time"
         },
-        "started_time": {
+        "startedTime": {
           "type": "string",
           "format": "date-time"
         },
@@ -2534,7 +2670,7 @@
     "v1PollerInfo": {
       "type": "object",
       "properties": {
-        "last_access_time": {
+        "lastAccessTime": {
           "type": "string",
           "format": "date-time",
           "title": "Unix Nano"
@@ -2542,7 +2678,7 @@
         "identity": {
           "type": "string"
         },
-        "rate_per_second": {
+        "ratePerSecond": {
           "type": "number",
           "format": "double"
         }
@@ -2576,31 +2712,13 @@
       ],
       "default": "QUERY_RESULT_TYPE_UNSPECIFIED"
     },
-    "v1QueryWorkflowRequest": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "execution": {
-          "$ref": "#/definitions/v1WorkflowExecution"
-        },
-        "query": {
-          "$ref": "#/definitions/v1WorkflowQuery"
-        },
-        "query_reject_condition": {
-          "$ref": "#/definitions/v1QueryRejectCondition",
-          "description": "QueryRejectCondition can used to reject the query if workflow state does not satisfy condition.\nDefault: QUERY_REJECT_CONDITION_NONE."
-        }
-      }
-    },
     "v1QueryWorkflowResponse": {
       "type": "object",
       "properties": {
-        "query_result": {
+        "queryResult": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "query_rejected": {
+        "queryRejected": {
           "$ref": "#/definitions/v1QueryRejected"
         }
       }
@@ -2608,7 +2726,7 @@
     "v1RecordActivityTaskHeartbeatByIdResponse": {
       "type": "object",
       "properties": {
-        "cancel_requested": {
+        "cancelRequested": {
           "type": "boolean"
         }
       }
@@ -2616,7 +2734,7 @@
     "v1RecordActivityTaskHeartbeatResponse": {
       "type": "object",
       "properties": {
-        "cancel_requested": {
+        "cancelRequested": {
           "type": "boolean"
         }
       }
@@ -2624,7 +2742,7 @@
     "v1RecordMarkerCommandAttributes": {
       "type": "object",
       "properties": {
-        "marker_name": {
+        "markerName": {
           "type": "string"
         },
         "details": {
@@ -2650,10 +2768,10 @@
         "description": {
           "type": "string"
         },
-        "owner_email": {
+        "ownerEmail": {
           "type": "string"
         },
-        "workflow_execution_retention_period": {
+        "workflowExecutionRetentionPeriod": {
           "type": "string"
         },
         "clusters": {
@@ -2662,7 +2780,7 @@
             "$ref": "#/definitions/v1ClusterReplicationConfig"
           }
         },
-        "active_cluster_name": {
+        "activeClusterName": {
           "type": "string"
         },
         "data": {
@@ -2672,24 +2790,24 @@
           },
           "description": "A key-value map for any customized purpose."
         },
-        "security_token": {
+        "securityToken": {
           "type": "string"
         },
-        "is_global_namespace": {
+        "isGlobalNamespace": {
           "type": "boolean"
         },
-        "history_archival_state": {
+        "historyArchivalState": {
           "$ref": "#/definitions/v1ArchivalState",
           "description": "If unspecified (ARCHIVAL_STATE_UNSPECIFIED) then default server configuration is used."
         },
-        "history_archival_uri": {
+        "historyArchivalUri": {
           "type": "string"
         },
-        "visibility_archival_state": {
+        "visibilityArchivalState": {
           "$ref": "#/definitions/v1ArchivalState",
           "description": "If unspecified (ARCHIVAL_STATE_UNSPECIFIED) then default server configuration is used."
         },
-        "visibility_archival_uri": {
+        "visibilityArchivalUri": {
           "type": "string"
         }
       }
@@ -2703,7 +2821,7 @@
         "version": {
           "type": "string"
         },
-        "release_time": {
+        "releaseTime": {
           "type": "string",
           "format": "date-time"
         },
@@ -2716,7 +2834,7 @@
     "v1RequestCancelActivityTaskCommandAttributes": {
       "type": "object",
       "properties": {
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -2728,16 +2846,16 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_id": {
+        "workflowId": {
           "type": "string"
         },
-        "run_id": {
+        "runId": {
           "type": "string"
         },
         "control": {
           "type": "string"
         },
-        "child_workflow_only": {
+        "childWorkflowOnly": {
           "type": "boolean"
         }
       }
@@ -2748,17 +2866,17 @@
         "cause": {
           "$ref": "#/definitions/v1CancelExternalWorkflowExecutionFailedCause"
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
@@ -2770,41 +2888,21 @@
     "v1RequestCancelExternalWorkflowExecutionInitiatedEventAttributes": {
       "type": "object",
       "properties": {
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "control": {
           "type": "string"
         },
-        "child_workflow_only": {
+        "childWorkflowOnly": {
           "type": "boolean"
-        }
-      }
-    },
-    "v1RequestCancelWorkflowExecutionRequest": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "workflow_execution": {
-          "$ref": "#/definitions/v1WorkflowExecution"
-        },
-        "identity": {
-          "type": "string"
-        },
-        "request_id": {
-          "type": "string"
-        },
-        "first_execution_run_id": {
-          "type": "string"
         }
       }
     },
@@ -2814,21 +2912,21 @@
     "v1ResetPointInfo": {
       "type": "object",
       "properties": {
-        "binary_checksum": {
+        "binaryChecksum": {
           "type": "string"
         },
-        "run_id": {
+        "runId": {
           "type": "string"
         },
-        "first_workflow_task_completed_id": {
+        "firstWorkflowTaskCompletedId": {
           "type": "string",
           "format": "int64"
         },
-        "create_time": {
+        "createTime": {
           "type": "string",
           "format": "date-time"
         },
-        "expire_time": {
+        "expireTime": {
           "type": "string",
           "format": "date-time",
           "description": "(-- api-linter: core::0214::resource-expiry=disabled\n    aip.dev/not-precedent: TTL is not defined for ResetPointInfo. --)\nThe time that the run is deleted due to retention."
@@ -2853,31 +2951,10 @@
     "v1ResetStickyTaskQueueResponse": {
       "type": "object"
     },
-    "v1ResetWorkflowExecutionRequest": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "workflow_execution": {
-          "$ref": "#/definitions/v1WorkflowExecution"
-        },
-        "reason": {
-          "type": "string"
-        },
-        "workflow_task_finish_event_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "request_id": {
-          "type": "string"
-        }
-      }
-    },
     "v1ResetWorkflowExecutionResponse": {
       "type": "object",
       "properties": {
-        "run_id": {
+        "runId": {
           "type": "string"
         }
       }
@@ -2885,7 +2962,7 @@
     "v1ResetWorkflowFailureInfo": {
       "type": "object",
       "properties": {
-        "last_heartbeat_details": {
+        "lastHeartbeatDetails": {
           "$ref": "#/definitions/v1Payloads"
         }
       }
@@ -2914,7 +2991,7 @@
     "v1RespondWorkflowTaskCompletedResponse": {
       "type": "object",
       "properties": {
-        "workflow_task": {
+        "workflowTask": {
           "$ref": "#/definitions/v1PollWorkflowTaskQueueResponse"
         }
       }
@@ -2925,25 +3002,25 @@
     "v1RetryPolicy": {
       "type": "object",
       "properties": {
-        "initial_interval": {
+        "initialInterval": {
           "type": "string",
           "description": "Interval of the first retry. If retryBackoffCoefficient is 1.0 then it is used for all retries."
         },
-        "backoff_coefficient": {
+        "backoffCoefficient": {
           "type": "number",
           "format": "double",
           "description": "Coefficient used to calculate the next retry interval.\nThe next retry interval is previous interval multiplied by the coefficient.\nMust be 1 or larger."
         },
-        "maximum_interval": {
+        "maximumInterval": {
           "type": "string",
           "description": "Maximum interval between retries. Exponential backoff leads to interval increase.\nThis value is the cap of the increase. Default is 100x of the initial interval."
         },
-        "maximum_attempts": {
+        "maximumAttempts": {
           "type": "integer",
           "format": "int32",
           "title": "Maximum number of attempts. When exceeded the retries stop even if not expired yet.\n1 disables retries. 0 means unlimited (up to the timeouts)"
         },
-        "non_retryable_error_types": {
+        "nonRetryableErrorTypes": {
           "type": "array",
           "items": {
             "type": "string"
@@ -2975,7 +3052,7 @@
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
-        "next_page_token": {
+        "nextPageToken": {
           "type": "string",
           "format": "byte"
         }
@@ -2984,16 +3061,16 @@
     "v1ScheduleActivityTaskCommandAttributes": {
       "type": "object",
       "properties": {
-        "activity_id": {
+        "activityId": {
           "type": "string"
         },
-        "activity_type": {
+        "activityType": {
           "$ref": "#/definitions/v1ActivityType"
         },
         "namespace": {
           "type": "string"
         },
-        "task_queue": {
+        "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
         "header": {
@@ -3002,23 +3079,23 @@
         "input": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "schedule_to_close_timeout": {
+        "scheduleToCloseTimeout": {
           "type": "string",
           "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nIndicates how long the caller is willing to wait for an activity completion.\nLimits for how long retries are happening. Either this or start_to_close_timeout_seconds must be specified.\nWhen not specified defaults to the workflow execution timeout."
         },
-        "schedule_to_start_timeout": {
+        "scheduleToStartTimeout": {
           "type": "string",
           "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nLimits time an activity task can stay in a task queue before a worker picks it up.\nThis timeout is always non retryable as all a retry would achieve is to put it back into the same queue.\nDefaults to schedule_to_close_timeout_seconds or workflow execution timeout if not specified."
         },
-        "start_to_close_timeout": {
+        "startToCloseTimeout": {
           "type": "string",
           "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nMaximum time an activity is allowed to execute after a pick up by a worker.\nThis timeout is always retryable. Either this or schedule_to_close_timeout_seconds must be specified."
         },
-        "heartbeat_timeout": {
+        "heartbeatTimeout": {
           "type": "string",
           "description": "Maximum time between successful worker heartbeats."
         },
-        "retry_policy": {
+        "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy",
           "description": "Activities are provided by a default retry policy controlled through the service dynamic configuration.\nRetries are happening up to schedule_to_close_timeout.\nTo disable retries set retry_policy.maximum_attempts to 1."
         }
@@ -3027,7 +3104,7 @@
     "v1SearchAttributes": {
       "type": "object",
       "properties": {
-        "indexed_fields": {
+        "indexedFields": {
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/v1Payload"
@@ -3038,7 +3115,7 @@
     "v1ServerFailureInfo": {
       "type": "object",
       "properties": {
-        "non_retryable": {
+        "nonRetryable": {
           "type": "boolean"
         }
       }
@@ -3062,7 +3139,7 @@
         "execution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "signal_name": {
+        "signalName": {
           "type": "string"
         },
         "input": {
@@ -3071,7 +3148,7 @@
         "control": {
           "type": "string"
         },
-        "child_workflow_only": {
+        "childWorkflowOnly": {
           "type": "boolean"
         }
       }
@@ -3090,17 +3167,17 @@
         "cause": {
           "$ref": "#/definitions/v1SignalExternalWorkflowExecutionFailedCause"
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
@@ -3112,17 +3189,17 @@
     "v1SignalExternalWorkflowExecutionInitiatedEventAttributes": {
       "type": "object",
       "properties": {
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
         "namespace": {
           "type": "string"
         },
-        "workflow_execution": {
+        "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "signal_name": {
+        "signalName": {
           "type": "string"
         },
         "input": {
@@ -3131,7 +3208,7 @@
         "control": {
           "type": "string"
         },
-        "child_workflow_only": {
+        "childWorkflowOnly": {
           "type": "boolean"
         }
       }
@@ -3139,7 +3216,7 @@
     "v1SignalWithStartWorkflowExecutionResponse": {
       "type": "object",
       "properties": {
-        "run_id": {
+        "runId": {
           "type": "string"
         }
       }
@@ -3153,45 +3230,45 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_id": {
+        "workflowId": {
           "type": "string"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "task_queue": {
+        "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
         "input": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "workflow_execution_timeout": {
+        "workflowExecutionTimeout": {
           "type": "string",
           "description": "Total workflow execution timeout including retries and continue as new."
         },
-        "workflow_run_timeout": {
+        "workflowRunTimeout": {
           "type": "string",
           "description": "Timeout of a single workflow run."
         },
-        "workflow_task_timeout": {
+        "workflowTaskTimeout": {
           "type": "string",
           "description": "Timeout of a single workflow task."
         },
-        "parent_close_policy": {
+        "parentClosePolicy": {
           "$ref": "#/definitions/v1ParentClosePolicy",
           "description": "Default: PARENT_CLOSE_POLICY_TERMINATE."
         },
         "control": {
           "type": "string"
         },
-        "workflow_id_reuse_policy": {
+        "workflowIdReusePolicy": {
           "$ref": "#/definitions/v1WorkflowIdReusePolicy",
           "description": "Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE."
         },
-        "retry_policy": {
+        "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy"
         },
-        "cron_schedule": {
+        "cronSchedule": {
           "type": "string"
         },
         "header": {
@@ -3200,7 +3277,7 @@
         "memo": {
           "$ref": "#/definitions/v1Memo"
         },
-        "search_attributes": {
+        "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
         }
       }
@@ -3219,10 +3296,10 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_id": {
+        "workflowId": {
           "type": "string"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
         "cause": {
@@ -3231,11 +3308,11 @@
         "control": {
           "type": "string"
         },
-        "initiated_event_id": {
+        "initiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -3247,49 +3324,49 @@
         "namespace": {
           "type": "string"
         },
-        "workflow_id": {
+        "workflowId": {
           "type": "string"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "task_queue": {
+        "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
         "input": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "workflow_execution_timeout": {
+        "workflowExecutionTimeout": {
           "type": "string",
           "description": "Total workflow execution timeout including retries and continue as new."
         },
-        "workflow_run_timeout": {
+        "workflowRunTimeout": {
           "type": "string",
           "description": "Timeout of a single workflow run."
         },
-        "workflow_task_timeout": {
+        "workflowTaskTimeout": {
           "type": "string",
           "description": "Timeout of a single workflow task."
         },
-        "parent_close_policy": {
+        "parentClosePolicy": {
           "$ref": "#/definitions/v1ParentClosePolicy",
           "description": "Default: PARENT_CLOSE_POLICY_TERMINATE."
         },
         "control": {
           "type": "string"
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "workflow_id_reuse_policy": {
+        "workflowIdReusePolicy": {
           "$ref": "#/definitions/v1WorkflowIdReusePolicy",
           "description": "Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE."
         },
-        "retry_policy": {
+        "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy"
         },
-        "cron_schedule": {
+        "cronSchedule": {
           "type": "string"
         },
         "header": {
@@ -3298,7 +3375,7 @@
         "memo": {
           "$ref": "#/definitions/v1Memo"
         },
-        "search_attributes": {
+        "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
         }
       }
@@ -3306,11 +3383,11 @@
     "v1StartTimeFilter": {
       "type": "object",
       "properties": {
-        "earliest_time": {
+        "earliestTime": {
           "type": "string",
           "format": "date-time"
         },
-        "latest_time": {
+        "latestTime": {
           "type": "string",
           "format": "date-time"
         }
@@ -3319,77 +3396,19 @@
     "v1StartTimerCommandAttributes": {
       "type": "object",
       "properties": {
-        "timer_id": {
+        "timerId": {
           "type": "string"
         },
-        "start_to_fire_timeout": {
+        "startToFireTimeout": {
           "type": "string",
           "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
-        }
-      }
-    },
-    "v1StartWorkflowExecutionRequest": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "workflow_id": {
-          "type": "string"
-        },
-        "workflow_type": {
-          "$ref": "#/definitions/v1WorkflowType"
-        },
-        "task_queue": {
-          "$ref": "#/definitions/v1TaskQueue"
-        },
-        "input": {
-          "$ref": "#/definitions/v1Payloads"
-        },
-        "workflow_execution_timeout": {
-          "type": "string",
-          "description": "Total workflow execution timeout including retries and continue as new."
-        },
-        "workflow_run_timeout": {
-          "type": "string",
-          "description": "Timeout of a single workflow run."
-        },
-        "workflow_task_timeout": {
-          "type": "string",
-          "description": "Timeout of a single workflow task."
-        },
-        "identity": {
-          "type": "string"
-        },
-        "request_id": {
-          "type": "string"
-        },
-        "workflow_id_reuse_policy": {
-          "$ref": "#/definitions/v1WorkflowIdReusePolicy",
-          "description": "Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE."
-        },
-        "retry_policy": {
-          "$ref": "#/definitions/v1RetryPolicy",
-          "description": "Retries up to workflow_execution_timeout_seconds."
-        },
-        "cron_schedule": {
-          "type": "string"
-        },
-        "memo": {
-          "$ref": "#/definitions/v1Memo"
-        },
-        "search_attributes": {
-          "$ref": "#/definitions/v1SearchAttributes"
-        },
-        "header": {
-          "$ref": "#/definitions/v1Header"
         }
       }
     },
     "v1StartWorkflowExecutionResponse": {
       "type": "object",
       "properties": {
-        "run_id": {
+        "runId": {
           "type": "string"
         }
       }
@@ -3405,10 +3424,10 @@
     "v1StickyExecutionAttributes": {
       "type": "object",
       "properties": {
-        "worker_task_queue": {
+        "workerTaskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
-        "schedule_to_start_timeout": {
+        "scheduleToStartTimeout": {
           "type": "string",
           "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         }
@@ -3417,11 +3436,11 @@
     "v1TaskIdBlock": {
       "type": "object",
       "properties": {
-        "start_id": {
+        "startId": {
           "type": "string",
           "format": "int64"
         },
-        "end_id": {
+        "endId": {
           "type": "string",
           "format": "int64"
         }
@@ -3451,7 +3470,7 @@
     "v1TaskQueueMetadata": {
       "type": "object",
       "properties": {
-        "max_tasks_per_second": {
+        "maxTasksPerSecond": {
           "type": "number",
           "format": "double"
         }
@@ -3463,7 +3482,7 @@
         "key": {
           "type": "string"
         },
-        "owner_host_name": {
+        "ownerHostName": {
           "type": "string"
         }
       }
@@ -3471,23 +3490,23 @@
     "v1TaskQueueStatus": {
       "type": "object",
       "properties": {
-        "backlog_count_hint": {
+        "backlogCountHint": {
           "type": "string",
           "format": "int64"
         },
-        "read_level": {
+        "readLevel": {
           "type": "string",
           "format": "int64"
         },
-        "ack_level": {
+        "ackLevel": {
           "type": "string",
           "format": "int64"
         },
-        "rate_per_second": {
+        "ratePerSecond": {
           "type": "number",
           "format": "double"
         },
-        "task_id_block": {
+        "taskIdBlock": {
           "$ref": "#/definitions/v1TaskIdBlock"
         }
       }
@@ -3502,29 +3521,6 @@
       "default": "TASK_QUEUE_TYPE_UNSPECIFIED",
       "description": " - TASK_QUEUE_TYPE_WORKFLOW: Workflow type of task queue.\n - TASK_QUEUE_TYPE_ACTIVITY: Activity type of task queue."
     },
-    "v1TerminateWorkflowExecutionRequest": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "workflow_execution": {
-          "$ref": "#/definitions/v1WorkflowExecution"
-        },
-        "reason": {
-          "type": "string"
-        },
-        "details": {
-          "$ref": "#/definitions/v1Payloads"
-        },
-        "identity": {
-          "type": "string"
-        },
-        "first_execution_run_id": {
-          "type": "string"
-        }
-      }
-    },
     "v1TerminateWorkflowExecutionResponse": {
       "type": "object"
     },
@@ -3534,10 +3530,10 @@
     "v1TimeoutFailureInfo": {
       "type": "object",
       "properties": {
-        "timeout_type": {
+        "timeoutType": {
           "$ref": "#/definitions/v1TimeoutType"
         },
-        "last_heartbeat_details": {
+        "lastHeartbeatDetails": {
           "$ref": "#/definitions/v1Payloads"
         }
       }
@@ -3556,14 +3552,14 @@
     "v1TimerCanceledEventAttributes": {
       "type": "object",
       "properties": {
-        "timer_id": {
+        "timerId": {
           "type": "string"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
@@ -3575,10 +3571,10 @@
     "v1TimerFiredEventAttributes": {
       "type": "object",
       "properties": {
-        "timer_id": {
+        "timerId": {
           "type": "string"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -3587,14 +3583,14 @@
     "v1TimerStartedEventAttributes": {
       "type": "object",
       "properties": {
-        "timer_id": {
+        "timerId": {
           "type": "string"
         },
-        "start_to_fire_timeout": {
+        "startToFireTimeout": {
           "type": "string",
           "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -3606,7 +3602,7 @@
         "description": {
           "type": "string"
         },
-        "owner_email": {
+        "ownerEmail": {
           "type": "string"
         },
         "data": {
@@ -3618,47 +3614,23 @@
         }
       }
     },
-    "v1UpdateNamespaceRequest": {
-      "type": "object",
-      "properties": {
-        "namespace": {
-          "type": "string"
-        },
-        "update_info": {
-          "$ref": "#/definitions/v1UpdateNamespaceInfo"
-        },
-        "config": {
-          "$ref": "#/definitions/v1NamespaceConfig"
-        },
-        "replication_config": {
-          "$ref": "#/definitions/v1NamespaceReplicationConfig"
-        },
-        "security_token": {
-          "type": "string"
-        },
-        "delete_bad_binary": {
-          "type": "string"
-        }
-      },
-      "title": "(-- api-linter: core::0134::request-mask-required=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)\n(-- api-linter: core::0134::request-resource-required=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)"
-    },
     "v1UpdateNamespaceResponse": {
       "type": "object",
       "properties": {
-        "namespace_info": {
+        "namespaceInfo": {
           "$ref": "#/definitions/v1NamespaceInfo"
         },
         "config": {
           "$ref": "#/definitions/v1NamespaceConfig"
         },
-        "replication_config": {
+        "replicationConfig": {
           "$ref": "#/definitions/v1NamespaceReplicationConfig"
         },
-        "failover_version": {
+        "failoverVersion": {
           "type": "string",
           "format": "int64"
         },
-        "is_global_namespace": {
+        "isGlobalNamespace": {
           "type": "boolean"
         }
       }
@@ -3666,7 +3638,7 @@
     "v1UpsertWorkflowSearchAttributesCommandAttributes": {
       "type": "object",
       "properties": {
-        "search_attributes": {
+        "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
         }
       }
@@ -3674,11 +3646,11 @@
     "v1UpsertWorkflowSearchAttributesEventAttributes": {
       "type": "object",
       "properties": {
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "search_attributes": {
+        "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
         }
       }
@@ -3701,7 +3673,7 @@
             "$ref": "#/definitions/v1Alert"
           }
         },
-        "last_update_time": {
+        "lastUpdateTime": {
           "type": "string",
           "format": "date-time"
         }
@@ -3711,10 +3683,10 @@
     "v1WorkflowExecution": {
       "type": "object",
       "properties": {
-        "workflow_id": {
+        "workflowId": {
           "type": "string"
         },
-        "run_id": {
+        "runId": {
           "type": "string"
         }
       }
@@ -3725,11 +3697,11 @@
         "cause": {
           "type": "string"
         },
-        "external_initiated_event_id": {
+        "externalInitiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "external_workflow_execution": {
+        "externalWorkflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "identity": {
@@ -3740,7 +3712,7 @@
     "v1WorkflowExecutionCanceledEventAttributes": {
       "type": "object",
       "properties": {
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
@@ -3755,7 +3727,7 @@
         "result": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -3764,16 +3736,16 @@
     "v1WorkflowExecutionConfig": {
       "type": "object",
       "properties": {
-        "task_queue": {
+        "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
-        "workflow_execution_timeout": {
+        "workflowExecutionTimeout": {
           "type": "string"
         },
-        "workflow_run_timeout": {
+        "workflowRunTimeout": {
           "type": "string"
         },
-        "default_workflow_task_timeout": {
+        "defaultWorkflowTaskTimeout": {
           "type": "string"
         }
       }
@@ -3781,31 +3753,31 @@
     "v1WorkflowExecutionContinuedAsNewEventAttributes": {
       "type": "object",
       "properties": {
-        "new_execution_run_id": {
+        "newExecutionRunId": {
           "type": "string"
         },
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "task_queue": {
+        "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
         "input": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "workflow_run_timeout": {
+        "workflowRunTimeout": {
           "type": "string",
           "description": "workflow_execution_timeout is omitted as it shouldn'be overridden from within a workflow.\nTimeout of a single workflow run."
         },
-        "workflow_task_timeout": {
+        "workflowTaskTimeout": {
           "type": "string",
           "description": "Timeout of a single workflow task."
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "backoff_start_interval": {
+        "backoffStartInterval": {
           "type": "string"
         },
         "initiator": {
@@ -3814,7 +3786,7 @@
         "failure": {
           "$ref": "#/definitions/v1Failure"
         },
-        "last_completion_result": {
+        "lastCompletionResult": {
           "$ref": "#/definitions/v1Payloads"
         },
         "header": {
@@ -3823,7 +3795,7 @@
         "memo": {
           "$ref": "#/definitions/v1Memo"
         },
-        "search_attributes": {
+        "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
         }
       }
@@ -3834,10 +3806,10 @@
         "failure": {
           "$ref": "#/definitions/v1Failure"
         },
-        "retry_state": {
+        "retryState": {
           "$ref": "#/definitions/v1RetryState"
         },
-        "workflow_task_completed_event_id": {
+        "workflowTaskCompletedEventId": {
           "type": "string",
           "format": "int64"
         }
@@ -3846,10 +3818,10 @@
     "v1WorkflowExecutionFilter": {
       "type": "object",
       "properties": {
-        "workflow_id": {
+        "workflowId": {
           "type": "string"
         },
-        "run_id": {
+        "runId": {
           "type": "string"
         }
       }
@@ -3863,41 +3835,41 @@
         "type": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "start_time": {
+        "startTime": {
           "type": "string",
           "format": "date-time"
         },
-        "close_time": {
+        "closeTime": {
           "type": "string",
           "format": "date-time"
         },
         "status": {
           "$ref": "#/definitions/v1WorkflowExecutionStatus"
         },
-        "history_length": {
+        "historyLength": {
           "type": "string",
           "format": "int64"
         },
-        "parent_namespace_id": {
+        "parentNamespaceId": {
           "type": "string"
         },
-        "parent_execution": {
+        "parentExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "execution_time": {
+        "executionTime": {
           "type": "string",
           "format": "date-time"
         },
         "memo": {
           "$ref": "#/definitions/v1Memo"
         },
-        "search_attributes": {
+        "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
         },
-        "auto_reset_points": {
+        "autoResetPoints": {
           "$ref": "#/definitions/v1ResetPoints"
         },
-        "task_queue": {
+        "taskQueue": {
           "type": "string"
         }
       }
@@ -3905,7 +3877,7 @@
     "v1WorkflowExecutionSignaledEventAttributes": {
       "type": "object",
       "properties": {
-        "signal_name": {
+        "signalName": {
           "type": "string"
         },
         "input": {
@@ -3919,85 +3891,85 @@
     "v1WorkflowExecutionStartedEventAttributes": {
       "type": "object",
       "properties": {
-        "workflow_type": {
+        "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
         },
-        "parent_workflow_namespace": {
+        "parentWorkflowNamespace": {
           "type": "string"
         },
-        "parent_workflow_execution": {
+        "parentWorkflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
-        "parent_initiated_event_id": {
+        "parentInitiatedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "task_queue": {
+        "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
         "input": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "workflow_execution_timeout": {
+        "workflowExecutionTimeout": {
           "type": "string",
           "description": "Total workflow execution timeout including retries and continue as new."
         },
-        "workflow_run_timeout": {
+        "workflowRunTimeout": {
           "type": "string",
           "description": "Timeout of a single workflow run."
         },
-        "workflow_task_timeout": {
+        "workflowTaskTimeout": {
           "type": "string",
           "description": "Timeout of a single workflow task."
         },
-        "continued_execution_run_id": {
+        "continuedExecutionRunId": {
           "type": "string"
         },
         "initiator": {
           "$ref": "#/definitions/v1ContinueAsNewInitiator"
         },
-        "continued_failure": {
+        "continuedFailure": {
           "$ref": "#/definitions/v1Failure"
         },
-        "last_completion_result": {
+        "lastCompletionResult": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "original_execution_run_id": {
+        "originalExecutionRunId": {
           "type": "string",
           "description": "This is the runId when the WorkflowExecutionStarted event is written."
         },
         "identity": {
           "type": "string"
         },
-        "first_execution_run_id": {
+        "firstExecutionRunId": {
           "type": "string",
           "description": "This is the very first runId along the chain of ContinueAsNew and Reset."
         },
-        "retry_policy": {
+        "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy"
         },
         "attempt": {
           "type": "integer",
           "format": "int32"
         },
-        "workflow_execution_expiration_time": {
+        "workflowExecutionExpirationTime": {
           "type": "string",
           "format": "date-time",
           "description": "The absolute time at which workflow is timed out.\nThis time is passed without change to the next run/retry of a workflow."
         },
-        "cron_schedule": {
+        "cronSchedule": {
           "type": "string"
         },
-        "first_workflow_task_backoff": {
+        "firstWorkflowTaskBackoff": {
           "type": "string"
         },
         "memo": {
           "$ref": "#/definitions/v1Memo"
         },
-        "search_attributes": {
+        "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
         },
-        "prev_auto_reset_points": {
+        "prevAutoResetPoints": {
           "$ref": "#/definitions/v1ResetPoints"
         },
         "header": {
@@ -4038,7 +4010,7 @@
     "v1WorkflowExecutionTimedOutEventAttributes": {
       "type": "object",
       "properties": {
-        "retry_state": {
+        "retryState": {
           "$ref": "#/definitions/v1RetryState"
         }
       }
@@ -4057,10 +4029,10 @@
     "v1WorkflowQuery": {
       "type": "object",
       "properties": {
-        "query_type": {
+        "queryType": {
           "type": "string"
         },
-        "query_args": {
+        "queryArgs": {
           "$ref": "#/definitions/v1Payloads"
         }
       }
@@ -4068,13 +4040,13 @@
     "v1WorkflowQueryResult": {
       "type": "object",
       "properties": {
-        "result_type": {
+        "resultType": {
           "$ref": "#/definitions/v1QueryResultType"
         },
         "answer": {
           "$ref": "#/definitions/v1Payloads"
         },
-        "error_message": {
+        "errorMessage": {
           "type": "string"
         }
       }
@@ -4082,18 +4054,18 @@
     "v1WorkflowTaskCompletedEventAttributes": {
       "type": "object",
       "properties": {
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
         "identity": {
           "type": "string"
         },
-        "binary_checksum": {
+        "binaryChecksum": {
           "type": "string"
         }
       }
@@ -4131,11 +4103,11 @@
     "v1WorkflowTaskFailedEventAttributes": {
       "type": "object",
       "properties": {
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
@@ -4148,18 +4120,18 @@
         "identity": {
           "type": "string"
         },
-        "base_run_id": {
+        "baseRunId": {
           "type": "string",
           "description": "For reset workflow."
         },
-        "new_run_id": {
+        "newRunId": {
           "type": "string"
         },
-        "fork_event_version": {
+        "forkEventVersion": {
           "type": "string",
           "format": "int64"
         },
-        "binary_checksum": {
+        "binaryChecksum": {
           "type": "string"
         }
       }
@@ -4167,10 +4139,10 @@
     "v1WorkflowTaskScheduledEventAttributes": {
       "type": "object",
       "properties": {
-        "task_queue": {
+        "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
-        "start_to_close_timeout": {
+        "startToCloseTimeout": {
           "type": "string",
           "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         },
@@ -4183,14 +4155,14 @@
     "v1WorkflowTaskStartedEventAttributes": {
       "type": "object",
       "properties": {
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
         "identity": {
           "type": "string"
         },
-        "request_id": {
+        "requestId": {
           "type": "string"
         }
       }
@@ -4198,15 +4170,15 @@
     "v1WorkflowTaskTimedOutEventAttributes": {
       "type": "object",
       "properties": {
-        "scheduled_event_id": {
+        "scheduledEventId": {
           "type": "string",
           "format": "int64"
         },
-        "started_event_id": {
+        "startedEventId": {
           "type": "string",
           "format": "int64"
         },
-        "timeout_type": {
+        "timeoutType": {
           "$ref": "#/definitions/v1TimeoutType"
         }
       }

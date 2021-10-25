@@ -23,7 +23,7 @@ PROTO_IMPORTS := \
 	-I ./proto/dependencies/github.com/gogo/googleapis/ \
 	-I ./proto/dependencies/
 PROTO_REFS := Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api
-SWAGGERUI_OUT := ./server/generated/swagger-ui
+OPENAPI_OUT := ./server/generated/openapi
 UI_OUT := ./server/generated/ui
 
 ##### Build #####
@@ -37,11 +37,11 @@ build-ui:
 	cp -r ./ui/build-local/* $(UI_OUT)
 
 build-api: build-grpc
-	mkdir -p $(SWAGGERUI_OUT)
-	cp -r ./third_party/OpenAPI/* $(SWAGGERUI_OUT)
-	cp $(SWAGGERUI_OUT)/temporal/api/workflowservice/v1/service.swagger.json $(SWAGGERUI_OUT)
-	mkdir -p $(SWAGGERUI_OUT)
-	rm -rf $(SWAGGERUI_OUT)/temporal
+	mkdir -p $(OPENAPI_OUT)
+	cp -r ./third_party/OpenAPI/* $(OPENAPI_OUT)
+	cp $(OPENAPI_OUT)/temporal/api/workflowservice/v1/service.swagger.json $(OPENAPI_OUT)
+	mkdir -p $(OPENAPI_OUT)
+	rm -rf $(OPENAPI_OUT)/temporal
 
 build-server:
 	go mod tidy
@@ -51,13 +51,13 @@ build-grpc:
 	printf $(COLOR) "Compiling gRPC..."
 	rm -rf $(PROTO_OUT)/*
 	mkdir -p $(PROTO_OUT)
-	rm -rf $(SWAGGERUI_OUT)/*
-	mkdir -p $(SWAGGERUI_OUT)
+	rm -rf $(OPENAPI_OUT)/*
+	mkdir -p $(OPENAPI_OUT)
 	$(foreach PROTO_DIR,$(PROTO_DIRS),\
 		protoc $(PROTO_IMPORTS) \
 			--gogoslick_out=plugins=grpc,paths=source_relative,$(PROTO_REFS):$(PROTO_OUT) \
 			--grpc-gateway_out=allow_patch_feature=false,paths=source_relative:$(PROTO_OUT) \
-			--swagger_out=$(SWAGGERUI_OUT) \
+			--openapiv2_out=$(OPENAPI_OUT) \
 		$(PROTO_DIR)*.proto \
 	;)
 	# fix grpc outputs path:
@@ -69,9 +69,9 @@ install: install-submodules install-utils install-ui
 
 install-utils:
 	go get \
-		github.com/temporalio/gogo-protobuf/protoc-gen-gogoslick \
-		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway \
-		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger \
+		github.com/temporalio/gogo-protobuf/protoc-gen-gogoslick@latest \
+		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@latest \
+		github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 
 install-submodules:
 	printf $(COLOR) "fetching submudules..."

@@ -48,10 +48,10 @@ var uiHTML []byte
 //go:embed generated/ui/* generated/ui/_app/assets/pages/* generated/ui/_app/chunks/* generated/ui/_app/pages/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/queues/\[queue\]/*  generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/activities/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/events/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\] generated/ui/_app/pages/namespaces/\[namespace\]/queues/\[queue\]/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/activities/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/events/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/* generated/ui/_app/pages/namespaces/\[namespace\]/*
 var uiAssets embed.FS
 
-//go:embed generated/swagger-ui/index.html
+//go:embed generated/openapi/index.html
 var swaggeruiHTML []byte
 
-//go:embed generated/swagger-ui
+//go:embed generated/openapi
 var swaggeruiAssets embed.FS
 
 type (
