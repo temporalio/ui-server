@@ -56,7 +56,7 @@ build-grpc:
 	$(foreach PROTO_DIR,$(PROTO_DIRS),\
 		protoc $(PROTO_IMPORTS) \
 			--gogoslick_out=plugins=grpc,paths=source_relative,$(PROTO_REFS):$(PROTO_OUT) \
-			--grpc-gateway_out=allow_patch_feature=false,paths=source_relative,$(PROTO_REFS):$(PROTO_OUT) \
+			--grpc-gateway_out=allow_patch_feature=false,paths=source_relative:$(PROTO_OUT) \
 			--swagger_out=$(SWAGGERUI_OUT) \
 		$(PROTO_DIR)*.proto \
 	;)

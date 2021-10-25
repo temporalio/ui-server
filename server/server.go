@@ -72,16 +72,14 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000", "https://localhost:3000", "http://localhost:8080"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 	e.Use(session.Middleware(sessions.NewCookieStore(
 		securecookie.GenerateRandomKey(32),
 		securecookie.GenerateRandomKey(32),
 	)))
-
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000", "https://localhost:3000"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
-	}))
 
 	conn := rpc.CreateFrontendGRPCConnection(serverOpts.Config.TemporalGRPCAddress)
 	routes.SetAPIRoutes(e, conn)
