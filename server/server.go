@@ -34,9 +34,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"google.golang.org/grpc"
 
-	"github.com/temporalio/web-go/server/routes"
-	"github.com/temporalio/web-go/server/rpc"
-	"github.com/temporalio/web-go/server/server_options"
+	"github.com/temporalio/ui-server/server/routes"
+	"github.com/temporalio/ui-server/server/rpc"
+	"github.com/temporalio/ui-server/server/server_options"
 )
 
 //go:embed generated/ui/index.html

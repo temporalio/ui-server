@@ -45,7 +45,7 @@ build-api: build-grpc
 
 build-server:
 	go mod tidy
-	go build -o web-go ./cmd/server/main.go
+	go build -o ui-server ./cmd/server/main.go
 
 build-grpc:
 	printf $(COLOR) "Compiling gRPC..."
