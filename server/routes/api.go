@@ -32,7 +32,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/temporalio/web-go/server/generated/api/workflowservice/v1"
+	"github.com/temporalio/ui-server/server/generated/api/workflowservice/v1"
 	"google.golang.org/grpc"
 )
 

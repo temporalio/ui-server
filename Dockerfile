@@ -24,7 +24,7 @@ RUN make build-server
 FROM ${BASE_SERVER_IMAGE} AS ui-server
 WORKDIR /home/ui-server
 
-COPY --from=ui-builder /home/ui-builder/web-go ./
+COPY --from=ui-builder /home/ui-builder/ui-server ./
 COPY docker/start-ui-server.sh ./start-ui-server.sh
 COPY docker/config_template.yaml ./config/config_template.yaml
 

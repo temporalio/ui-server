@@ -1,4 +1,4 @@
-module github.com/temporalio/web-go
+module github.com/temporalio/ui-server
 
 go 1.16
 

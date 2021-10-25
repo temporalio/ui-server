@@ -5,7 +5,7 @@
 *.so
 *.dylib
 __debug_bin
-web-go
+ui-server
 
 # Test binary, built with `go test -c`
 *.test
@@ -14,7 +14,6 @@ web-go
 *.out
 
 # Output of code generation tools
-statik
 server/generated/ui
 third_party/OpenAPI/temporal
 

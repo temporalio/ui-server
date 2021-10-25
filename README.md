@@ -10,11 +10,11 @@ For first run, execute from the project folder:
 make
 ```
 
-This will install required tools, build the project and create an executable `webv2`
+This will install required tools, build the project and create an executable `ui-server`
 
 To start the server, execute
 ```
-./web-go start
+./ui-server start
 ```
 
 - Open http://localhost:8080/ in the browser to explore the UI

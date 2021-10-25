@@ -27,9 +27,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/temporalio/web-go/server"
-	"github.com/temporalio/web-go/server/config"
-	"github.com/temporalio/web-go/server/server_options"
+	"github.com/temporalio/ui-server/server"
+	"github.com/temporalio/ui-server/server/config"
+	"github.com/temporalio/ui-server/server/server_options"
 	"github.com/urfave/cli/v2"
 )
 

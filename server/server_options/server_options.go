@@ -25,7 +25,7 @@
 package server_options
 
 import (
-	"github.com/temporalio/web-go/server/config"
+	"github.com/temporalio/ui-server/server/config"
 )
 
 type (
