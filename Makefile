@@ -31,7 +31,7 @@ build: build-ui build-api build-server
 
 build-ui:
 	(cd ./ui && rm -rf ./build-local ./build-cloud)
-	(cd ./ui && npm run build:local)
+	(cd ./ui && VITE_API="" npm run build:local)
 	rm -rf $(UI_OUT)
 	mkdir -p $(UI_OUT)
 	cp -r ./ui/build-local/* $(UI_OUT)
