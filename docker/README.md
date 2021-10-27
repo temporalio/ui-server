@@ -22,7 +22,7 @@ To use the container in a production setting, use the following command:
 ```shellscript
 docker run \
     -e TEMPORAL_ADDRESS=127.0.0.1:7233 \                                    -- Temporal Frontend Address
-    -e TEMPORAL_PORT=8080 \                                                 -- Port to serve HTTP API and UI on
+    -e TEMPORAL_UI_PORT=8080 \                                              -- Port to serve HTTP API and UI on
     -e TEMPORAL_AUTH_ENABLED=true \                                         -- Enable auth
     -e TEMPORAL_AUTH_PROVIDER_URL=https://accounts.google.com \             -- Auth OIDC provider url
     -e TEMPORAL_AUTH_CLIENT_ID=xxxxx-xxxx.apps.googleusercontent.com \      -- Auth client ID
