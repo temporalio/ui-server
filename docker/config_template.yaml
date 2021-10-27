@@ -3,6 +3,10 @@ port: {{ default .Env.TEMPORAL_UI_PORT "8080" }}
 uiRootPath: {{ default .Env.TEMPORAL_UI_ROOT_PATH "/" }}
 enableUi: {{ default .Env.TEMPORAL_ENABLE_UI "true" }}
 enableOpenApi: {{ default .Env.TEMPORAL_ENABLE_OPENAPI "true" }}
+cors:
+  allowOrigins:
+    # override framework's default that allows all origins "*"
+    - {{ default .Env.TEMPORAL_CORS_ORIGINS "http://localhost:8080" }}
 auth:
     enabled: {{ default .Env.TEMPORAL_AUTH_ENABLED "false" }}
     providers:
