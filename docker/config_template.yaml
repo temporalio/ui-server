@@ -1,6 +1,8 @@
 temporalGrpcAddress: {{ default .Env.TEMPORAL_ADDRESS "127.0.0.1:7233" }}
 port: {{ default .Env.TEMPORAL_UI_PORT "8080" }}
 uiRootPath: {{ default .Env.TEMPORAL_UI_ROOT_PATH "/" }}
+enableUi: {{ default .Env.TEMPORAL_ENABLE_UI "true" }}
+enableOpenApi: {{ default .Env.TEMPORAL_ENABLE_OPENAPI "true" }}
 auth:
     enabled: {{ default .Env.TEMPORAL_AUTH_ENABLED "false" }}
     providers:

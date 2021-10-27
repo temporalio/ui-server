@@ -1,6 +1,5 @@
-temporalGrpcAddress: 127.0.0.1:7233
-port: 8080
-uiRootPath: /
+enableUi: true
+enableOpenApi: true
 auth:
   enabled: false
   providers:
@@ -13,6 +12,6 @@ auth:
         - openid
         - profile
         - email
-      audience: 
+      audience:
       callbackUrl: http://localhost:8080/auth/sso/callback
       passIdToken: false
