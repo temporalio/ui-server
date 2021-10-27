@@ -6,9 +6,6 @@ on:
       - main
     tags:
       - 'v*'
-  pull_request:
-    branches:
-      - main
 
 jobs:
   publish_to_docker_hub:
@@ -21,7 +18,6 @@ jobs:
         with:
           images: temporaliotest/ui
           tags: |
-            type=sha,format=long,event=pr
             type=sha,format=long,event=branch
             type=semver,pattern={{version}}
             latest
