@@ -6,16 +6,13 @@ FROM golang:1.17-alpine3.14 AS ui-builder
 
 RUN apk add --update --no-cache \
     make \
-    git \
-    npm
+    git
 
 WORKDIR /home/ui-builder
 
 # pre-build dependecies to improve subsequent build times
 COPY go.mod go.sum ./
 RUN go mod download
-COPY ./ui/package*.json ./ui/
-RUN (cd ./ui && npm install)
 
 COPY . .
 RUN make build-server
