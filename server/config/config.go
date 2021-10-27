@@ -37,6 +37,11 @@ type (
 		Auth                Auth   `yaml:"auth"`
 		EnableUI            bool   `yaml:"enableUi"`
 		EnableOpenAPI       bool   `yaml:"enableOpenApi"`
+		CORS                CORS   `yaml:"cors"`
+	}
+
+	CORS struct {
+		AllowOrigins []string `yaml:"allowOrigins"`
 	}
 
 	Auth struct {

@@ -30,5 +30,6 @@ docker run \
     -e TEMPORAL_AUTH_CALLBACK_URL=https://xxxx.com:8080/auth/sso/callback \ -- Auth callback url
     -e TEMPORAL_ENABLE_UI=true \                                            -- Serve UI
     -e TEMPORAL_ENABLE_OPENAPI=true \                                       -- Serve Open API UI
+    -e TEMPORAL_CORS_ORIGINS=http://localhost:3000 \                        -- Allow CORS origins
     temporalio/ui:<tag>
 ```
