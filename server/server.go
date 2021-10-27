@@ -83,9 +83,14 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 
 	conn := rpc.CreateFrontendGRPCConnection(serverOpts.Config.TemporalGRPCAddress)
 	routes.SetAPIRoutes(e, conn)
+
 	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
-	routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
-	routes.SetUIRoutes(e, uiHTML, uiAssets)
+	if serverOpts.Config.EnableOpenAPI {
+		routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
+	}
+	if serverOpts.Config.EnableUI {
+		routes.SetUIRoutes(e, uiHTML, uiAssets)
+	}
 
 	s := &Server{
 		httpServer:   e,

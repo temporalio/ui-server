@@ -35,6 +35,8 @@ type (
 		Port                int    `yaml:"port"`
 		UIRootPath          string `yaml:"uiRootPath"`
 		Auth                Auth   `yaml:"auth"`
+		EnableUI            bool   `yaml:"enableUi"`
+		EnableOpenAPI       bool   `yaml:"enableOpenApi"`
 	}
 
 	Auth struct {
