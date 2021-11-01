@@ -3,7 +3,7 @@
 # Development
 Pre-requirements:
  - Go v1.16 or later installed on your development machine
- - Protobuf installed on your development machine (`brew install protobuf`)
+ - Protobuf installed on your development machine (`brew install protobuf`) (Note: M1 macs will need `/opt/homebrew/bin` on the PATH or you may get `/bin/sh: protoc: command not found` errors (or you can [manually download protoc](http://google.github.io/proto-lens/installing-protoc.html)))
 
 For first run, execute from the project folder:
 ``` bash
