@@ -24,6 +24,6 @@ To start the server, execute
 In VSCode launch "Debug Server" script (or press F5)
 
 ## Docker
-This UI is published periodically on DockerHub: https://hub.docker.com/r/temporalio/ui
+This UI is published periodically on DockerHub: https://hub.docker.com/r/temporaliotest/ui
 
 You can run this with Temporal Server using the [experimental Temporal docker-compose](https://github.com/temporalio/docker-compose/blob/main/docker-compose-ui-experimental.yml#L60).
