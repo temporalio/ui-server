@@ -18,7 +18,7 @@ jobs:
         with:
           images: temporaliotest/ui
           tags: |
-            type=sha,format=long,event=branch
+            type=sha,format=short,event=branch
             type=semver,pattern={{version}}
             latest
       - name: Set up QEMU
