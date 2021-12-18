@@ -25,7 +25,6 @@ package server
 import (
 	"embed"
 	"fmt"
-	"strconv"
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -103,8 +102,8 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 // Start UI server.
 func (s *Server) Start() error {
 	fmt.Println("Starting UI server...")
-	port := s.options.Config.Port
-	s.httpServer.Logger.Fatal(s.httpServer.Start(":" + strconv.Itoa(port)))
+	address := fmt.Sprintf("%s:%d", s.options.Config.Host, s.options.Config.Port)
+	s.httpServer.Logger.Fatal(s.httpServer.Start(address))
 	return nil
 }
 
