@@ -32,6 +32,7 @@ type (
 	// Config contains the configuration for the UI server
 	Config struct {
 		TemporalGRPCAddress string `yaml:"temporalGrpcAddress"`
+		Host                string `yaml:"host"`
 		Port                int    `yaml:"port"`
 		UIRootPath          string `yaml:"uiRootPath"`
 		Auth                Auth   `yaml:"auth"`
