@@ -82,7 +82,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	)))
 
 	conn := rpc.CreateFrontendGRPCConnection(serverOpts.Config.TemporalGRPCAddress)
-	routes.SetAPIRoutes(e, conn)
+	routes.SetAPIRoutes(e, serverOpts.Config, conn)
 
 	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
 	if serverOpts.Config.EnableOpenAPI {

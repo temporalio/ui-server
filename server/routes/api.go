@@ -30,16 +30,18 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
+	"github.com/temporalio/ui-server/server/config"
 	"github.com/temporalio/ui-server/server/generated/api/workflowservice/v1"
-	"google.golang.org/grpc"
 )
 
 // SetAPIRoutes sets api routes
-func SetAPIRoutes(e *echo.Echo, temporalConn *grpc.ClientConn) error {
+func SetAPIRoutes(e *echo.Echo, cfg *config.Config, temporalConn *grpc.ClientConn) error {
 	api := e.Group("/api")
 	api.GET("/v1/me", getCurrentUser)
+	api.GET("/v1/settings", getSettings(cfg))
 	api.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", temporalAPIHandler(temporalConn))
 	return nil
 }
@@ -88,6 +90,22 @@ func getCurrentUser(c echo.Context) error {
 	}{email.(string), name.(string), picture.(string)}
 
 	return c.JSON(http.StatusOK, user)
+}
+
+func getSettings(cfg *config.Config) func(echo.Context) error {
+	return func(c echo.Context) error {
+		settings := struct {
+			Auth struct {
+				Enabled bool
+			}
+		}{
+			struct{ Enabled bool }{
+				cfg.Auth.Enabled,
+			},
+		}
+
+		return c.JSON(http.StatusOK, settings)
+	}
 }
 
 func withMarshaler() runtime.ServeMuxOption {
