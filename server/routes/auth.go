@@ -112,6 +112,8 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.P
 			Path:     "/",
 			MaxAge:   7 * 24 * int(time.Hour.Seconds()),
 			HttpOnly: true,
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
 		}
 		sess.Values["access-token"] = &user.OAuth2Token.AccessToken
 		sess.Values["email"] = &user.IDToken.Email
