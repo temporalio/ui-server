@@ -1,0 +1,1 @@
+import{C as t}from"./vendor-8450f4eb.js";import{r}from"./request-from-api-da859ff0.js";const e=async(s=fetch)=>await r("/cluster",{request:s}),a=t({}),f=async()=>{const s=await e();a.set(s)};export{a as c,f as l};

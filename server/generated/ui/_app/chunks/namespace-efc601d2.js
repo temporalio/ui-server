@@ -1,1 +1,0 @@
-import{p as n}from"./data-converter-config-53dafe45.js";import{a6 as c,a7 as s}from"./vendor-6d2fcc6d.js";const o=new c("/namespaces/:namespace/*"),t=e=>e(),d=s(n,e=>{const a=o.match(e.path),r=t(()=>localStorage.getItem("currentNamespace")||"default")||"default";return a?(t(()=>localStorage.setItem("currentNamespace",a.namespace)),a.namespace):r});export{d as n};
