@@ -71,12 +71,17 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.Secure())
-	e.Use(middleware.CSRF())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     serverOpts.Config.CORS.AllowOrigins,
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowOrigins: serverOpts.Config.CORS.AllowOrigins,
+		AllowHeaders: []string{
+			echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
+			echo.HeaderXCSRFToken,
+		},
 		AllowCredentials: true,
+	}))
+	e.Use(middleware.Secure())
+	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		CookiePath: "/",
 	}))
 	e.Use(session.Middleware(sessions.NewCookieStore(
 		securecookie.GenerateRandomKey(32),
