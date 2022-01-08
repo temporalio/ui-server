@@ -40,35 +40,13 @@ import (
 //go:embed generated/ui/index.html
 var uiHTML []byte
 
-// TODO resolving one of these two issues may allow to clean the embed string
-// https://github.com/golang/go/issues/43854
-// https://github.com/sveltejs/kit/pull/1370#issuecomment-853306453
-//go:embed generated/ui/*
-//go:embed generated/ui/_app/assets/_*
-//go:embed generated/ui/_app/assets/pages/_*
-//go:embed generated/ui/_app/assets/pages/namespaces/_*
-//go:embed generated/ui/_app/assets/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/activity-_eventId_/*
-//go:embed generated/ui/_app/assets/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/_*
-//go:embed generated/ui/_app/assets/pages/namespaces/_namespace_/workflows/_workflow_/_run_/_*
-//go:embed generated/ui/_app/chunks/*
-//go:embed generated/ui/_app/pages/_*
-//go:embed generated/ui/_app/pages/data-converter/_*
-//go:embed generated/ui/_app/pages/namespaces/_*
-//go:embed generated/ui/_app/pages/namespaces/_namespace_/archival/*
-//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/*.js
-//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/*
-//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/*
-//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/full/*
-//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/*
-//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/activity-_eventId_/_*
-//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/activity-_eventId_/events/*
-//go:embed generated/ui/_app/pages/namespaces/_namespace_/workers/_queue_/*
+//go:embed all:generated/ui
 var uiAssets embed.FS
 
 //go:embed generated/openapi/index.html
 var swaggeruiHTML []byte
 
-//go:embed generated/openapi
+//go:embed all:generated/openapi
 var swaggeruiAssets embed.FS
 
 type (
