@@ -1,0 +1,39 @@
+name: "Update UI Submodule"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: "Update UI submodule"
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Update Git Sumbodule
+        run: |
+          git pull --recurse-submodules
+          git submodule update --remote --recursive
+
+      - name: Re-build UI
+        run: |
+          make build-ui
+
+      - name: Verify go:embed paths
+        run: |
+          make build-server
+
+      - name: Commit update
+        run: |
+          git config --global user.name 'Temporal Data (cicd)'
+          git config --global user.email 'commander-data@temporal.io'
+          git remote set-url origin https://x-access-token:${{ secrets.COMMANDER_DATA_TOKEN }}@github.com/${{ github.repository }}
+          git commit -am "Update UI submodule" && git push || echo "No changes to commit"
