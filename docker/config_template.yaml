@@ -7,6 +7,12 @@ cors:
   allowOrigins:
     # override framework's default that allows all origins "*"
     - {{ default .Env.TEMPORAL_CORS_ORIGINS "http://localhost:8080" }}
+tls:
+  сaFile: {{ default .Env.TEMPORAL_TLS_CA "" }}
+  certFile: {{ default .Env.TEMPORAL_TLS_CERT "" }}
+  keyFile: {{ default .Env.TEMPORAL_TLS_KEY "" }}
+  enableHostVerification: {{ default .Env.TEMPORAL_TLS_ENABLE_HOST_VERIFICATION "false" }}
+  serverName: {{ default .Env.TEMPORAL_TLS_SERVER_NAME "" }}
 auth:
     enabled: {{ default .Env.TEMPORAL_AUTH_ENABLED "false" }}
     providers:

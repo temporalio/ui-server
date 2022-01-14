@@ -88,7 +88,8 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		securecookie.GenerateRandomKey(32),
 	)))
 
-	conn := rpc.CreateFrontendGRPCConnection(serverOpts.Config.TemporalGRPCAddress)
+	tlsCfg, _ := rpc.CreateTLSConfig(serverOpts.Config.TemporalGRPCAddress, serverOpts.Config.TLS, e.Logger)
+	conn := rpc.CreateFrontendGRPCConnection(serverOpts.Config.TemporalGRPCAddress, tlsCfg)
 	routes.SetAPIRoutes(e, serverOpts.Config, conn)
 
 	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
