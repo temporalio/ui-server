@@ -25,7 +25,7 @@ jobs:
 
       - name: Re-build UI
         run: |
-          make build-ui
+          make install-ui build-ui
 
       - name: Verify go:embed paths
         run: |
