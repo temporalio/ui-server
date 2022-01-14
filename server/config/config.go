@@ -35,6 +35,7 @@ type (
 		Host                string `yaml:"host"`
 		Port                int    `yaml:"port"`
 		UIRootPath          string `yaml:"uiRootPath"`
+		TLS                 TLS    `yaml:"tls"`
 		Auth                Auth   `yaml:"auth"`
 		EnableUI            bool   `yaml:"enableUi"`
 		EnableOpenAPI       bool   `yaml:"enableOpenApi"`
@@ -43,6 +44,14 @@ type (
 
 	CORS struct {
 		AllowOrigins []string `yaml:"allowOrigins"`
+	}
+
+	TLS struct {
+		CaFile                 string `yaml:"сaFile"`
+		CertFile               string `yaml:"certFile"`
+		KeyFile                string `yaml:"keyFile"`
+		EnableHostVerification bool   `yaml:"enableHostVerification"`
+		ServerName             string `yaml:"serverName"`
 	}
 
 	Auth struct {

@@ -18,3 +18,9 @@ auth:
       audience:
       callbackUrl: http://localhost:8080/auth/sso/callback
       passIdToken: false
+tls:
+  сaFile: ""
+  certFile: ""
+  keyFile: ""
+  enableHostVerification: "false"
+  serverName: tls-server

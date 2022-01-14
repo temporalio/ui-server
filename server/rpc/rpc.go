@@ -47,9 +47,8 @@ const (
 )
 
 // CreateFrontendGRPCConnection creates connection for gRPC calls
-func CreateFrontendGRPCConnection(hostName string) *grpc.ClientConn {
-	var tlsClientConfig *tls.Config
-	connection, err := Dial(hostName, tlsClientConfig)
+func CreateFrontendGRPCConnection(hostName string, tls *tls.Config) *grpc.ClientConn {
+	connection, err := Dial(hostName, tls)
 
 	if err != nil {
 		fmt.Println("Failed to create gRPC connection")
