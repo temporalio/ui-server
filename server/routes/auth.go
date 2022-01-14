@@ -81,6 +81,7 @@ func SetAuthRoutes(e *echo.Echo, cfg *config.Auth) {
 	api := e.Group("/auth")
 	api.GET("/sso", authenticate(&config))
 	api.GET("/sso/callback", authenticateCb(ctx, &config, provider))
+	api.GET("/logout", logout)
 }
 
 func authenticate(config *oauth2.Config) func(echo.Context) error {
@@ -121,8 +122,32 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.P
 		sess.Values["name"] = &user.IDToken.Name
 		sess.Save(c.Request(), c.Response())
 
-		return c.Redirect(http.StatusSeeOther, "/")
+		returnUrl := c.Request().Header.Get("Referer")
+		if returnUrl == "" {
+			returnUrl = "/"
+		}
+
+		return c.Redirect(http.StatusSeeOther, returnUrl)
 	}
+}
+
+func logout(c echo.Context) error {
+	sess, _ := session.Get("auth", c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
+	}
+	sess.Save(c.Request(), c.Response())
+
+	returnUrl := c.Request().Header.Get("Referer")
+	if returnUrl == "" {
+		returnUrl = "/"
+	}
+
+	return c.Redirect(http.StatusSeeOther, returnUrl)
 }
 
 func exchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, provider *oidc.Provider) (*User, error) {
