@@ -1,0 +1,1 @@
+import{C as t}from"./vendor-ea4e1b17.js";import{r as s}from"./request-from-api-fc543812.js";import{r as e}from"./route-for-api-a5ba59e5.js";const o=async(r=fetch)=>await s(e("cluster"),{request:r}),a=t({}),f=async()=>{const r=await o();a.set(r)};export{a as c,f as l};
