@@ -44,7 +44,20 @@ var uiHTML []byte
 // TODO resolving one of these two issues may allow to clean the embed string
 // https://github.com/golang/go/issues/43854
 // https://github.com/sveltejs/kit/pull/1370#issuecomment-853306453
-//go:embed generated/ui/* generated/ui/_app/assets/pages/* generated/ui/_app/chunks/* generated/ui/_app/pages/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/queue/\[queue\]/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/activity-\[eventId\]/* generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/_* generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/_* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/full/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/json/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/activity-\[eventId\]/* generated/ui/_app/pages/namespaces/\[namespace\]/workflows/* generated/ui/_app/pages/namespaces/\[namespace\]/*
+//go:embed generated/ui/*
+//go:embed generated/ui/_app/assets/pages/*
+//go:embed generated/ui/_app/chunks/*
+//go:embed generated/ui/_app/pages/*
+//go:embed generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/activity-\[eventId\]/*
+//go:embed generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/_*
+//go:embed generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/_*
+//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/*
+//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/*
+//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/full/*
+//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/*
+//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/activity-\[eventId\]/*
+//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/*
+//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/*
 var uiAssets embed.FS
 
 //go:embed generated/openapi/index.html
