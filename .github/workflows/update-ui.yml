@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
+          persist-credentials: false
 
       - uses: actions/setup-go@v2
         with:
@@ -41,7 +42,8 @@ jobs:
 
       - name: Commit update
         run: |
-          git config --global user.name 'Temporal Data (cicd)'
-          git config --global user.email 'commander-data@temporal.io'
+          git config --local user.name 'Temporal Data (cicd)'
+          git config --local user.email 'commander-data@temporal.io'
           git remote set-url origin https://x-access-token:${{ secrets.COMMANDER_DATA_TOKEN }}@github.com/${{ github.repository }}
-          git commit -am "Update UI submodule" && git push || echo "No changes to commit"
+          git add .
+          git commit -m "Update UI submodule" && git push || echo "No changes to commit"
