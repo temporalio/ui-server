@@ -1,0 +1,1 @@
+import{C as i}from"./vendor-c7e306c1.js";const b=(e,o=e(),n=1e4)=>{let r;const s=()=>{e().then(a=>t.set(Promise.resolve(a)))},c=()=>clearInterval(r),l=()=>(r=setInterval(s,n),c),t=i(Promise.resolve(o),l);return{subscribe:t.subscribe,refresh:s}};export{b as r};
