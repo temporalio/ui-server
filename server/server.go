@@ -25,6 +25,7 @@ package server
 import (
 	"embed"
 	"fmt"
+	"log"
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -101,7 +102,11 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		securecookie.GenerateRandomKey(32),
 	)))
 
-	tlsCfg, _ := rpc.CreateTLSConfig(serverOpts.Config.TemporalGRPCAddress, serverOpts.Config.TLS, e.Logger)
+	tlsCfg, err := rpc.CreateTLSConfig(serverOpts.Config.TemporalGRPCAddress, &serverOpts.Config.TLS)
+	if err != nil {
+		log.Printf("Unable to create TLS config: %v\n", err)
+		log.Printf("Establishing insecure connection to Temporal")
+	}
 	conn := rpc.CreateFrontendGRPCConnection(serverOpts.Config.TemporalGRPCAddress, tlsCfg)
 	routes.SetAPIRoutes(e, serverOpts.Config, conn)
 
