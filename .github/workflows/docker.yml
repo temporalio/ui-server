@@ -26,7 +26,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker meta for Commit image
-        id: meta
         uses: docker/metadata-action@v3
         with:
           images: temporaliotest/ui
@@ -35,7 +34,6 @@ jobs:
             latest
 
       - name: Push Commit image to DockerHub
-        id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: ${{ github.event_name == 'push' }}
@@ -44,7 +42,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Docker meta for Release image
-        id: meta
         uses: docker/metadata-action@v3
         with:
           images: temporalio/ui
@@ -53,7 +50,6 @@ jobs:
             latest
 
       - name: Push Release image to DockerHub
-        id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: ${{ github.event_name == 'tag' }}
