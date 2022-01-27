@@ -26,6 +26,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker meta for Commit image
+        id: meta_commit
         uses: docker/metadata-action@v3
         with:
           images: temporaliotest/ui
@@ -38,10 +39,11 @@ jobs:
         with:
           push: ${{ github.event_name == 'push' }}
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta_commit.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Docker meta for Release image
+        id: meta_release
         uses: docker/metadata-action@v3
         with:
           images: temporalio/ui
@@ -54,5 +56,5 @@ jobs:
         with:
           push: ${{ github.event_name == 'tag' }}
           platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta_release.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
