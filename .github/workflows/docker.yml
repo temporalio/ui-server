@@ -40,7 +40,7 @@ jobs:
           push: ${{ github.event_name == 'push' }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta_commit.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ steps.meta_commit.outputs.labels }}
 
       - name: Docker meta for Release image
         id: meta_release
@@ -54,7 +54,7 @@ jobs:
       - name: Push Release image to DockerHub
         uses: docker/build-push-action@v2
         with:
-          push: ${{ github.event_name == 'tag' }}
+          push: ${{ github.event_name == 'release' }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta_release.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ steps.meta_release.outputs.labels }}
