@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - main
-    tags:
-      - "v*"
+  release:
+    types:
+      - created
 
 jobs:
   publish_to_docker_hub:
@@ -28,6 +29,7 @@ jobs:
       - name: Docker meta for Commit image
         id: meta_commit
         uses: docker/metadata-action@v3
+        if: github.event_name == 'push'
         with:
           images: temporaliotest/ui
           tags: |
@@ -36,8 +38,9 @@ jobs:
 
       - name: Push Commit image to DockerHub
         uses: docker/build-push-action@v2
+        if: github.event_name == 'push'
         with:
-          push: ${{ github.event_name == 'push' }}
+          push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta_commit.outputs.tags }}
           labels: ${{ steps.meta_commit.outputs.labels }}
@@ -45,6 +48,7 @@ jobs:
       - name: Docker meta for Release image
         id: meta_release
         uses: docker/metadata-action@v3
+        if: github.event_name == 'release'
         with:
           images: temporalio/ui
           tags: |
@@ -53,8 +57,9 @@ jobs:
 
       - name: Push Release image to DockerHub
         uses: docker/build-push-action@v2
+        if: github.event_name == 'release'
         with:
-          push: ${{ github.event_name == 'release' }}
+          push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta_release.outputs.tags }}
           labels: ${{ steps.meta_release.outputs.labels }}
