@@ -46,7 +46,8 @@ var uiHTML []byte
 // https://github.com/golang/go/issues/43854
 // https://github.com/sveltejs/kit/pull/1370#issuecomment-853306453
 //go:embed generated/ui/*
-//go:embed generated/ui/_app/assets/pages/*
+//go:embed generated/ui/_app/assets/*.css
+//go:embed generated/ui/_app/assets/pages/*.css
 //go:embed generated/ui/_app/chunks/*
 //go:embed generated/ui/_app/pages/*
 //go:embed generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/activity-\[eventId\]/*
