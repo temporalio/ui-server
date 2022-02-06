@@ -1,0 +1,1 @@
+import{S as a,i as n,s as e}from"../../../../../../chunks/vendor-aac54a92.js";async function o({page:s}){return{status:302,redirect:`${s.path}/history`}}class u extends a{constructor(t){super();n(this,t,null,null,e,{})}}export{u as default,o as load};
