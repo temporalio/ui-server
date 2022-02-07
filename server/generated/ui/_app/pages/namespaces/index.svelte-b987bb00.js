@@ -1,0 +1,1 @@
+import{S as s,i as t,s as a}from"../../chunks/vendor-b93e428e.js";async function r(){return{status:302,redirect:"/namespaces/default"}}class u extends s{constructor(e){super();t(this,e,null,null,a,{})}}export{u as default,r as load};
