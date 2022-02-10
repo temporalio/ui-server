@@ -1,6 +1,6 @@
 // The MIT License
 //
-// Copyright (c) 2022 Temporal Technologies Inc.  All rights reserved.
+// Copyright (c) 2020 Temporal Technologies Inc.  All rights reserved.
 //
 // Copyright (c) 2020 Uber Technologies, Inc.
 //
@@ -22,28 +22,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package server_options
+package rpc
 
 import (
-	"github.com/temporalio/ui-server/server/config"
-	"github.com/temporalio/ui-server/server/rpc"
+	"crypto/tls"
+	"crypto/x509"
 )
 
-type (
-	ServerOption interface {
-		apply(*ServerOptions)
+// Helper methods for creating tls.Config structs to ensure MinVersion is 1.3
+
+func NewEmptyTLSConfig() *tls.Config {
+	return &tls.Config{
+		MinVersion: tls.VersionTLS12,
+		NextProtos: []string{
+			"h2",
+		},
 	}
-)
-
-func WithConfig(cfg *config.Config) ServerOption {
-	return newApplyFuncContainer(func(s *ServerOptions) {
-		s.Config = cfg
-	})
 }
 
-// WithTLSConfigFactory overrides default provider of TLS configuration
-func WithTLSConfigFactory(tlsConfigProvider rpc.TLSConfigProvider) ServerOption {
-	return newApplyFuncContainer(func(s *ServerOptions) {
-		s.tlsConfigProvider = tlsConfigProvider
-	})
+func NewTLSConfigForServer(
+	serverName string,
+	enableHostVerification bool,
+) *tls.Config {
+	c := NewEmptyTLSConfig()
+	c.ServerName = serverName
+	c.InsecureSkipVerify = !enableHostVerification
+	return c
+}
+
+func NewDynamicTLSClientConfig(
+	getCert func() (*tls.Certificate, error),
+	rootCAs *x509.CertPool,
+	serverName string,
+	enableHostVerification bool,
+) *tls.Config {
+	c := NewTLSConfigForServer(serverName, enableHostVerification)
+
+	if getCert != nil {
+		c.GetClientCertificate = func(info *tls.CertificateRequestInfo) (*tls.Certificate, error) {
+			return getCert()
+		}
+	}
+	c.RootCAs = rootCAs
+
+	return c
 }

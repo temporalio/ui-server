@@ -1,6 +1,6 @@
 // The MIT License
 //
-// Copyright (c) 2020 Temporal Technologies Inc.  All rights reserved.
+// Copyright (c) 2022 Temporal Technologies Inc.  All rights reserved.
 //
 // Copyright (c) 2020 Uber Technologies, Inc.
 //
@@ -26,11 +26,13 @@ package server_options
 
 import (
 	"github.com/temporalio/ui-server/server/config"
+	"github.com/temporalio/ui-server/server/rpc"
 )
 
 type (
 	ServerOptions struct {
-		Config *config.Config
+		Config            *config.Config
+		tlsConfigProvider rpc.TLSConfigProvider
 	}
 )
 

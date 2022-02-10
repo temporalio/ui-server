@@ -193,39 +193,3 @@ func loadKeyPair(cfg *config.TLS) (tls.Certificate, error) {
 
 	return keyPair, err
 }
-
-func NewEmptyTLSConfig() *tls.Config {
-	return &tls.Config{
-		MinVersion: tls.VersionTLS12,
-		NextProtos: []string{
-			"h2",
-		},
-	}
-}
-
-func NewTLSConfigForServer(
-	serverName string,
-	enableHostVerification bool,
-) *tls.Config {
-	c := NewEmptyTLSConfig()
-	c.ServerName = serverName
-	c.InsecureSkipVerify = !enableHostVerification
-	return c
-}
-
-func validateTLS(cfg *config.TLS) error {
-	if cfg.CertFile != "" && cfg.CertData != "" {
-		return fmt.Errorf("cannot specify TLS cert file and cert data at the same time")
-	}
-	if cfg.KeyFile != "" && cfg.KeyData != "" {
-		return fmt.Errorf("cannot specify TLS key file and key data at the same time")
-	}
-	if cfg.CaFile != "" && cfg.CaData != "" {
-		return fmt.Errorf("cannot specify TLS CA file and CA data at the same time")
-	}
-
-	if strings.TrimSpace(cfg.CaFile) == "" && strings.TrimSpace(cfg.CaData) == "" {
-		return fmt.Errorf("CA cannot be empty string")
-	}
-	return nil
-}

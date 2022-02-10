@@ -22,28 +22,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package server_options
+package rpc
 
 import (
-	"github.com/temporalio/ui-server/server/config"
-	"github.com/temporalio/ui-server/server/rpc"
+	"errors"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-type (
-	ServerOption interface {
-		apply(*ServerOptions)
-	}
-)
+func TestAppendError(t *testing.T) {
+	assert := assert.New(t)
+	err1 := errors.New("error1")
+	err2 := errors.New("error2")
 
-func WithConfig(cfg *config.Config) ServerOption {
-	return newApplyFuncContainer(func(s *ServerOptions) {
-		s.Config = cfg
-	})
-}
+	err := appendError(nil, err1)
+	assert.Equal(err1, err)
+	assert.Equal("error1", err.Error())
+	err = appendError(err1, nil)
+	assert.Equal(err1, err)
+	assert.Equal("error1", err.Error())
 
-// WithTLSConfigFactory overrides default provider of TLS configuration
-func WithTLSConfigFactory(tlsConfigProvider rpc.TLSConfigProvider) ServerOption {
-	return newApplyFuncContainer(func(s *ServerOptions) {
-		s.tlsConfigProvider = tlsConfigProvider
-	})
+	err = appendError(err1, err2)
+	assert.Equal(err2, errors.Unwrap(err))
+	assert.Equal("error1, error2", err.Error())
 }

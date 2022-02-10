@@ -1,6 +1,6 @@
 // The MIT License
 //
-// Copyright (c) 2020 Temporal Technologies Inc.  All rights reserved.
+// Copyright (c) 2022 Temporal Technologies Inc.  All rights reserved.
 //
 // Copyright (c) 2020 Uber Technologies, Inc.
 //
@@ -26,6 +26,7 @@ package config
 
 import (
 	"errors"
+	"time"
 )
 
 type (
@@ -55,6 +56,20 @@ type (
 		KeyData                string `yaml:"keyData"`
 		EnableHostVerification bool   `yaml:"enableHostVerification"`
 		ServerName             string `yaml:"serverName"`
+		// ExpirationChecks defines settings for periodic checks for expiration of certificates
+		ExpirationChecks CertExpirationValidation `yaml:"expirationChecks"`
+		// Interval between refreshes of certificates loaded from files
+		RefreshInterval time.Duration `yaml:"refreshInterval"`
+	}
+
+	// CertExpirationValidation contains settings for periodic checks of TLS certificate expiration
+	CertExpirationValidation struct {
+		// Log warnings for certificates expiring during this time window from now
+		WarningWindow time.Duration `yaml:"warningWindow"`
+		// Log error for certificates expiring during this time window from now
+		ErrorWindow time.Duration `yaml:"errorWindow"`
+		// Interval between checks for certificate expiration
+		CheckInterval time.Duration `yaml:"checkInterval"`
 	}
 
 	Auth struct {
@@ -86,4 +101,9 @@ func (c *Config) Validate() error {
 	}
 
 	return nil
+}
+
+func (r *TLS) IsEnabled() bool {
+	return r.KeyFile != "" || r.KeyData != "" ||
+		r.CaFile != "" || r.CaData != ""
 }
