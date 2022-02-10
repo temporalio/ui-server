@@ -25,14 +25,12 @@ package server
 import (
 	"embed"
 	"fmt"
-	"log"
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"google.golang.org/grpc"
 
 	"github.com/temporalio/ui-server/server/routes"
 	"github.com/temporalio/ui-server/server/rpc"
@@ -70,9 +68,8 @@ var swaggeruiAssets embed.FS
 type (
 	// Server ui server.
 	Server struct {
-		httpServer   *echo.Echo
-		temporalConn *grpc.ClientConn
-		options      *server_options.ServerOptions
+		httpServer *echo.Echo
+		options    *server_options.ServerOptions
 	}
 )
 
@@ -102,13 +99,10 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		securecookie.GenerateRandomKey(32),
 	)))
 
-	tlsCfg, err := rpc.CreateTLSConfig(serverOpts.Config.TemporalGRPCAddress, &serverOpts.Config.TLS)
-	if err != nil {
-		log.Printf("Unable to create TLS config: %v\n", err)
-		log.Printf("Establishing insecure connection to Temporal")
-	}
-	conn := rpc.CreateFrontendGRPCConnection(serverOpts.Config.TemporalGRPCAddress, tlsCfg)
-	routes.SetAPIRoutes(e, serverOpts.Config, conn)
+	address := serverOpts.Config.TemporalGRPCAddress
+	tlsProvider, _ := getTLSConfigProvider(serverOpts)
+	rpcFactory := rpc.NewFactory(address, tlsProvider)
+	routes.SetAPIRoutes(e, serverOpts.Config, rpcFactory)
 
 	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
 	if serverOpts.Config.EnableOpenAPI {
@@ -119,9 +113,8 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	}
 
 	s := &Server{
-		httpServer:   e,
-		temporalConn: conn,
-		options:      serverOpts,
+		httpServer: e,
+		options:    serverOpts,
 	}
 	return s
 }
@@ -140,5 +133,14 @@ func (s *Server) Stop() {
 	if err := s.httpServer.Close(); err != nil {
 		s.httpServer.Logger.Warn(err)
 	}
-	s.temporalConn.Close()
+}
+
+func getTLSConfigProvider(
+	so *server_options.ServerOptions,
+) (rpc.TLSConfigProvider, error) {
+	if so.TlsConfigProvider != nil {
+		return so.TlsConfigProvider, nil
+	}
+
+	return rpc.NewTLSConfigProviderFromConfig(so.Config.TLS, nil)
 }

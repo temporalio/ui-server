@@ -44,6 +44,6 @@ func WithConfig(cfg *config.Config) ServerOption {
 // WithTLSConfigFactory overrides default provider of TLS configuration
 func WithTLSConfigFactory(tlsConfigProvider rpc.TLSConfigProvider) ServerOption {
 	return newApplyFuncContainer(func(s *ServerOptions) {
-		s.tlsConfigProvider = tlsConfigProvider
+		s.TlsConfigProvider = tlsConfigProvider
 	})
 }

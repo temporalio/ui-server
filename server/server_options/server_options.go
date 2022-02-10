@@ -32,7 +32,7 @@ import (
 type (
 	ServerOptions struct {
 		Config            *config.Config
-		tlsConfigProvider rpc.TLSConfigProvider
+		TlsConfigProvider rpc.TLSConfigProvider
 	}
 )
 

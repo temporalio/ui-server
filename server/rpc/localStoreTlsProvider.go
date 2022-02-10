@@ -54,11 +54,10 @@ var _ CertExpirationChecker = (*localStoreTlsProvider)(nil)
 
 func NewLocalStoreTlsProvider(tlsConfig *config.TLS, certProviderFactory CertProviderFactory,
 ) (TLSConfigProvider, error) {
-
-	providerF := certProviderFactory(tlsConfig, tlsConfig.RefreshInterval)
+	certProvider := certProviderFactory(tlsConfig, tlsConfig.RefreshInterval)
 
 	provider := &localStoreTlsProvider{
-		certProvider: providerF,
+		certProvider: certProvider,
 		RWMutex:      sync.RWMutex{},
 		settings:     tlsConfig,
 	}
@@ -87,21 +86,17 @@ func (s *localStoreTlsProvider) Close() {
 }
 
 func (s *localStoreTlsProvider) GetTLSConfig() (*tls.Config, error) {
-	var useTLS bool
-
 	return s.getOrCreateConfig(
 		&s.cachedTLSConfig,
 		func() (*tls.Config, error) {
 			return newTLSConfig(s.certProvider, s.settings.ServerName,
 				s.settings.EnableHostVerification)
 		},
-		useTLS,
 	)
 }
 
 func (s *localStoreTlsProvider) GetExpiringCerts(timeWindow time.Duration,
 ) (expiring CertExpirationMap, expired CertExpirationMap, err error) {
-
 	expiring = make(CertExpirationMap)
 	expired = make(CertExpirationMap)
 
@@ -126,12 +121,7 @@ func checkExpiration(
 func (s *localStoreTlsProvider) getOrCreateConfig(
 	cachedConfig **tls.Config,
 	configConstructor tlsConfigConstructor,
-	isEnabled bool,
 ) (*tls.Config, error) {
-	if !isEnabled {
-		return nil, nil
-	}
-
 	// Check if exists under a read lock first
 	s.RLock()
 	if *cachedConfig != nil {
@@ -162,7 +152,7 @@ func newTLSConfig(cProvider CertProvider, serverName string,
 	enableHostVerification bool) (*tls.Config, error) {
 	serverCa, err := cProvider.FetchCA()
 	if err != nil {
-		return nil, fmt.Errorf("unable to load client ca: %v", err)
+		return nil, fmt.Errorf("unable to load CA: %v", err)
 	}
 
 	var getCert tlsCertFetcher = func() (*tls.Certificate, error) {
@@ -172,12 +162,12 @@ func newTLSConfig(cProvider CertProvider, serverName string,
 		}
 
 		if cert == nil {
-			return nil, fmt.Errorf("certificate is notc provided")
+			return nil, fmt.Errorf("certificate is not provided")
 		}
 		return cert, nil
 	}
 
-	return NewDynamicTLSClientConfig(
+	return NewTLSConfigWithClientCerts(
 		getCert,
 		serverCa,
 		serverName,

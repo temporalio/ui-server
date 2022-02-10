@@ -28,7 +28,6 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -36,7 +35,7 @@ import (
 )
 
 type (
-	// TLSConfigProvider serves as a common interface to read server and client configuration for TLS.
+	// TLSConfigProvider serves as a common interface to read TLS configuration.
 	TLSConfigProvider interface {
 		GetTLSConfig() (*tls.Config, error)
 	}
@@ -46,13 +45,6 @@ type (
 		FetchCertificate() (*tls.Certificate, error)
 		FetchCA() (*x509.CertPool, error)
 		GetExpiringCerts(timeWindow time.Duration) (expiring CertExpirationMap, expired CertExpirationMap, err error)
-	}
-
-	// PerHostCertProviderMap returns a CertProvider for a given host name.
-	PerHostCertProviderMap interface {
-		GetCertProvider(hostName string) (provider CertProvider, clientAuthRequired bool, err error)
-		GetExpiringCerts(timeWindow time.Duration) (expiring CertExpirationMap, expired CertExpirationMap, err error)
-		NumberOfHosts() int
 	}
 
 	CertThumbprint [16]byte
@@ -73,22 +65,20 @@ type (
 	tlsConfigConstructor func() (*tls.Config, error)
 )
 
-// NewTLSConfigProviderFromConfig creates a new TLS Config provider from RootTLS config.
+// NewTLSConfigProviderFromConfig creates a new TLS Config provider from TLS config.
 // A custom cert provider factory can be optionally injected via certProviderFactory argument.
 // Otherwise, it defaults to using localStoreCertProvider
 func NewTLSConfigProviderFromConfig(
-	encryptionSettings config.TLS,
-	logger log.Logger,
+	tlsCfg config.TLS,
 	certProviderFactory CertProviderFactory,
 ) (TLSConfigProvider, error) {
-
-	if err := validateTLS(&encryptionSettings); err != nil {
+	if err := validateTLS(&tlsCfg); err != nil {
 		return nil, err
 	}
 	if certProviderFactory == nil {
 		certProviderFactory = NewLocalStoreCertProvider
 	}
-	return NewLocalStoreTlsProvider(&encryptionSettings, certProviderFactory)
+	return NewLocalStoreTlsProvider(&tlsCfg, certProviderFactory)
 }
 
 func validateTLS(cfg *config.TLS) error {

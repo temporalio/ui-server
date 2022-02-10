@@ -35,20 +35,27 @@ import (
 
 	"github.com/temporalio/ui-server/server/config"
 	"github.com/temporalio/ui-server/server/generated/api/workflowservice/v1"
+	"github.com/temporalio/ui-server/server/rpc"
 )
 
 // SetAPIRoutes sets api routes
-func SetAPIRoutes(e *echo.Echo, cfg *config.Config, temporalConn *grpc.ClientConn) error {
+func SetAPIRoutes(e *echo.Echo, cfg *config.Config, rpcFactory *rpc.RPCFactory) error {
 	api := e.Group("/api")
 	api.GET("/v1/me", getCurrentUser)
 	api.GET("/v1/settings", getSettings(cfg))
-	api.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", temporalAPIHandler(temporalConn))
+	api.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", temporalAPIHandler(rpcFactory))
 	return nil
 }
 
-func temporalAPIHandler(temporalConn *grpc.ClientConn) echo.HandlerFunc {
+func temporalAPIHandler(rpcFactory *rpc.RPCFactory) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mux, err := getTemporalClientMux(c, temporalConn)
+		rpcConfig, err := rpcFactory.GetTLSConfig()
+		if err != nil {
+			return err
+		}
+		conn := rpc.CreateGRPCConnection(rpcFactory.Address, rpcConfig)
+
+		mux, err := getTemporalClientMux(c, conn)
 		if err != nil {
 			return err
 		}

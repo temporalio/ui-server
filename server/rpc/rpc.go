@@ -26,6 +26,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc"
@@ -46,8 +47,33 @@ const (
 	minConnectTimeout = 20 * time.Second
 )
 
-// CreateFrontendGRPCConnection creates connection for gRPC calls
-func CreateFrontendGRPCConnection(hostName string, tls *tls.Config) *grpc.ClientConn {
+// RPCFactory builds RPC & TLS config
+type RPCFactory struct {
+	Address string
+
+	sync.Mutex
+	tlsFactory TLSConfigProvider
+}
+
+// NewFactory builds a new RPCFactory
+// conforming to the underlying configuration
+func NewFactory(rpcAddress string, tlsProvider TLSConfigProvider) *RPCFactory {
+	return &RPCFactory{
+		Address:    rpcAddress,
+		tlsFactory: tlsProvider,
+	}
+}
+
+func (d *RPCFactory) GetTLSConfig() (*tls.Config, error) {
+	if d.tlsFactory != nil {
+		return d.tlsFactory.GetTLSConfig()
+	}
+
+	return nil, nil
+}
+
+// CreateGRPCConnection creates connection for gRPC calls
+func CreateGRPCConnection(hostName string, tls *tls.Config) *grpc.ClientConn {
 	connection, err := Dial(hostName, tls)
 
 	if err != nil {
