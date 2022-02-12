@@ -3,6 +3,7 @@ enableOpenApi: true
 cors:
   allowOrigins:
     - http://localhost:3000
+refreshInterval: 0s
 auth:
   enabled: false
   providers:

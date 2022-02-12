@@ -25,17 +25,15 @@ package server
 import (
 	"embed"
 	"fmt"
-	"log"
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"google.golang.org/grpc"
 
+	"github.com/temporalio/ui-server/server/config"
 	"github.com/temporalio/ui-server/server/routes"
-	"github.com/temporalio/ui-server/server/rpc"
 	"github.com/temporalio/ui-server/server/server_options"
 )
 
@@ -70,15 +68,20 @@ var swaggeruiAssets embed.FS
 type (
 	// Server ui server.
 	Server struct {
-		httpServer   *echo.Echo
-		temporalConn *grpc.ClientConn
-		options      *server_options.ServerOptions
+		httpServer  *echo.Echo
+		options     *server_options.ServerOptions
+		cfgProvider *config.ConfigProviderWithRefresh
 	}
 )
 
 // NewServer returns a new instance of server that serves one or many services.
 func NewServer(opts ...server_options.ServerOption) *Server {
 	serverOpts := server_options.NewServerOptions(opts)
+	cfgProvider, err := config.NewConfigProviderWithRefresh(*serverOpts.ConfigProvider)
+	cfg, err := cfgProvider.GetConfig()
+	if err != nil {
+		panic(err)
+	}
 
 	e := echo.New()
 
@@ -86,7 +89,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: serverOpts.Config.CORS.AllowOrigins,
+		AllowOrigins: cfg.CORS.AllowOrigins,
 		AllowHeaders: []string{
 			echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
 			echo.HeaderXCSRFToken,
@@ -102,26 +105,24 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		securecookie.GenerateRandomKey(32),
 	)))
 
-	tlsCfg, err := rpc.CreateTLSConfig(serverOpts.Config.TemporalGRPCAddress, &serverOpts.Config.TLS)
 	if err != nil {
-		log.Printf("Unable to create TLS config: %v\n", err)
-		log.Printf("Establishing insecure connection to Temporal")
+		panic(err)
 	}
-	conn := rpc.CreateFrontendGRPCConnection(serverOpts.Config.TemporalGRPCAddress, tlsCfg)
-	routes.SetAPIRoutes(e, serverOpts.Config, conn)
 
-	routes.SetAuthRoutes(e, &serverOpts.Config.Auth)
-	if serverOpts.Config.EnableOpenAPI {
+	routes.SetAPIRoutes(e, cfgProvider)
+	routes.SetAuthRoutes(e, cfgProvider)
+
+	if cfg.EnableOpenAPI {
 		routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
 	}
-	if serverOpts.Config.EnableUI {
+	if cfg.EnableUI {
 		routes.SetUIRoutes(e, uiHTML, uiAssets)
 	}
 
 	s := &Server{
-		httpServer:   e,
-		temporalConn: conn,
-		options:      serverOpts,
+		httpServer:  e,
+		options:     serverOpts,
+		cfgProvider: cfgProvider,
 	}
 	return s
 }
@@ -129,7 +130,12 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 // Start UI server.
 func (s *Server) Start() error {
 	fmt.Println("Starting UI server...")
-	address := fmt.Sprintf("%s:%d", s.options.Config.Host, s.options.Config.Port)
+	cfg, err := s.cfgProvider.GetConfig()
+	if err != nil {
+		return err
+	}
+
+	address := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 	s.httpServer.Logger.Fatal(s.httpServer.Start(address))
 	return nil
 }
@@ -140,5 +146,4 @@ func (s *Server) Stop() {
 	if err := s.httpServer.Close(); err != nil {
 		s.httpServer.Logger.Warn(err)
 	}
-	s.temporalConn.Close()
 }

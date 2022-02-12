@@ -27,8 +27,8 @@ import (
 	"os"
 	"path"
 
+	"github.com/temporalio/ui-server/plugins/fs_config_provider"
 	"github.com/temporalio/ui-server/server"
-	"github.com/temporalio/ui-server/server/config"
 	"github.com/temporalio/ui-server/server/server_options"
 	"github.com/urfave/cli/v2"
 )
@@ -52,21 +52,21 @@ func buildCLI() *cli.App {
 			Aliases: []string{"r"},
 			Value:   ".",
 			Usage:   "root directory of execution environment",
-			EnvVars: []string{config.EnvKeyRoot},
+			EnvVars: []string{fs_config_provider.EnvKeyRoot},
 		},
 		&cli.StringFlag{
 			Name:    "config",
 			Aliases: []string{"c"},
 			Value:   "config",
 			Usage:   "config dir path relative to root",
-			EnvVars: []string{config.EnvKeyConfigDir},
+			EnvVars: []string{fs_config_provider.EnvKeyConfigDir},
 		},
 		&cli.StringFlag{
 			Name:    "env",
 			Aliases: []string{"e"},
 			Value:   "development",
 			Usage:   "runtime environment",
-			EnvVars: []string{config.EnvKeyEnvironment},
+			EnvVars: []string{fs_config_provider.EnvKeyEnvironment},
 		}}
 
 	app.Commands = []*cli.Command{
@@ -78,17 +78,14 @@ func buildCLI() *cli.App {
 			Action: func(c *cli.Context) error {
 				env := c.String("env")
 				configDir := path.Join(c.String("root"), c.String("config"))
-
-				cfg, err := config.LoadConfig(configDir, env)
-				if err != nil {
-					return cli.Exit(fmt.Sprintf("Unable to load configuration: %v.", err), 1)
-				}
+				cfgProvider := fs_config_provider.NewFSConfigProvider(configDir, env)
 
 				s := server.NewServer(
-					server_options.WithConfig(cfg),
+					server_options.WithConfigProvider(&cfgProvider),
 				)
 				defer s.Stop()
-				err = s.Start()
+				err := s.Start()
+
 				if err != nil {
 					return cli.NewExitError(fmt.Sprintf("Unable to start server: %v.", err), 1)
 				}

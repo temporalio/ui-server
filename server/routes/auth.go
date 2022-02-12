@@ -52,18 +52,19 @@ type Claims struct {
 }
 
 // SetAuthRoutes sets routes used by auth
-func SetAuthRoutes(e *echo.Echo, cfg *config.Auth) {
+func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) {
 	ctx := context.Background()
+	cfg, _ := cfgProvider.GetConfig()
 
-	if !cfg.Enabled {
+	if !cfg.Auth.Enabled {
 		return
 	}
 
-	if len(cfg.Providers) == 0 {
+	if len(cfg.Auth.Providers) == 0 {
 		log.Fatal(`auth providers configuration is empty. Configure an auth provider or disable auth`)
 	}
 
-	providerCfg := cfg.Providers[0] // only single provider is currently supported
+	providerCfg := cfg.Auth.Providers[0] // only single provider is currently supported
 
 	provider, err := oidc.NewProvider(ctx, providerCfg.ProviderUrl)
 	if err != nil {

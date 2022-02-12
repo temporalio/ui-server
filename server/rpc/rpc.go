@@ -46,8 +46,8 @@ const (
 	minConnectTimeout = 20 * time.Second
 )
 
-// CreateFrontendGRPCConnection creates connection for gRPC calls
-func CreateFrontendGRPCConnection(hostName string, tls *tls.Config) *grpc.ClientConn {
+// CreateGRPCConnection creates connection for gRPC calls
+func CreateGRPCConnection(hostName string, tls *tls.Config) *grpc.ClientConn {
 	connection, err := Dial(hostName, tls)
 
 	if err != nil {

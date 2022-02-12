@@ -1,6 +1,6 @@
 // The MIT License
 //
-// Copyright (c) 2020 Temporal Technologies Inc.  All rights reserved.
+// Copyright (c) 2022 Temporal Technologies Inc.  All rights reserved.
 //
 // Copyright (c) 2020 Uber Technologies, Inc.
 //
@@ -24,7 +24,9 @@
 
 package server_options
 
-import "github.com/temporalio/ui-server/server/config"
+import (
+	"github.com/temporalio/ui-server/server/config"
+)
 
 type (
 	ServerOption interface {
@@ -32,8 +34,9 @@ type (
 	}
 )
 
-func WithConfig(cfg *config.Config) ServerOption {
+// WithConfigProvider supplies the config for the UI server
+func WithConfigProvider(cfgProvider *config.ConfigProvider) ServerOption {
 	return newApplyFuncContainer(func(s *ServerOptions) {
-		s.Config = cfg
+		s.ConfigProvider = cfgProvider
 	})
 }

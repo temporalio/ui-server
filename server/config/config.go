@@ -1,6 +1,6 @@
 // The MIT License
 //
-// Copyright (c) 2020 Temporal Technologies Inc.  All rights reserved.
+// Copyright (c) 2022 Temporal Technologies Inc.  All rights reserved.
 //
 // Copyright (c) 2020 Uber Technologies, Inc.
 //
@@ -26,6 +26,7 @@ package config
 
 import (
 	"errors"
+	"time"
 )
 
 type (
@@ -41,6 +42,8 @@ type (
 		EnableOpenAPI       bool   `yaml:"enableOpenApi"`
 		CORS                CORS   `yaml:"cors"`
 		DefaultNamespace    string `yaml:"defaultNamespace"`
+		// How often to reload the config
+		RefreshInterval time.Duration `yaml:"refreshInterval"`
 	}
 
 	CORS struct {

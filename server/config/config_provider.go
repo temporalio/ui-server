@@ -2,8 +2,6 @@
 //
 // Copyright (c) 2022 Temporal Technologies Inc.  All rights reserved.
 //
-// Copyright (c) 2020 Uber Technologies, Inc.
-//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -22,24 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package server_options
-
-import (
-	"github.com/temporalio/ui-server/server/config"
-)
+package config
 
 type (
-	ServerOptions struct {
-		ConfigProvider *config.ConfigProvider
+	// ConfigProvider serves as a common interface to read UI server configuration.
+	ConfigProvider interface {
+		GetConfig() (*Config, error)
 	}
 )
-
-func NewServerOptions(opts []ServerOption) *ServerOptions {
-	so := &ServerOptions{
-		// Set defaults here.
-	}
-	for _, opt := range opts {
-		opt.apply(so)
-	}
-	return so
-}

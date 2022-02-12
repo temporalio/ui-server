@@ -4,6 +4,7 @@ uiRootPath: {{ default .Env.TEMPORAL_UI_ROOT_PATH "/" }}
 enableUi: {{ default .Env.TEMPORAL_UI_ENABLED "true" }}
 enableOpenApi: {{ default .Env.TEMPORAL_OPENAPI_ENABLED "true" }}
 defaultNamespace: {{ .Env.TEMPORAL_DEFAULT_NAMESPACE }}
+refreshInterval: {{ default .Env.TEMPORAL_CONFIG_REFRESH_INTERVAL "0s" }}
 cors:
   allowOrigins:
     # override framework's default that allows all origins "*"

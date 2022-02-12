@@ -1,6 +1,6 @@
 // The MIT License
 //
-// Copyright (c) 2022 Temporal Technologies Inc.  All rights reserved.
+// Copyright (c) 2020 Temporal Technologies Inc.  All rights reserved.
 //
 // Copyright (c) 2020 Uber Technologies, Inc.
 //
@@ -22,24 +22,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package server_options
+package fs_config_provider
 
 import (
 	"github.com/temporalio/ui-server/server/config"
 )
 
 type (
-	ServerOptions struct {
-		ConfigProvider *config.ConfigProvider
+	fsConfigProvider struct {
+		configDir string
+		env       string
 	}
 )
 
-func NewServerOptions(opts []ServerOption) *ServerOptions {
-	so := &ServerOptions{
-		// Set defaults here.
+var _ config.ConfigProvider = (*fsConfigProvider)(nil)
+
+// NewFSConfigProvider creates a default file system based Config Provider
+func NewFSConfigProvider(configDir string, env string) config.ConfigProvider {
+	return &fsConfigProvider{
+		configDir,
+		env,
 	}
-	for _, opt := range opts {
-		opt.apply(so)
+}
+
+func (a *fsConfigProvider) GetConfig() (*config.Config, error) {
+	cfg, err := LoadConfig(a.configDir, a.env)
+	if err != nil {
+		return nil, err
 	}
-	return so
+
+	return cfg, nil
 }
