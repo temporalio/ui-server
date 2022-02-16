@@ -78,6 +78,9 @@ type (
 func NewServer(opts ...server_options.ServerOption) *Server {
 	serverOpts := server_options.NewServerOptions(opts)
 	cfgProvider, err := config.NewConfigProviderWithRefresh(*serverOpts.ConfigProvider)
+	if err != nil {
+		panic(err)
+	}
 	cfg, err := cfgProvider.GetConfig()
 	if err != nil {
 		panic(err)

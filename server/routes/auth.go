@@ -25,6 +25,7 @@ package routes
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -54,7 +55,10 @@ type Claims struct {
 // SetAuthRoutes sets routes used by auth
 func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) {
 	ctx := context.Background()
-	cfg, _ := cfgProvider.GetConfig()
+	cfg, err := cfgProvider.GetConfig()
+	if err != nil {
+		fmt.Printf("unable to get auth config: %s\n", err)
+	}
 
 	if !cfg.Auth.Enabled {
 		return
