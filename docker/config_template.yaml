@@ -3,6 +3,7 @@ port: {{ default .Env.TEMPORAL_UI_PORT "8080" }}
 uiRootPath: {{ default .Env.TEMPORAL_UI_ROOT_PATH "/" }}
 enableUi: {{ default .Env.TEMPORAL_UI_ENABLED "true" }}
 enableOpenApi: {{ default .Env.TEMPORAL_OPENAPI_ENABLED "true" }}
+defaultNamespace: {{ .Env.TEMPORAL_DEFAULT_NAMESPACE }}
 cors:
   allowOrigins:
     # override framework's default that allows all origins "*"

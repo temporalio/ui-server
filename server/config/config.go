@@ -40,6 +40,7 @@ type (
 		EnableUI            bool   `yaml:"enableUi"`
 		EnableOpenAPI       bool   `yaml:"enableOpenApi"`
 		CORS                CORS   `yaml:"cors"`
+		DefaultNamespace    string `yaml:"defaultNamespace"`
 	}
 
 	CORS struct {

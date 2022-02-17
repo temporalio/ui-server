@@ -98,10 +98,12 @@ func getSettings(cfg *config.Config) func(echo.Context) error {
 			Auth struct {
 				Enabled bool
 			}
+			DefaultNamespace string
 		}{
 			struct{ Enabled bool }{
 				cfg.Auth.Enabled,
 			},
+			cfg.DefaultNamespace,
 		}
 
 		return c.JSON(http.StatusOK, settings)
