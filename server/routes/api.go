@@ -23,6 +23,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gogo/gateway"
@@ -35,20 +36,33 @@ import (
 
 	"github.com/temporalio/ui-server/server/config"
 	"github.com/temporalio/ui-server/server/generated/api/workflowservice/v1"
+	"github.com/temporalio/ui-server/server/rpc"
 )
 
 // SetAPIRoutes sets api routes
-func SetAPIRoutes(e *echo.Echo, cfg *config.Config, temporalConn *grpc.ClientConn) error {
+func SetAPIRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) error {
 	api := e.Group("/api")
 	api.GET("/v1/me", getCurrentUser)
-	api.GET("/v1/settings", getSettings(cfg))
-	api.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", temporalAPIHandler(temporalConn))
+	api.GET("/v1/settings", getSettings(cfgProvider))
+	api.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", temporalAPIHandler(cfgProvider))
 	return nil
 }
 
-func temporalAPIHandler(temporalConn *grpc.ClientConn) echo.HandlerFunc {
+func temporalAPIHandler(cfgProvider *config.ConfigProviderWithRefresh) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mux, err := getTemporalClientMux(c, temporalConn)
+		cfg, err := cfgProvider.GetConfig()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+
+		tls, err := rpc.CreateTLSConfig(cfg.TemporalGRPCAddress, &cfg.TLS)
+		if err != nil {
+			fmt.Printf("unable to read TLS configs: %s", err)
+		}
+		conn := rpc.CreateGRPCConnection(cfg.TemporalGRPCAddress, tls)
+		defer conn.Close()
+
+		mux, err := getTemporalClientMux(c, conn)
 		if err != nil {
 			return err
 		}
@@ -92,8 +106,13 @@ func getCurrentUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
-func getSettings(cfg *config.Config) func(echo.Context) error {
+func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context) error {
 	return func(c echo.Context) error {
+		cfg, err := cfgProvier.GetConfig()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+
 		settings := struct {
 			Auth struct {
 				Enabled bool

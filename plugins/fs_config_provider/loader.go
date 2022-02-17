@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package config
+package fs_config_provider
 
 import (
 	"fmt"
@@ -32,6 +32,8 @@ import (
 
 	"gopkg.in/validator.v2"
 	"gopkg.in/yaml.v3"
+
+	"github.com/temporalio/ui-server/server/config"
 )
 
 const (
@@ -98,8 +100,8 @@ func Load(configDir string, config interface{}, env string) error {
 }
 
 // Helper function for loading configuration
-func LoadConfig(configDir string, env string) (*Config, error) {
-	config := Config{}
+func LoadConfig(configDir string, env string) (*config.Config, error) {
+	config := config.Config{}
 	err := Load(configDir, &config, env)
 	if err != nil {
 		return nil, fmt.Errorf("config file corrupted: %w", err)
