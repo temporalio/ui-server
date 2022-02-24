@@ -1,0 +1,1 @@
+import{p as s}from"./stores-053bb508.js";import{a8 as n,a9 as c}from"./vendor-07bbbbe5.js";const o=new n("/namespaces/:namespace/*"),t=e=>e(),l=c(s,e=>{const a=o.match(e.path),r=t(()=>localStorage.getItem("currentNamespace")||"default")||"default";return a?(t(()=>localStorage.setItem("currentNamespace",a.namespace)),a.namespace):r});export{l as n};
