@@ -1,1 +1,0 @@
-import{S as e,i as t,s as n}from"../chunks/vendor-c7e306c1.js";async function r(){return{status:302,redirect:"/namespaces/default/workflows"}}class u extends e{constructor(s){super();t(this,s,null,null,n,{})}}export{u as default,r as load};
