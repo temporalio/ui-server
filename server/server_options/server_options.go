@@ -30,7 +30,7 @@ import (
 
 type (
 	ServerOptions struct {
-		ConfigProvider *config.ConfigProvider
+		ConfigProvider config.ConfigProvider
 	}
 )
 
