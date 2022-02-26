@@ -91,3 +91,11 @@ func (c *Config) Validate() error {
 
 	return nil
 }
+
+// Ensure that *Config implements ConfigProvider interface.
+var _ ConfigProvider = &Config{}
+
+// GetConfig implements ConfigProvider.
+func (c *Config) GetConfig() (*Config, error) {
+	return c, nil
+}
