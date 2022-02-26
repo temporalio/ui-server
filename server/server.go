@@ -77,7 +77,7 @@ type (
 // NewServer returns a new instance of server that serves one or many services.
 func NewServer(opts ...server_options.ServerOption) *Server {
 	serverOpts := server_options.NewServerOptions(opts)
-	cfgProvider, err := config.NewConfigProviderWithRefresh(*serverOpts.ConfigProvider)
+	cfgProvider, err := config.NewConfigProviderWithRefresh(serverOpts.ConfigProvider)
 	if err != nil {
 		panic(err)
 	}

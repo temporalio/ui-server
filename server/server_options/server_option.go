@@ -35,7 +35,7 @@ type (
 )
 
 // WithConfigProvider supplies the config for the UI server
-func WithConfigProvider(cfgProvider *config.ConfigProvider) ServerOption {
+func WithConfigProvider(cfgProvider config.ConfigProvider) ServerOption {
 	return newApplyFuncContainer(func(s *ServerOptions) {
 		s.ConfigProvider = cfgProvider
 	})

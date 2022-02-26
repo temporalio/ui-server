@@ -81,7 +81,7 @@ func buildCLI() *cli.App {
 				cfgProvider := fs_config_provider.NewFSConfigProvider(configDir, env)
 
 				s := server.NewServer(
-					server_options.WithConfigProvider(&cfgProvider),
+					server_options.WithConfigProvider(cfgProvider),
 				)
 				defer s.Stop()
 				err := s.Start()
