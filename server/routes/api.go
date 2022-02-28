@@ -50,6 +50,11 @@ func SetAPIRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) e
 
 func temporalAPIHandler(cfgProvider *config.ConfigProviderWithRefresh) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		err := validateAuth(c, cfgProvider)
+		if err != nil {
+			return err
+		}
+
 		cfg, err := cfgProvider.GetConfig()
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
@@ -164,4 +169,28 @@ func withAuth(c echo.Context) runtime.ServeMuxOption {
 			return md
 		},
 	)
+}
+
+func validateAuth(c echo.Context, cfgProvider *config.ConfigProviderWithRefresh) error {
+	cfg, err := cfgProvider.GetConfig()
+	if err != nil {
+		return err
+	}
+
+	isEnabled := cfg.Auth.Enabled
+	if !isEnabled {
+		return nil
+	}
+
+	sess, _ := session.Get("auth", c)
+	if sess == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
+	token := sess.Values["access-token"]
+	if token == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
+	return nil
 }
