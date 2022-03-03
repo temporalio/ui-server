@@ -67,15 +67,15 @@ type (
 	}
 
 	AuthProvider struct {
-		Label        string   `yaml:"label"`
-		Type         string   `yaml:"type"`
-		ProviderUrl  string   `yaml:"providerUrl"`
-		ClientID     string   `yaml:"clientId"`
-		ClientSecret string   `yaml:"clientSecret"`
-		Scopes       []string `yaml:"scopes"`
-		Audience     string   `yaml:"audience"`
-		CallbackURL  string   `yaml:"callbackUrl"`
-		PassIDToken  bool     `yaml:"passIdToken"`
+		Label        string                 `yaml:"label"`
+		Type         string                 `yaml:"type"`
+		ProviderUrl  string                 `yaml:"providerUrl"`
+		ClientID     string                 `yaml:"clientId"`
+		ClientSecret string                 `yaml:"clientSecret"`
+		Scopes       []string               `yaml:"scopes"`
+		CallbackURL  string                 `yaml:"callbackUrl"`
+		PassIDToken  bool                   `yaml:"passIdToken"`
+		Options      map[string]interface{} `yaml:"options"`
 	}
 )
 
