@@ -44,20 +44,25 @@ var uiHTML []byte
 // https://github.com/golang/go/issues/43854
 // https://github.com/sveltejs/kit/pull/1370#issuecomment-853306453
 //go:embed generated/ui/*
-//go:embed generated/ui/_app/assets/pages/*
 //go:embed generated/ui/_app/assets/_*
+//go:embed generated/ui/_app/assets/pages/_*
+//go:embed generated/ui/_app/assets/pages/namespaces/_*
+//go:embed generated/ui/_app/assets/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/activity-_eventId_/*
+//go:embed generated/ui/_app/assets/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/_*
+//go:embed generated/ui/_app/assets/pages/namespaces/_namespace_/workflows/_workflow_/_run_/_*
 //go:embed generated/ui/_app/chunks/*
-//go:embed generated/ui/_app/pages/*
-//go:embed generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/activity-\[eventId\]/*
-//go:embed generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/_*
-//go:embed generated/ui/_app/assets/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/_*
-//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/*
-//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/*
-//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/full/*
-//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/*
-//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/\[workflow\]/\[run\]/history/compact/activity-\[eventId\]/*
-//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/workflows/*
-//go:embed generated/ui/_app/pages/namespaces/\[namespace\]/*
+//go:embed generated/ui/_app/pages/_*
+//go:embed generated/ui/_app/pages/data-converter/_*
+//go:embed generated/ui/_app/pages/namespaces/_*
+//go:embed generated/ui/_app/pages/namespaces/_namespace_/archival/*
+//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/*.js
+//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/*
+//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/*
+//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/full/*
+//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/*
+//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/activity-_eventId_/_*
+//go:embed generated/ui/_app/pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/activity-_eventId_/events/*
+//go:embed generated/ui/_app/pages/namespaces/_namespace_/workers/_queue_/*
 var uiAssets embed.FS
 
 //go:embed generated/openapi/index.html
