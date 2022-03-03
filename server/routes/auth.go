@@ -84,12 +84,15 @@ func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) 
 	}
 
 	api := e.Group("/auth")
-	api.GET("/sso", authenticate(&config))
+	opts := []oauth2.AuthCodeOption{
+		oauth2.SetAuthURLParam("audience", providerCfg.Audience),
+	}
+	api.GET("/sso", authenticate(&config, opts))
 	api.GET("/sso/callback", authenticateCb(ctx, &config, provider))
 	api.GET("/logout", logout)
 }
 
-func authenticate(config *oauth2.Config) func(echo.Context) error {
+func authenticate(config *oauth2.Config, opts []oauth2.AuthCodeOption) func(echo.Context) error {
 	return func(c echo.Context) error {
 		state, err := randString()
 		if err != nil {
@@ -102,7 +105,10 @@ func authenticate(config *oauth2.Config) func(echo.Context) error {
 		setCallbackCookie(c, "state", state)
 		setCallbackCookie(c, "nonce", nonce)
 
-		return c.Redirect(http.StatusFound, config.AuthCodeURL(state, oidc.Nonce(nonce)))
+		opts = append(opts, oidc.Nonce(nonce))
+		url := config.AuthCodeURL(state, opts...)
+
+		return c.Redirect(http.StatusFound, url)
 	}
 }
 
