@@ -84,15 +84,13 @@ func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) 
 	}
 
 	api := e.Group("/auth")
-	opts := []oauth2.AuthCodeOption{
-		oauth2.SetAuthURLParam("audience", providerCfg.Audience),
-	}
-	api.GET("/sso", authenticate(&config, opts))
+
+	api.GET("/sso", authenticate(&config, providerCfg.Options))
 	api.GET("/sso/callback", authenticateCb(ctx, &config, provider))
 	api.GET("/logout", logout)
 }
 
-func authenticate(config *oauth2.Config, opts []oauth2.AuthCodeOption) func(echo.Context) error {
+func authenticate(config *oauth2.Config, options map[string]interface{}) func(echo.Context) error {
 	return func(c echo.Context) error {
 		state, err := randString()
 		if err != nil {
@@ -105,7 +103,25 @@ func authenticate(config *oauth2.Config, opts []oauth2.AuthCodeOption) func(echo
 		setCallbackCookie(c, "state", state)
 		setCallbackCookie(c, "nonce", nonce)
 
-		opts = append(opts, oidc.Nonce(nonce))
+		opts := []oauth2.AuthCodeOption{
+			oidc.Nonce(nonce),
+		}
+		for k, v := range options {
+			var value string
+			if vStr, ok := v.(string); ok {
+				value = vStr
+			}
+
+			// Some options, ex Auth0 invitation code, may be undefined in config as they are unknowns beforehand
+			// These may come from outside, ex in an invitation email
+			vOverride := c.QueryParam(k)
+			if vOverride != "" {
+				value = vOverride
+			}
+
+			opts = append(opts, oauth2.SetAuthURLParam(k, value))
+		}
+
 		url := config.AuthCodeURL(state, opts...)
 
 		return c.Redirect(http.StatusFound, url)
