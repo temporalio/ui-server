@@ -3,15 +3,16 @@ enableOpenApi: true
 cors:
   allowOrigins:
     - http://localhost:3000
-refreshInterval: 0s
+refreshInterval: 1m
+defaultNamespace: default
 auth:
   enabled: false
   providers:
-    - label: google oidc # for internal use; in future may expose as button text
+    - label: Auth0 oidc # for internal use; in future may expose as button text
       type: oidc # for futureproofing; only oidc is supported today
-      providerUrl: https://accounts.google.com
-      clientId: xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
-      clientSecret: xxxxxxxxxxxxxxxxxxxxxxx
+      providerUrl: https://myorg.us.auth0.com/
+      clientId: xxxxxxxxxxxxxxxxxxxx
+      clientSecret: xxxxxxxxxxxxxxxxxxxx
       scopes:
         - openid
         - profile
