@@ -118,14 +118,27 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			return c.JSON(http.StatusInternalServerError, err)
 		}
 
+		var options []string
+		if len(cfg.Auth.Providers) != 0 {
+			authProviderCfg := cfg.Auth.Providers[0].Options
+			for k := range authProviderCfg {
+				options = append(options, k)
+			}
+		}
+
 		settings := struct {
 			Auth struct {
 				Enabled bool
+				Options []string
 			}
 			DefaultNamespace string
 		}{
-			struct{ Enabled bool }{
+			struct {
+				Enabled bool
+				Options []string
+			}{
 				cfg.Auth.Enabled,
+				options,
 			},
 			cfg.DefaultNamespace,
 		}
