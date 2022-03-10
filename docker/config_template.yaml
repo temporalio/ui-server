@@ -3,7 +3,7 @@ port: {{ default .Env.TEMPORAL_UI_PORT "8080" }}
 uiRootPath: {{ default .Env.TEMPORAL_UI_ROOT_PATH "/" }}
 enableUi: {{ default .Env.TEMPORAL_UI_ENABLED "true" }}
 enableOpenApi: {{ default .Env.TEMPORAL_OPENAPI_ENABLED "true" }}
-defaultNamespace: {{ .Env.TEMPORAL_DEFAULT_NAMESPACE }}
+defaultNamespace: {{ default .Env.TEMPORAL_DEFAULT_NAMESPACE "default" }}
 refreshInterval: {{ default .Env.TEMPORAL_CONFIG_REFRESH_INTERVAL "0s" }}
 cors:
   allowOrigins:
