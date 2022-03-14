@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-78112d87.js",
+    "file": "start-6ebd4996.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -38,13 +38,13 @@
     ]
   },
   "src/routes/__layout.svelte": {
-    "file": "pages/__layout.svelte-e540cf9c.js",
+    "file": "pages/__layout.svelte-630587c4.js",
     "src": "src/routes/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_notifications-5747bfcc.js",
       "_namespace-04210685.js",
       "_select-679aa293.js",
@@ -124,17 +124,17 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/index.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/index.svelte-5f5df243.js",
+    "file": "pages/namespaces/_namespace_/workflows/index.svelte-bec1f41d.js",
     "src": "src/routes/namespaces/[namespace]/workflows/index.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_workflow-status-3dd5fdad.js",
-      "__workflows-loading-e139cc38.js",
+      "_workflow-status-7bfe05c2.js",
+      "__workflows-loading-1ac4791a.js",
       "_empty-state-3f413084.js",
       "_pagination-050ef405.js",
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_notifications-5747bfcc.js",
       "_is-network-error-ac7c8caf.js",
       "_format-date-df195453.js",
@@ -152,16 +152,16 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/__layout.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/__layout.svelte-684ffc7d.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/__layout.svelte-5f22b7ec.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_workflow-status-3dd5fdad.js",
+      "_workflow-status-7bfe05c2.js",
       "_navigation-093db9e2.js",
       "_route-for-11851a4f.js",
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_notifications-5747bfcc.js",
       "_button-7d13177b.js",
       "_stores-eb9dc606.js",
@@ -182,29 +182,29 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/stack-trace.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/stack-trace.svelte-ef52b29b.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/stack-trace.svelte-add3359b.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/stack-trace.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_query-service-bf6343c8.js",
+      "_query-service-0a1708e4.js",
       "_code-block-0adce4b8.js",
       "_button-7d13177b.js",
       "_empty-state-3f413084.js",
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_notifications-5747bfcc.js",
       "_is-network-error-ac7c8caf.js"
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/__layout.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/__layout.svelte-16be0f75.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/__layout.svelte-34d2975c.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_data-converter-config-52e021cd.js",
       "_is-event-type-6f6767d3.js",
       "_route-for-11851a4f.js",
@@ -283,13 +283,13 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/compact/activity-[eventId]/events/[id].svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/activity-_eventId_/events/_id_.svelte-74080649.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/activity-_eventId_/events/_id_.svelte-f2dd6b5a.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/compact/activity-[eventId]/events/[id].svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_event-details-f45919e5.js",
+      "_event-details-eaa0b907.js",
       "_format-camel-case-8b7e013d.js",
       "_code-block-0adce4b8.js"
     ]
@@ -324,26 +324,26 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/full/pending-[id].svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/full/pending-_id_.svelte-379f8d45.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/full/pending-_id_.svelte-99257483.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/full/pending-[id].svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
       "_stores-eb9dc606.js",
-      "_event-details-f45919e5.js",
+      "_event-details-eaa0b907.js",
       "_format-camel-case-8b7e013d.js",
       "_code-block-0adce4b8.js"
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/full/event-[id].svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/full/event-_id_.svelte-ee8b60bc.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/full/event-_id_.svelte-bafc5491.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/full/event-[id].svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_event-details-f45919e5.js",
+      "_event-details-eaa0b907.js",
       "_format-camel-case-8b7e013d.js",
       "_code-block-0adce4b8.js"
     ]
@@ -359,32 +359,32 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/workers.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/workers.svelte-6477d1c2.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/workers.svelte-e35ff412.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/workers.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_workers-row-9305830b.js",
+      "_workers-row-87a20825.js",
       "_empty-state-3f413084.js",
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_notifications-5747bfcc.js",
       "_is-network-error-ac7c8caf.js",
       "_format-date-df195453.js"
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/query.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/query.svelte-bde55ce4.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/query.svelte-a73bbf63.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/query.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_query-service-bf6343c8.js",
+      "_query-service-0a1708e4.js",
       "_code-block-0adce4b8.js",
       "_filter-select-1a09ab0c.js",
       "_select-679aa293.js",
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_notifications-5747bfcc.js",
       "_is-network-error-ac7c8caf.js",
       "_navigation-093db9e2.js",
@@ -394,17 +394,17 @@
     ]
   },
   "src/routes/namespaces/[namespace]/archival/index.svelte": {
-    "file": "pages/namespaces/_namespace_/archival/index.svelte-d307548f.js",
+    "file": "pages/namespaces/_namespace_/archival/index.svelte-7b8134b5.js",
     "src": "src/routes/namespaces/[namespace]/archival/index.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_workflow-status-3dd5fdad.js",
-      "__workflows-loading-e139cc38.js",
+      "_workflow-status-7bfe05c2.js",
+      "__workflows-loading-1ac4791a.js",
       "_empty-state-3f413084.js",
       "_code-block-0adce4b8.js",
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_notifications-5747bfcc.js",
       "_is-network-error-ac7c8caf.js",
       "_format-date-df195453.js",
@@ -419,15 +419,15 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workers/[queue]/__layout.svelte": {
-    "file": "pages/namespaces/_namespace_/workers/_queue_/__layout.svelte-00d61214.js",
+    "file": "pages/namespaces/_namespace_/workers/_queue_/__layout.svelte-bb8a2abd.js",
     "src": "src/routes/namespaces/[namespace]/workers/[queue]/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_vendor-81c0e211.js",
-      "_workers-row-9305830b.js",
+      "_workers-row-87a20825.js",
       "_empty-state-3f413084.js",
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_notifications-5747bfcc.js",
       "_is-network-error-ac7c8caf.js",
       "_format-date-df195453.js"
@@ -457,8 +457,8 @@
       "_vendor-81c0e211.js"
     ]
   },
-  "_route-for-api-246818e0.js": {
-    "file": "chunks/route-for-api-246818e0.js",
+  "_route-for-api-e9908c01.js": {
+    "file": "chunks/route-for-api-e9908c01.js",
     "imports": [
       "_vendor-81c0e211.js",
       "_notifications-5747bfcc.js",
@@ -523,23 +523,23 @@
   "_route-for-11851a4f.js": {
     "file": "chunks/route-for-11851a4f.js"
   },
-  "_workflow-status-3dd5fdad.js": {
-    "file": "chunks/workflow-status-3dd5fdad.js",
+  "_workflow-status-7bfe05c2.js": {
+    "file": "chunks/workflow-status-7bfe05c2.js",
     "imports": [
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_vendor-81c0e211.js"
     ],
     "css": [
       "assets/workflow-status-c8a5c750.css"
     ]
   },
-  "__workflows-loading-e139cc38.js": {
-    "file": "chunks/_workflows-loading-e139cc38.js",
+  "__workflows-loading-1ac4791a.js": {
+    "file": "chunks/_workflows-loading-1ac4791a.js",
     "imports": [
       "_vendor-81c0e211.js",
       "_format-date-df195453.js",
       "_namespace-04210685.js",
-      "_workflow-status-3dd5fdad.js",
+      "_workflow-status-7bfe05c2.js",
       "_route-for-11851a4f.js",
       "_stores-eb9dc606.js",
       "_navigation-093db9e2.js",
@@ -595,10 +595,10 @@
       "assets/button-7e73ad23.css"
     ]
   },
-  "_query-service-bf6343c8.js": {
-    "file": "chunks/query-service-bf6343c8.js",
+  "_query-service-0a1708e4.js": {
+    "file": "chunks/query-service-0a1708e4.js",
     "imports": [
-      "_route-for-api-246818e0.js"
+      "_route-for-api-e9908c01.js"
     ]
   },
   "_code-block-0adce4b8.js": {
@@ -630,18 +630,18 @@
   "_format-camel-case-8b7e013d.js": {
     "file": "chunks/format-camel-case-8b7e013d.js"
   },
-  "_event-details-f45919e5.js": {
-    "file": "chunks/event-details-f45919e5.js",
+  "_event-details-eaa0b907.js": {
+    "file": "chunks/event-details-eaa0b907.js",
     "imports": [
       "_vendor-81c0e211.js",
       "_format-camel-case-8b7e013d.js",
       "_code-block-0adce4b8.js"
     ]
   },
-  "_workers-row-9305830b.js": {
-    "file": "chunks/workers-row-9305830b.js",
+  "_workers-row-87a20825.js": {
+    "file": "chunks/workers-row-87a20825.js",
     "imports": [
-      "_route-for-api-246818e0.js",
+      "_route-for-api-e9908c01.js",
       "_vendor-81c0e211.js",
       "_format-date-df195453.js"
     ]
