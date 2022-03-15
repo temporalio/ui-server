@@ -1,0 +1,1 @@
+import{S as e,i as n,s as a}from"../../../../../../../chunks/vendor-b58bb848.js";const l=async function({url:t}){return{status:302,redirect:`${t.pathname}/full`}};class r extends e{constructor(s){super();n(this,s,null,null,a,{})}}export{r as default,l as load};
