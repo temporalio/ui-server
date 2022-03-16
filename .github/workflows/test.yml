@@ -8,21 +8,33 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
+      - name: Print build information
+        run: "echo head_ref: ${{ github.head_ref }}, ref: ${{ github.ref }}, os: ${{ matrix.os }}"
+
       - uses: actions/checkout@v2
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.18
+
       - name: Set up Protoc
         uses: arduino/setup-protoc@v1
         with:
-          version: '3.x'
+          version: "3.x"
+
       - uses: actions/setup-node@v1
         with:
           node-version: 16
+
       - name: build
         run: make install build
+
       - name: test
         run: make test
