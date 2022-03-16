@@ -68,10 +68,12 @@ build-grpc:
 install: install-submodules install-utils install-ui
 
 install-utils:
-	go get \
-		github.com/temporalio/gogo-protobuf/protoc-gen-gogoslick@latest \
-		github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@latest \
-		github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+	@go install github.com/temporalio/gogo-protobuf/protoc-gen-gogoslick@latest
+	@GO111MODULE=off go get github.com/temporalio/gogo-protobuf/protoc-gen-gogoslick
+	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@latest
+	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 
 install-submodules:
 	printf $(COLOR) "fetching submudules..."
