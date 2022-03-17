@@ -1,1 +1,0 @@
-import{S as e,i as a,s as n}from"../../../../../../../../chunks/vendor-ff19c65d.js";import{g as o}from"../../../../../../../../chunks/_get-first-id-2c418984.js";const i=async function({url:s,stuff:t}){return{status:302,redirect:`${s.pathname}/${o(t.eventGroups)}`}};class l extends e{constructor(t){super();a(this,t,null,null,n,{})}}export{l as default,i as load};
