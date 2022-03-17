@@ -1,12 +1,9 @@
 ARG BASE_SERVER_IMAGE=temporalio/base-server:1.2.0
+ARG BASE_BUILDER_IMAGE=temporalio/base-builder:1.7.0
 ARG GOPROXY
 
 ##### UI builder #####
-FROM golang:1.18-alpine3.14 AS ui-builder
-
-RUN apk add --update --no-cache \
-    make \
-    git
+FROM ${BASE_BUILDER_IMAGE} AS ui-builder
 
 WORKDIR /home/ui-builder
 
