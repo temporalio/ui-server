@@ -86,7 +86,8 @@ func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) 
 	api := e.Group("/auth")
 
 	api.GET("/sso", authenticate(&config, providerCfg.Options))
-	api.GET("/sso_callback", authenticateCb(ctx, &config, provider))
+	api.GET("/sso/callback", authenticateCb(ctx, &config, provider))
+	api.GET("/sso_callback", authenticateCb(ctx, &config, provider)) // compatibility with UI v1
 	api.GET("/logout", logout)
 }
 
