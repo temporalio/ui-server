@@ -6,6 +6,8 @@ package errordetails
 import (
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
+	v11 "go.temporal.io/api/common/v1"
+	v1 "go.temporal.io/api/enums/v1"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -402,6 +404,146 @@ func (m *QueryFailedFailure) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryFailedFailure proto.InternalMessageInfo
 
+type PermissionDeniedFailure struct {
+	Reason string `protobuf:"bytes,1,opt,name=reason,proto3" json:"reason,omitempty"`
+}
+
+func (m *PermissionDeniedFailure) Reset()      { *m = PermissionDeniedFailure{} }
+func (*PermissionDeniedFailure) ProtoMessage() {}
+func (*PermissionDeniedFailure) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2ed300ab0b02d291, []int{8}
+}
+func (m *PermissionDeniedFailure) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PermissionDeniedFailure) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PermissionDeniedFailure.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *PermissionDeniedFailure) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PermissionDeniedFailure.Merge(m, src)
+}
+func (m *PermissionDeniedFailure) XXX_Size() int {
+	return m.Size()
+}
+func (m *PermissionDeniedFailure) XXX_DiscardUnknown() {
+	xxx_messageInfo_PermissionDeniedFailure.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PermissionDeniedFailure proto.InternalMessageInfo
+
+func (m *PermissionDeniedFailure) GetReason() string {
+	if m != nil {
+		return m.Reason
+	}
+	return ""
+}
+
+type ResourceExhaustedFailure struct {
+	Cause v1.ResourceExhaustedCause `protobuf:"varint,1,opt,name=cause,proto3,enum=temporal.api.enums.v1.ResourceExhaustedCause" json:"cause,omitempty"`
+}
+
+func (m *ResourceExhaustedFailure) Reset()      { *m = ResourceExhaustedFailure{} }
+func (*ResourceExhaustedFailure) ProtoMessage() {}
+func (*ResourceExhaustedFailure) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2ed300ab0b02d291, []int{9}
+}
+func (m *ResourceExhaustedFailure) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ResourceExhaustedFailure) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ResourceExhaustedFailure.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ResourceExhaustedFailure) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ResourceExhaustedFailure.Merge(m, src)
+}
+func (m *ResourceExhaustedFailure) XXX_Size() int {
+	return m.Size()
+}
+func (m *ResourceExhaustedFailure) XXX_DiscardUnknown() {
+	xxx_messageInfo_ResourceExhaustedFailure.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ResourceExhaustedFailure proto.InternalMessageInfo
+
+func (m *ResourceExhaustedFailure) GetCause() v1.ResourceExhaustedCause {
+	if m != nil {
+		return m.Cause
+	}
+	return v1.RESOURCE_EXHAUSTED_CAUSE_UNSPECIFIED
+}
+
+type SystemWorkflowFailure struct {
+	// WorkflowId and RunId of the Temporal system workflow performing the underlying operation.
+	// Looking up the info of the system workflow run may help identify the issue causing the failure.
+	WorkflowExecution *v11.WorkflowExecution `protobuf:"bytes,1,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
+	// Serialized error returned by the system workflow performing the underlying operation.
+	WorkflowError string `protobuf:"bytes,2,opt,name=workflow_error,json=workflowError,proto3" json:"workflow_error,omitempty"`
+}
+
+func (m *SystemWorkflowFailure) Reset()      { *m = SystemWorkflowFailure{} }
+func (*SystemWorkflowFailure) ProtoMessage() {}
+func (*SystemWorkflowFailure) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2ed300ab0b02d291, []int{10}
+}
+func (m *SystemWorkflowFailure) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SystemWorkflowFailure) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_SystemWorkflowFailure.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *SystemWorkflowFailure) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SystemWorkflowFailure.Merge(m, src)
+}
+func (m *SystemWorkflowFailure) XXX_Size() int {
+	return m.Size()
+}
+func (m *SystemWorkflowFailure) XXX_DiscardUnknown() {
+	xxx_messageInfo_SystemWorkflowFailure.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SystemWorkflowFailure proto.InternalMessageInfo
+
+func (m *SystemWorkflowFailure) GetWorkflowExecution() *v11.WorkflowExecution {
+	if m != nil {
+		return m.WorkflowExecution
+	}
+	return nil
+}
+
+func (m *SystemWorkflowFailure) GetWorkflowError() string {
+	if m != nil {
+		return m.WorkflowError
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*NotFoundFailure)(nil), "temporal.api.errordetails.v1.NotFoundFailure")
 	proto.RegisterType((*WorkflowExecutionAlreadyStartedFailure)(nil), "temporal.api.errordetails.v1.WorkflowExecutionAlreadyStartedFailure")
@@ -411,6 +553,9 @@ func init() {
 	proto.RegisterType((*NamespaceAlreadyExistsFailure)(nil), "temporal.api.errordetails.v1.NamespaceAlreadyExistsFailure")
 	proto.RegisterType((*CancellationAlreadyRequestedFailure)(nil), "temporal.api.errordetails.v1.CancellationAlreadyRequestedFailure")
 	proto.RegisterType((*QueryFailedFailure)(nil), "temporal.api.errordetails.v1.QueryFailedFailure")
+	proto.RegisterType((*PermissionDeniedFailure)(nil), "temporal.api.errordetails.v1.PermissionDeniedFailure")
+	proto.RegisterType((*ResourceExhaustedFailure)(nil), "temporal.api.errordetails.v1.ResourceExhaustedFailure")
+	proto.RegisterType((*SystemWorkflowFailure)(nil), "temporal.api.errordetails.v1.SystemWorkflowFailure")
 }
 
 func init() {
@@ -418,41 +563,51 @@ func init() {
 }
 
 var fileDescriptor_2ed300ab0b02d291 = []byte{
-	// 540 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xcf, 0x6e, 0xd3, 0x40,
-	0x10, 0xc6, 0xbd, 0x41, 0x54, 0xea, 0x42, 0x5b, 0xb0, 0x40, 0x02, 0x29, 0xdd, 0x44, 0x46, 0x81,
-	0x0a, 0x09, 0x47, 0x11, 0x37, 0x73, 0x4a, 0x43, 0x8a, 0x7a, 0x20, 0x2a, 0x0d, 0x0a, 0x12, 0x97,
-	0x68, 0xb1, 0x87, 0x6a, 0x85, 0xe3, 0x35, 0xfb, 0xc7, 0xb4, 0x37, 0xae, 0xdc, 0x10, 0x37, 0xde,
-	0x00, 0xf1, 0x24, 0x1c, 0x73, 0xa3, 0x47, 0xe2, 0x5c, 0x10, 0xa7, 0x3e, 0x02, 0xb2, 0xbd, 0x76,
-	0x5d, 0x14, 0x55, 0x1c, 0xfd, 0xcd, 0x37, 0xdf, 0xfc, 0x46, 0xde, 0xc1, 0x0f, 0x15, 0xcc, 0x62,
-	0x2e, 0x68, 0xd8, 0xa5, 0x31, 0xeb, 0x82, 0x10, 0x5c, 0x04, 0xa0, 0x28, 0x0b, 0x65, 0x37, 0xe9,
-	0x75, 0x67, 0x20, 0x25, 0x3d, 0x02, 0x37, 0x16, 0x5c, 0x71, 0xbb, 0x59, 0x7a, 0x5d, 0x1a, 0x33,
-	0xb7, 0xee, 0x75, 0x93, 0x9e, 0x43, 0xf1, 0xd6, 0x88, 0xab, 0x3d, 0xae, 0xa3, 0x60, 0x8f, 0xb2,
-	0x50, 0x0b, 0xb0, 0x1f, 0xe0, 0x2d, 0x5f, 0x0b, 0x01, 0x91, 0x9a, 0xfa, 0xa1, 0x96, 0x0a, 0xc4,
-	0x1d, 0xd4, 0x46, 0x3b, 0xeb, 0x87, 0x9b, 0x46, 0x1e, 0x14, 0xaa, 0xdd, 0xc1, 0x9b, 0xd4, 0x57,
-	0x2c, 0x81, 0xca, 0xd7, 0xc8, 0x7d, 0x1b, 0x85, 0x6a, 0x6c, 0x0e, 0xc3, 0xf7, 0x5f, 0x71, 0xf1,
-	0xee, 0x6d, 0xc8, 0x3f, 0x0c, 0x8f, 0xc1, 0xd7, 0x8a, 0xf1, 0xa8, 0x1f, 0x0a, 0xa0, 0xc1, 0xc9,
-	0x58, 0x51, 0xa1, 0xa0, 0x9a, 0xbc, 0x83, 0x6f, 0xc8, 0x4c, 0x99, 0x0a, 0x78, 0xaf, 0x41, 0xaa,
-	0x29, 0x0b, 0xca, 0xd1, 0xb9, 0x7e, 0x58, 0xc8, 0xfb, 0x81, 0x7d, 0x1b, 0xaf, 0x09, 0x1d, 0x65,
-	0xf5, 0x62, 0xe4, 0x55, 0xa1, 0xa3, 0xfd, 0xc0, 0xf9, 0x84, 0xf0, 0xdd, 0x11, 0x9d, 0x81, 0x8c,
-	0xa9, 0x0f, 0x23, 0xae, 0xfa, 0x39, 0x48, 0x19, 0xdf, 0xc4, 0xeb, 0x51, 0x59, 0x34, 0xb9, 0xe7,
-	0xc2, 0xaa, 0xb5, 0x1b, 0xff, 0xb9, 0xf6, 0x95, 0x55, 0x6b, 0x7f, 0x45, 0xb8, 0x3d, 0x08, 0x19,
-	0x44, 0x6a, 0x02, 0x42, 0x32, 0x1e, 0x8d, 0xb8, 0x1a, 0xeb, 0x38, 0xe6, 0xf5, 0x8d, 0x3b, 0x78,
-	0xd3, 0xcf, 0x3d, 0xd3, 0xa4, 0x30, 0x19, 0xae, 0x0d, 0xbf, 0xde, 0x69, 0xb7, 0xf0, 0x35, 0x63,
-	0xcb, 0x78, 0x0d, 0x17, 0x2e, 0xa4, 0x6c, 0x5f, 0xfb, 0x11, 0xb6, 0x65, 0x99, 0x5d, 0x46, 0x49,
-	0xc3, 0x75, 0xb3, 0xaa, 0x98, 0x38, 0xe9, 0x7c, 0x41, 0xb8, 0x3d, 0x06, 0x91, 0x80, 0xb8, 0x9c,
-	0x4d, 0xe6, 0x9e, 0x7f, 0xd9, 0x64, 0xbd, 0xd3, 0x7e, 0x86, 0xdb, 0x86, 0xed, 0x9c, 0xe0, 0x62,
-	0x9f, 0x34, 0xc0, 0xdb, 0x85, 0xaf, 0x1a, 0x74, 0x81, 0x40, 0x3a, 0x2d, 0xbc, 0x5d, 0xfd, 0x3b,
-	0xf3, 0x3e, 0x86, 0xc7, 0x4c, 0x2a, 0x69, 0x80, 0x9c, 0x0e, 0xbe, 0x37, 0xa0, 0x91, 0x0f, 0x61,
-	0x48, 0x6b, 0x6f, 0xc8, 0x3c, 0x8a, 0x8a, 0xdb, 0xb9, 0x85, 0xed, 0x17, 0x1a, 0xc4, 0x49, 0xf6,
-	0x5d, 0xa9, 0xbb, 0x3f, 0xd1, 0x7c, 0x41, 0xac, 0xd3, 0x05, 0xb1, 0xce, 0x16, 0x04, 0x7d, 0x4c,
-	0x09, 0xfa, 0x96, 0x12, 0xf4, 0x23, 0x25, 0x68, 0x9e, 0x12, 0xf4, 0x2b, 0x25, 0xe8, 0x77, 0x4a,
-	0xac, 0xb3, 0x94, 0xa0, 0xcf, 0x4b, 0x62, 0xcd, 0x97, 0xc4, 0x3a, 0x5d, 0x12, 0x0b, 0xb7, 0x18,
-	0x77, 0x2f, 0x3b, 0xa0, 0xdd, 0xeb, 0xcf, 0x8b, 0x6b, 0x3b, 0xc8, 0x8e, 0xed, 0x00, 0xbd, 0xee,
-	0x1e, 0xd5, 0x1a, 0x18, 0x5f, 0x75, 0xa0, 0x4f, 0xea, 0xdf, 0xdf, 0x1b, 0xcd, 0x97, 0xa5, 0xbd,
-	0x1f, 0x33, 0x77, 0x98, 0xd5, 0x9e, 0x9a, 0xfc, 0x49, 0xef, 0x4f, 0xa3, 0x55, 0x96, 0x3d, 0xaf,
-	0x1f, 0x33, 0xcf, 0xab, 0x1b, 0x3c, 0x6f, 0xd2, 0x7b, 0xb3, 0x96, 0xdf, 0xf9, 0xe3, 0xbf, 0x01,
-	0x00, 0x00, 0xff, 0xff, 0xaa, 0x7e, 0x02, 0x87, 0x15, 0x04, 0x00, 0x00,
+	// 691 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcf, 0x4f, 0xd4, 0x5a,
+	0x14, 0x9e, 0x3b, 0x2f, 0x90, 0x70, 0x79, 0x0c, 0x8f, 0xe6, 0xf1, 0x1e, 0x12, 0xe8, 0x4c, 0xaa,
+	0x28, 0x9a, 0xd0, 0xc9, 0xe0, 0x6e, 0x5c, 0x0d, 0x03, 0x18, 0x16, 0x4e, 0x70, 0xc6, 0xa0, 0x71,
+	0xd3, 0x5c, 0xdb, 0x03, 0xde, 0xd8, 0xf6, 0xd6, 0xfb, 0x63, 0x80, 0x9d, 0x5b, 0x77, 0xc6, 0x95,
+	0xfe, 0x07, 0xc6, 0xbf, 0xc4, 0x25, 0x3b, 0x59, 0x4a, 0xd9, 0x18, 0x57, 0xfc, 0x09, 0xa6, 0xed,
+	0x6d, 0xa7, 0x03, 0x84, 0xb8, 0xec, 0x77, 0xbf, 0xf3, 0x7d, 0xdf, 0x49, 0xcf, 0x39, 0xf8, 0x81,
+	0x84, 0x20, 0x62, 0x9c, 0xf8, 0x4d, 0x12, 0xd1, 0x26, 0x70, 0xce, 0xb8, 0x07, 0x92, 0x50, 0x5f,
+	0x34, 0x87, 0xad, 0x66, 0x00, 0x42, 0x90, 0x03, 0xb0, 0x23, 0xce, 0x24, 0x33, 0x96, 0x72, 0xae,
+	0x4d, 0x22, 0x6a, 0x97, 0xb9, 0xf6, 0xb0, 0xb5, 0x78, 0x67, 0x4c, 0xc9, 0x65, 0x41, 0xc0, 0xc2,
+	0x2b, 0x1a, 0x8b, 0xab, 0xe3, 0x7e, 0xa1, 0x0a, 0x52, 0xa3, 0x7d, 0x42, 0x7d, 0xf0, 0x1c, 0x97,
+	0x28, 0xa1, 0x99, 0x16, 0xc1, 0xb3, 0x3d, 0x26, 0xb7, 0x99, 0x0a, 0xbd, 0x6d, 0x42, 0x7d, 0xc5,
+	0xc1, 0xb8, 0x87, 0x67, 0x5d, 0xc5, 0x39, 0x84, 0xd2, 0x71, 0x7d, 0x25, 0x24, 0xf0, 0x05, 0xd4,
+	0x40, 0xab, 0x53, 0xfd, 0x9a, 0x86, 0xbb, 0x19, 0x6a, 0xac, 0xe0, 0x1a, 0x71, 0x25, 0x1d, 0x42,
+	0xc1, 0xab, 0xa6, 0xbc, 0x99, 0x0c, 0xd5, 0x34, 0x8b, 0xe2, 0xbb, 0xcf, 0x19, 0x7f, 0xb3, 0xef,
+	0xb3, 0xc3, 0xad, 0x23, 0x70, 0x95, 0xa4, 0x2c, 0xec, 0xf8, 0x1c, 0x88, 0x77, 0x3c, 0x90, 0x84,
+	0x4b, 0x28, 0x9c, 0x57, 0xf1, 0x3f, 0x22, 0x41, 0x1c, 0x0e, 0x6f, 0x15, 0x08, 0xe9, 0x50, 0x2f,
+	0xb7, 0x4e, 0xf1, 0x7e, 0x06, 0xef, 0x78, 0xc6, 0x3c, 0x9e, 0xe4, 0x2a, 0x4c, 0xde, 0x33, 0xcb,
+	0x09, 0xae, 0xc2, 0x1d, 0xcf, 0x7a, 0x8f, 0xf0, 0xad, 0x1e, 0x09, 0x40, 0x44, 0xc4, 0x85, 0x1e,
+	0x93, 0x9d, 0x34, 0x48, 0x2e, 0xbf, 0x84, 0xa7, 0xc2, 0xfc, 0x51, 0xeb, 0x8e, 0x80, 0xeb, 0xda,
+	0xae, 0xfe, 0x61, 0xdb, 0x7f, 0x5d, 0xd7, 0xf6, 0x67, 0x84, 0x1b, 0x5d, 0x9f, 0x42, 0x28, 0xf7,
+	0x80, 0x0b, 0xca, 0xc2, 0x1e, 0x93, 0x03, 0x15, 0x45, 0xac, 0xdc, 0xf1, 0x0a, 0xae, 0xb9, 0x29,
+	0xc7, 0x19, 0x66, 0x24, 0x9d, 0x6b, 0xc6, 0x2d, 0x57, 0x1a, 0x75, 0x3c, 0xad, 0x69, 0x49, 0x5e,
+	0x9d, 0x0b, 0x67, 0x50, 0xd2, 0xaf, 0xb1, 0x86, 0x0d, 0x91, 0x6b, 0xe7, 0x52, 0x42, 0xe7, 0x9a,
+	0x2b, 0x5e, 0xb4, 0x9c, 0xb0, 0x3e, 0x22, 0xdc, 0x18, 0x00, 0x1f, 0x02, 0xbf, 0x39, 0x9b, 0x48,
+	0x39, 0x97, 0xb3, 0x89, 0x72, 0xa5, 0xf1, 0x18, 0x37, 0x74, 0xb6, 0x51, 0x82, 0xf1, 0x3a, 0xa1,
+	0x03, 0x2f, 0x67, 0xbc, 0xc2, 0x68, 0x2c, 0x81, 0xb0, 0xea, 0x78, 0xb9, 0xf8, 0x77, 0x7a, 0x3e,
+	0xb6, 0x8e, 0xa8, 0x90, 0x42, 0x07, 0xb2, 0x56, 0xf0, 0xed, 0x2e, 0x09, 0x5d, 0xf0, 0x7d, 0x52,
+	0x9a, 0x21, 0x3d, 0x14, 0x45, 0x6e, 0xeb, 0x5f, 0x6c, 0x3c, 0x55, 0xc0, 0x8f, 0xb7, 0xd3, 0x69,
+	0xcf, 0xd1, 0x16, 0xfe, 0x7f, 0x17, 0x78, 0x40, 0x45, 0x62, 0xb6, 0x09, 0x21, 0x1d, 0x35, 0xfa,
+	0x1f, 0x9e, 0xe4, 0x40, 0x44, 0xd1, 0xa0, 0xfe, 0xb2, 0x1c, 0xbc, 0xd0, 0x07, 0xc1, 0x14, 0x77,
+	0x61, 0xeb, 0xe8, 0x35, 0x51, 0x25, 0x13, 0xa3, 0x8b, 0x27, 0xd2, 0x35, 0x4a, 0x4b, 0x6a, 0xeb,
+	0x6b, 0xf6, 0xf8, 0xd6, 0x26, 0x1b, 0x67, 0x0f, 0x5b, 0xf6, 0x95, 0xfa, 0x6e, 0x52, 0xd4, 0xcf,
+	0x6a, 0xad, 0x4f, 0x08, 0xcf, 0x0f, 0x8e, 0x85, 0x84, 0x20, 0x5f, 0x90, 0x5c, 0xfe, 0x05, 0x36,
+	0x0e, 0x35, 0xe4, 0x40, 0xbe, 0x34, 0xa9, 0xd7, 0xf4, 0xfa, 0xfd, 0x71, 0xaf, 0xec, 0x06, 0x24,
+	0x66, 0x57, 0xb6, 0xac, 0x3f, 0x77, 0x78, 0x19, 0x4a, 0xfe, 0xea, 0x48, 0x39, 0x39, 0x2e, 0xf9,
+	0xd2, 0x16, 0xd4, 0x04, 0xdc, 0xf8, 0x8e, 0x4e, 0xce, 0xcc, 0xca, 0xe9, 0x99, 0x59, 0xb9, 0x38,
+	0x33, 0xd1, 0xbb, 0xd8, 0x44, 0x5f, 0x62, 0x13, 0x7d, 0x8b, 0x4d, 0x74, 0x12, 0x9b, 0xe8, 0x47,
+	0x6c, 0xa2, 0x9f, 0xb1, 0x59, 0xb9, 0x88, 0x4d, 0xf4, 0xe1, 0xdc, 0xac, 0x9c, 0x9c, 0x9b, 0x95,
+	0xd3, 0x73, 0xb3, 0x82, 0xeb, 0x94, 0xd9, 0x37, 0xdd, 0xaf, 0x8d, 0xbf, 0x9f, 0x64, 0x87, 0x6a,
+	0x37, 0xb9, 0x3e, 0xbb, 0xe8, 0x65, 0xf3, 0xa0, 0x54, 0x40, 0xd9, 0x75, 0xf7, 0xf1, 0x51, 0xf9,
+	0xfb, 0x6b, 0x75, 0xe9, 0x59, 0x4e, 0xef, 0x44, 0xd4, 0x4e, 0xd3, 0x6e, 0x6a, 0xfd, 0xbd, 0xd6,
+	0xaf, 0x6a, 0x3d, 0x7f, 0x6e, 0xb7, 0x3b, 0x11, 0x6d, 0xb7, 0xcb, 0x84, 0x76, 0x7b, 0xaf, 0xf5,
+	0x6a, 0x32, 0x3d, 0x7c, 0x0f, 0x7f, 0x07, 0x00, 0x00, 0xff, 0xff, 0xce, 0x77, 0x44, 0xb5, 0x94,
+	0x05, 0x00, 0x00,
 }
 
 func (this *NotFoundFailure) Equal(that interface{}) bool {
@@ -659,6 +814,81 @@ func (this *QueryFailedFailure) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *PermissionDeniedFailure) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*PermissionDeniedFailure)
+	if !ok {
+		that2, ok := that.(PermissionDeniedFailure)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Reason != that1.Reason {
+		return false
+	}
+	return true
+}
+func (this *ResourceExhaustedFailure) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*ResourceExhaustedFailure)
+	if !ok {
+		that2, ok := that.(ResourceExhaustedFailure)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Cause != that1.Cause {
+		return false
+	}
+	return true
+}
+func (this *SystemWorkflowFailure) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*SystemWorkflowFailure)
+	if !ok {
+		that2, ok := that.(SystemWorkflowFailure)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.WorkflowExecution.Equal(that1.WorkflowExecution) {
+		return false
+	}
+	if this.WorkflowError != that1.WorkflowError {
+		return false
+	}
+	return true
+}
 func (this *NotFoundFailure) GoString() string {
 	if this == nil {
 		return "nil"
@@ -740,6 +970,39 @@ func (this *QueryFailedFailure) GoString() string {
 	}
 	s := make([]string, 0, 4)
 	s = append(s, "&errordetails.QueryFailedFailure{")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *PermissionDeniedFailure) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&errordetails.PermissionDeniedFailure{")
+	s = append(s, "Reason: "+fmt.Sprintf("%#v", this.Reason)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *ResourceExhaustedFailure) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 5)
+	s = append(s, "&errordetails.ResourceExhaustedFailure{")
+	s = append(s, "Cause: "+fmt.Sprintf("%#v", this.Cause)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *SystemWorkflowFailure) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&errordetails.SystemWorkflowFailure{")
+	if this.WorkflowExecution != nil {
+		s = append(s, "WorkflowExecution: "+fmt.Sprintf("%#v", this.WorkflowExecution)+",\n")
+	}
+	s = append(s, "WorkflowError: "+fmt.Sprintf("%#v", this.WorkflowError)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -1019,6 +1282,106 @@ func (m *QueryFailedFailure) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *PermissionDeniedFailure) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PermissionDeniedFailure) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PermissionDeniedFailure) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Reason) > 0 {
+		i -= len(m.Reason)
+		copy(dAtA[i:], m.Reason)
+		i = encodeVarintMessage(dAtA, i, uint64(len(m.Reason)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ResourceExhaustedFailure) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ResourceExhaustedFailure) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ResourceExhaustedFailure) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Cause != 0 {
+		i = encodeVarintMessage(dAtA, i, uint64(m.Cause))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *SystemWorkflowFailure) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SystemWorkflowFailure) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SystemWorkflowFailure) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.WorkflowError) > 0 {
+		i -= len(m.WorkflowError)
+		copy(dAtA[i:], m.WorkflowError)
+		i = encodeVarintMessage(dAtA, i, uint64(len(m.WorkflowError)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.WorkflowExecution != nil {
+		{
+			size, err := m.WorkflowExecution.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintMessage(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintMessage(dAtA []byte, offset int, v uint64) int {
 	offset -= sovMessage(v)
 	base := offset
@@ -1150,6 +1513,48 @@ func (m *QueryFailedFailure) Size() (n int) {
 	return n
 }
 
+func (m *PermissionDeniedFailure) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Reason)
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
+	return n
+}
+
+func (m *ResourceExhaustedFailure) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Cause != 0 {
+		n += 1 + sovMessage(uint64(m.Cause))
+	}
+	return n
+}
+
+func (m *SystemWorkflowFailure) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.WorkflowExecution != nil {
+		l = m.WorkflowExecution.Size()
+		n += 1 + l + sovMessage(uint64(l))
+	}
+	l = len(m.WorkflowError)
+	if l > 0 {
+		n += 1 + l + sovMessage(uint64(l))
+	}
+	return n
+}
+
 func sovMessage(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
@@ -1236,6 +1641,37 @@ func (this *QueryFailedFailure) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&QueryFailedFailure{`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *PermissionDeniedFailure) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&PermissionDeniedFailure{`,
+		`Reason:` + fmt.Sprintf("%v", this.Reason) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *ResourceExhaustedFailure) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&ResourceExhaustedFailure{`,
+		`Cause:` + fmt.Sprintf("%v", this.Cause) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *SystemWorkflowFailure) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&SystemWorkflowFailure{`,
+		`WorkflowExecution:` + strings.Replace(fmt.Sprintf("%v", this.WorkflowExecution), "WorkflowExecution", "v11.WorkflowExecution", 1) + `,`,
+		`WorkflowError:` + fmt.Sprintf("%v", this.WorkflowError) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -2032,6 +2468,284 @@ func (m *QueryFailedFailure) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: QueryFailedFailure: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMessage(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthMessage
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthMessage
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PermissionDeniedFailure) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMessage
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PermissionDeniedFailure: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PermissionDeniedFailure: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Reason", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessage
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessage
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMessage
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Reason = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMessage(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthMessage
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthMessage
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ResourceExhaustedFailure) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMessage
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ResourceExhaustedFailure: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ResourceExhaustedFailure: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cause", wireType)
+			}
+			m.Cause = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessage
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Cause |= v1.ResourceExhaustedCause(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMessage(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthMessage
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthMessage
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SystemWorkflowFailure) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMessage
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SystemWorkflowFailure: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SystemWorkflowFailure: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WorkflowExecution", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessage
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMessage
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMessage
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.WorkflowExecution == nil {
+				m.WorkflowExecution = &v11.WorkflowExecution{}
+			}
+			if err := m.WorkflowExecution.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WorkflowError", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMessage
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMessage
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMessage
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.WorkflowError = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMessage(dAtA[iNdEx:])

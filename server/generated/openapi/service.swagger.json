@@ -78,7 +78,8 @@
         ]
       },
       "post": {
-        "summary": "RegisterNamespace creates a new namespace which can be used as a container for all resources.  Namespace is a top level\nentity within Temporal, used as a container for all resources like workflow executions, task queues, etc.  Namespace\nacts as a sandbox and provides isolation for all resources within the namespace.  All resources belongs to exactly one\nnamespace.",
+        "summary": "RegisterNamespace creates a new namespace which can be used as a container for all resources.",
+        "description": "A Namespace is a top level entity within Temporal, and is used as a container for resources\nlike workflow executions, task queues, etc. A Namespace acts as a sandbox and provides\nisolation for all resources within the namespace. All resources belongs to exactly one\nnamespace.",
         "operationId": "WorkflowService_RegisterNamespace",
         "responses": {
           "200": {
@@ -146,7 +147,8 @@
         ]
       },
       "delete": {
-        "summary": "DeprecateNamespace is used to update state of a registered namespace to DEPRECATED.  Once the namespace is deprecated\nit cannot be used to start new workflow executions.  Existing workflow executions will continue to run on\ndeprecated namespaces.",
+        "summary": "DeprecateNamespace is used to update the state of a registered namespace to DEPRECATED.",
+        "description": "Once the namespace is deprecated it cannot be used to start new workflow executions. Existing\nworkflow executions will continue to run on deprecated namespaces.\nDeprecated.",
         "operationId": "WorkflowService_DeprecateNamespace",
         "responses": {
           "200": {
@@ -181,7 +183,8 @@
         ]
       },
       "put": {
-        "summary": "(-- api-linter: core::0134::method-signature=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)\n(-- api-linter: core::0134::response-message-name=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)\nUpdateNamespace is used to update the information and configuration for a registered namespace.",
+        "summary": "UpdateNamespace is used to update the information and configuration of a registered\nnamespace.",
+        "description": "(-- api-linter: core::0134::method-signature=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)\n(-- api-linter: core::0134::response-message-name=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)",
         "operationId": "WorkflowService_UpdateNamespace",
         "responses": {
           "200": {
@@ -225,6 +228,10 @@
                 },
                 "deleteBadBinary": {
                   "type": "string"
+                },
+                "promoteNamespace": {
+                  "type": "boolean",
+                  "description": "promote local namespace to global namespace. Ignored if namespace is already global namespace."
                 }
               },
               "title": "(-- api-linter: core::0134::request-mask-required=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)\n(-- api-linter: core::0134::request-resource-required=disabled\n    aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)"
@@ -238,7 +245,7 @@
     },
     "/api/v1/namespaces/{namespace}/task-queues/{taskQueue.name}": {
       "get": {
-        "summary": "DescribeTaskQueue returns information about the target task queue, right now this API returns the\npollers which polled this task queue in last few minutes.",
+        "summary": "DescribeTaskQueue returns information about the target task queue.",
         "operationId": "WorkflowService_DescribeTaskQueue",
         "responses": {
           "200": {
@@ -269,7 +276,7 @@
           },
           {
             "name": "taskQueue.kind",
-            "description": "Default: TASK_QUEUE_KIND_NORMAL.",
+            "description": "Default: TASK_QUEUE_KIND_NORMAL.\n\n - TASK_QUEUE_KIND_NORMAL: Tasks from a normal workflow task queue always include complete workflow history\n\nThe task queue specified by the user is always a normal task queue. There can be as many\nworkers as desired for a single normal task queue. All those workers may pick up tasks from\nthat queue.\n - TASK_QUEUE_KIND_STICKY: A sticky queue only includes new history since the last workflow task, and they are\nper-worker.\n\nSticky queues are created dynamically by each worker during their start up. They only exist\nfor the lifetime of the worker process. Tasks in a sticky task queue are only available to\nthe worker that created the sticky queue.\n\nSticky queues are only for workflow tasks. There are no sticky task queues for activities.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -661,7 +668,7 @@
     },
     "/api/v1/namespaces/{namespace}/workflows/{execution.workflowId}/executions/{execution.runId}/events": {
       "get": {
-        "summary": "GetWorkflowExecutionHistory returns the history of specified workflow execution.  It fails with 'NotFoundFailure' if specified workflow\nexecution in unknown to the service.",
+        "summary": "GetWorkflowExecutionHistory returns the history of specified workflow execution. Fails with\n`NotFound` if the specified workflow execution is unknown to the service.",
         "operationId": "WorkflowService_GetWorkflowExecutionHistory",
         "responses": {
           "200": {
@@ -705,6 +712,7 @@
           },
           {
             "name": "nextPageToken",
+            "description": "If a `GetWorkflowExecutionHistoryResponse` or a `PollWorkflowTaskQueueResponse` had one of\nthese, it should be passed here to fetch the next page.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -712,13 +720,14 @@
           },
           {
             "name": "waitNewEvent",
+            "description": "If set to true, the RPC call will not resolve until there is a new event which matches\nthe `history_event_filter_type`, or a timeout is hit.",
             "in": "query",
             "required": false,
             "type": "boolean"
           },
           {
             "name": "historyEventFilterType",
-            "description": "Default: HISTORY_EVENT_FILTER_TYPE_ALL_EVENT.",
+            "description": "Filter returned events such that they match the specified filter type.\nDefault: HISTORY_EVENT_FILTER_TYPE_ALL_EVENT.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -741,9 +750,66 @@
         ]
       }
     },
+    "/api/v1/namespaces/{namespace}/workflows/{execution.workflowId}/executions/{execution.runId}/events/reverse": {
+      "get": {
+        "summary": "GetWorkflowExecutionHistoryReverse returns the history of specified workflow execution in reverse \norder (starting from last event). Fails with`NotFound` if the specified workflow execution is \nunknown to the service.",
+        "operationId": "WorkflowService_GetWorkflowExecutionHistoryReverse",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetWorkflowExecutionHistoryReverseResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "execution.workflowId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "execution.runId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maximumPageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "nextPageToken",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
     "/api/v1/namespaces/{namespace}/workflows/{execution.workflowId}/executions/{execution.runId}/query": {
       "post": {
-        "summary": "QueryWorkflow returns query result for a specified workflow execution",
+        "summary": "QueryWorkflow requests a query be executed for a specified workflow execution.",
         "operationId": "WorkflowService_QueryWorkflow",
         "responses": {
           "200": {
@@ -786,7 +852,8 @@
               "type": "object",
               "properties": {
                 "execution": {
-                  "$ref": "#/definitions/v1WorkflowExecution"
+                  "type": "object",
+                  "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
                 },
                 "query": {
                   "$ref": "#/definitions/v1WorkflowQuery"
@@ -806,7 +873,8 @@
     },
     "/api/v1/namespaces/{namespace}/workflows/{workflowExecution.workflowId}/executions/{workflowExecution.runId}/cancel": {
       "post": {
-        "summary": "RequestCancelWorkflowExecution is called by application worker when it wants to request cancellation of a workflow instance.\nIt will result in a new 'WorkflowExecutionCancelRequested' event being written to the workflow history and a new WorkflowTask\ncreated for the workflow instance so new commands could be made. It fails with 'NotFoundFailure' if the workflow is not valid\nanymore due to completion or doesn't exist.",
+        "summary": "RequestCancelWorkflowExecution is called by workers when they want to request cancellation of\na workflow execution.",
+        "description": "This result in a new `WORKFLOW_EXECUTION_CANCEL_REQUESTED` event being written to the\nworkflow history and a new workflow task created for the workflow. Fails with `NotFound` if\nthe workflow is already completed or doesn't exist.",
         "operationId": "WorkflowService_RequestCancelWorkflowExecution",
         "responses": {
           "200": {
@@ -849,16 +917,20 @@
               "type": "object",
               "properties": {
                 "workflowExecution": {
-                  "$ref": "#/definitions/v1WorkflowExecution"
+                  "type": "object",
+                  "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
                 },
                 "identity": {
-                  "type": "string"
+                  "type": "string",
+                  "title": "The identity of the worker/client"
                 },
                 "requestId": {
-                  "type": "string"
+                  "type": "string",
+                  "title": "Used to de-dupe cancellation requests"
                 },
                 "firstExecutionRunId": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "If set, this call will error if the most recent (if no run id is set on\n`workflow_execution`), or specified (if it is) workflow execution is not part of the same\nexecution chain as this id."
                 }
               }
             }
@@ -871,7 +943,7 @@
     },
     "/api/v1/namespaces/{namespace}/workflows/{workflowExecution.workflowId}/executions/{workflowExecution.runId}/reset": {
       "post": {
-        "summary": "ResetWorkflowExecution reset an existing workflow execution to WorkflowTaskCompleted event(exclusive).\nAnd it will immediately terminating the current execution instance.",
+        "summary": "ResetWorkflowExecution will reset an existing workflow execution to a specified\n`WORKFLOW_TASK_COMPLETED` event (exclusive). It will immediately terminate the current\nexecution instance.\nTODO: Does exclusive here mean *just* the completed event, or also WFT started? Otherwise the task is doomed to time out?",
         "operationId": "WorkflowService_ResetWorkflowExecution",
         "responses": {
           "200": {
@@ -914,17 +986,24 @@
               "type": "object",
               "properties": {
                 "workflowExecution": {
-                  "$ref": "#/definitions/v1WorkflowExecution"
+                  "type": "object",
+                  "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
                 },
                 "reason": {
                   "type": "string"
                 },
                 "workflowTaskFinishEventId": {
                   "type": "string",
-                  "format": "int64"
+                  "format": "int64",
+                  "description": "The id of a `WORKFLOW_TASK_COMPLETED`,`WORKFLOW_TASK_TIMED_OUT`, `WORKFLOW_TASK_FAILED`, or\n`WORKFLOW_TASK_STARTED` event to reset to."
                 },
                 "requestId": {
-                  "type": "string"
+                  "type": "string",
+                  "title": "Used to de-dupe reset requests"
+                },
+                "resetReapplyType": {
+                  "$ref": "#/definitions/v1ResetReapplyType",
+                  "description": "Should be removed. Appears unused."
                 }
               }
             }
@@ -937,7 +1016,7 @@
     },
     "/api/v1/namespaces/{namespace}/workflows/{workflowExecution.workflowId}/executions/{workflowExecution.runId}/terminate": {
       "post": {
-        "summary": "TerminateWorkflowExecution terminates an existing workflow execution by recording WorkflowExecutionTerminated event\nin the history and immediately terminating the execution instance.",
+        "summary": "TerminateWorkflowExecution terminates an existing workflow execution by recording a\n`WORKFLOW_EXECUTION_TERMINATED` event in the history and immediately terminating the\nexecution instance.",
         "operationId": "WorkflowService_TerminateWorkflowExecution",
         "responses": {
           "200": {
@@ -980,19 +1059,23 @@
               "type": "object",
               "properties": {
                 "workflowExecution": {
-                  "$ref": "#/definitions/v1WorkflowExecution"
+                  "type": "object",
+                  "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
                 },
                 "reason": {
                   "type": "string"
                 },
                 "details": {
-                  "$ref": "#/definitions/v1Payloads"
+                  "$ref": "#/definitions/v1Payloads",
+                  "title": "Serialized additional information to attach to the termination event"
                 },
                 "identity": {
-                  "type": "string"
+                  "type": "string",
+                  "title": "The identity of the worker/client"
                 },
                 "firstExecutionRunId": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "If set, this call will error if the most recent (if no run id is set on\n`workflow_execution`), or specified (if it is) workflow execution is not part of the same\nexecution chain as this id."
                 }
               }
             }
@@ -1005,7 +1088,8 @@
     },
     "/api/v1/namespaces/{namespace}/workflows/{workflowId}/start": {
       "post": {
-        "summary": "StartWorkflowExecution starts a new long running workflow instance.  It will create the instance with\n'WorkflowExecutionStarted' event in history and also schedule the first WorkflowTask for the worker to make the\nfirst command for this instance.  It will return 'WorkflowExecutionAlreadyStartedFailure', if an instance already\nexists with same workflowId.",
+        "summary": "StartWorkflowExecution starts a new workflow execution.",
+        "description": "It will create the execution with a `WORKFLOW_EXECUTION_STARTED` event in its history and\nalso schedule the first workflow task. Returns `WorkflowExecutionAlreadyStarted`, if an\ninstance already exists with same workflow id.",
         "operationId": "WorkflowService_StartWorkflowExecution",
         "responses": {
           "200": {
@@ -1048,7 +1132,8 @@
                   "$ref": "#/definitions/v1TaskQueue"
                 },
                 "input": {
-                  "$ref": "#/definitions/v1Payloads"
+                  "$ref": "#/definitions/v1Payloads",
+                  "description": "Serialized arguments to the workflow. These are passed as arguments to the workflow function."
                 },
                 "workflowExecutionTimeout": {
                   "type": "string",
@@ -1063,10 +1148,12 @@
                   "description": "Timeout of a single workflow task."
                 },
                 "identity": {
-                  "type": "string"
+                  "type": "string",
+                  "title": "The identity of the client who initiated this request"
                 },
                 "requestId": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "A unique identifier for this start request. Typically UUIDv4."
                 },
                 "workflowIdReusePolicy": {
                   "$ref": "#/definitions/v1WorkflowIdReusePolicy",
@@ -1074,10 +1161,11 @@
                 },
                 "retryPolicy": {
                   "$ref": "#/definitions/v1RetryPolicy",
-                  "description": "Retries up to workflow_execution_timeout_seconds."
+                  "description": "The retry policy for the workflow. Will never exceed `workflow_execution_timeout`."
                 },
                 "cronSchedule": {
-                  "type": "string"
+                  "type": "string",
+                  "title": "See https://docs.temporal.io/docs/content/what-is-a-temporal-cron-job/"
                 },
                 "memo": {
                   "$ref": "#/definitions/v1Memo"
@@ -1122,6 +1210,24 @@
     }
   },
   "definitions": {
+    "GetSystemInfoResponseCapabilities": {
+      "type": "object",
+      "properties": {
+        "signalAndQueryHeader": {
+          "type": "boolean",
+          "description": "True if signal and query headers are supported."
+        },
+        "internalErrorDifferentiation": {
+          "type": "boolean",
+          "description": "True if internal errors are differentiated from other types of errors for purposes of\nretrying non-internal errors.\n\nWhen unset/false, clients retry all failures. When true, clients should only retry\nnon-internal errors."
+        },
+        "activityFailureIncludeHeartbeat": {
+          "type": "boolean",
+          "title": "True if RespondActivityTaskFailed API supports including heartbeat details"
+        }
+      },
+      "description": "System capability details."
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -1179,11 +1285,13 @@
       "properties": {
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_SCHEDULED` event this cancel request corresponds to"
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         }
       }
     },
@@ -1191,22 +1299,27 @@
       "type": "object",
       "properties": {
         "details": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "title": "Additional information that the activity reported upon confirming cancellation"
         },
         "latestCancelRequestedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "id of the most recent `ACTIVITY_TASK_CANCEL_REQUESTED` event which refers to the same\nactivity"
         },
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_SCHEDULED` event this cancel confirmation corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_STARTED` event this cancel confirmation corresponds to"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "id of the worker who canceled this activity"
         }
       }
     },
@@ -1214,18 +1327,22 @@
       "type": "object",
       "properties": {
         "result": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "title": "Serialized results of the activity. IE: The return value of the activity function"
         },
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_SCHEDULED` event this completion corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_STARTED` event this completion corresponds to"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "id of the worker that completed this task"
         }
       }
     },
@@ -1233,18 +1350,22 @@
       "type": "object",
       "properties": {
         "failure": {
-          "$ref": "#/definitions/v1Failure"
+          "$ref": "#/definitions/v1Failure",
+          "title": "Failure details"
         },
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_SCHEDULED` event this failure corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_STARTED` event this failure corresponds to"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "id of the worker that failed this task"
         },
         "retryState": {
           "$ref": "#/definitions/v1RetryState"
@@ -1255,7 +1376,8 @@
       "type": "object",
       "properties": {
         "activityId": {
-          "type": "string"
+          "type": "string",
+          "title": "The worker/user assigned identifier for the activity"
         },
         "activityType": {
           "$ref": "#/definitions/v1ActivityType"
@@ -1274,27 +1396,28 @@
         },
         "scheduleToCloseTimeout": {
           "type": "string",
-          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nIndicates how long the caller is willing to wait for an activity completion.\nLimits for how long retries are happening. Either this or start_to_close_timeout_seconds must be specified."
+          "description": "Indicates how long the caller is willing to wait for an activity completion. Limits how long\nretries will be attempted. Either this or `start_to_close_timeout` must be specified.\n\n(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         },
         "scheduleToStartTimeout": {
           "type": "string",
-          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nLimits time an activity task can stay in a task queue before a worker picks it up.\nThis timeout is always non retryable as all a retry would achieve is to put it back into the same queue.\nDefaults to schedule_to_close_timeout_seconds or workflow execution timeout if not specified."
+          "description": "Limits time an activity task can stay in a task queue before a worker picks it up. This\ntimeout is always non retryable, as all a retry would achieve is to put it back into the same\nqueue. Defaults to `schedule_to_close_timeout` or workflow execution timeout if not\nspecified.\n\n(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         },
         "startToCloseTimeout": {
           "type": "string",
-          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nMaximum time an activity is allowed to execute after a pick up by a worker.\nThis timeout is always retryable. Either this or schedule_to_close_timeout_seconds must be specified."
+          "description": "Maximum time an activity is allowed to execute after being picked up by a worker. This\ntimeout is always retryable. Either this or `schedule_to_close_timeout` must be\nspecified.\n\n(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         },
         "heartbeatTimeout": {
           "type": "string",
-          "description": "Maximum time between successful worker heartbeats."
+          "description": "Maximum permitted time between successful worker heartbeats."
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy",
-          "description": "Activities are provided by a default retry policy controlled through the service dynamic configuration.\nRetries are happening up to schedule_to_close_timeout.\nTo disable retries set retry_policy.maximum_attempts to 1."
+          "description": "Activities are assigned a default retry policy controlled by the service's dynamic\nconfiguration. Retries will happen up to `schedule_to_close_timeout`. To disable retries set\nretry_policy.maximum_attempts to 1."
         }
       }
     },
@@ -1303,20 +1426,25 @@
       "properties": {
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_SCHEDULED` event this task corresponds to"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "id of the worker that picked up this task"
         },
         "requestId": {
-          "type": "string"
+          "type": "string",
+          "title": "TODO ??"
         },
         "attempt": {
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "title": "Starting at 1, the number of times this task has been attempted"
         },
         "lastFailure": {
-          "$ref": "#/definitions/v1Failure"
+          "$ref": "#/definitions/v1Failure",
+          "description": "Will be set to the most recent failure details, if this task has previously failed and then\nbeen retried."
         }
       }
     },
@@ -1325,15 +1453,17 @@
       "properties": {
         "failure": {
           "$ref": "#/definitions/v1Failure",
-          "description": "For retry activity, it may have a failure before timeout. It is stored as `cause` in `failure`."
+          "description": "If this activity had failed, was retried, and then timed out, that failure is stored as the\n`cause` in here."
         },
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_SCHEDULED` event this timeout corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `ACTIVITY_TASK_STARTED` event this timeout corresponds to"
         },
         "retryState": {
           "$ref": "#/definitions/v1RetryState"
@@ -1346,7 +1476,8 @@
         "name": {
           "type": "string"
         }
-      }
+      },
+      "title": "Represents the identifier used by a activity author to define the activity. Typically, the\nname of a function. This is sometimes referred to as the activity's \"name\""
     },
     "v1Alert": {
       "type": "object",
@@ -1421,7 +1552,8 @@
       "type": "object",
       "properties": {
         "timerId": {
-          "type": "string"
+          "type": "string",
+          "title": "The same timer id from the start timer command"
         }
       }
     },
@@ -1448,7 +1580,8 @@
           "$ref": "#/definitions/v1Payloads"
         },
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "Namespace of the child workflow"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -1458,11 +1591,13 @@
         },
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `START_CHILD_WORKFLOW_EXECUTION_INITIATED` event which this event corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `CHILD_WORKFLOW_EXECUTION_STARTED` event which this event corresponds to"
         }
       }
     },
@@ -1473,7 +1608,8 @@
           "$ref": "#/definitions/v1Payloads"
         },
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "Namespace of the child workflow"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -1483,11 +1619,13 @@
         },
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `START_CHILD_WORKFLOW_EXECUTION_INITIATED` event which this event corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `CHILD_WORKFLOW_EXECUTION_STARTED` event which this event corresponds to"
         }
       }
     },
@@ -1498,7 +1636,8 @@
           "$ref": "#/definitions/v1Failure"
         },
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "Namespace of the child workflow"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -1508,11 +1647,13 @@
         },
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `START_CHILD_WORKFLOW_EXECUTION_INITIATED` event which this event corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `CHILD_WORKFLOW_EXECUTION_STARTED` event which this event corresponds to"
         },
         "retryState": {
           "$ref": "#/definitions/v1RetryState"
@@ -1548,11 +1689,13 @@
       "type": "object",
       "properties": {
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "Namespace of the child workflow"
         },
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `START_CHILD_WORKFLOW_EXECUTION_INITIATED` event which this event corresponds to"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -1569,7 +1712,8 @@
       "type": "object",
       "properties": {
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "Namespace of the child workflow"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -1579,11 +1723,13 @@
         },
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `START_CHILD_WORKFLOW_EXECUTION_INITIATED` event which this event corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `CHILD_WORKFLOW_EXECUTION_STARTED` event which this event corresponds to"
         }
       }
     },
@@ -1591,7 +1737,8 @@
       "type": "object",
       "properties": {
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "Namespace of the child workflow"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -1601,11 +1748,13 @@
         },
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `START_CHILD_WORKFLOW_EXECUTION_INITIATED` event which this event corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `CHILD_WORKFLOW_EXECUTION_STARTED` event which this event corresponds to"
         },
         "retryState": {
           "$ref": "#/definitions/v1RetryState"
@@ -1704,7 +1853,8 @@
         "CONTINUE_AS_NEW_INITIATOR_RETRY",
         "CONTINUE_AS_NEW_INITIATOR_CRON_SCHEDULE"
       ],
-      "default": "CONTINUE_AS_NEW_INITIATOR_UNSPECIFIED"
+      "default": "CONTINUE_AS_NEW_INITIATOR_UNSPECIFIED",
+      "title": "- CONTINUE_AS_NEW_INITIATOR_WORKFLOW: The workflow itself requested to continue as new\n - CONTINUE_AS_NEW_INITIATOR_RETRY: The workflow continued as new because it is retrying\n - CONTINUE_AS_NEW_INITIATOR_CRON_SCHEDULE: The workflow continued as new because cron has triggered a new execution"
     },
     "v1ContinueAsNewWorkflowExecutionCommandAttributes": {
       "type": "object",
@@ -1720,29 +1870,34 @@
         },
         "workflowRunTimeout": {
           "type": "string",
-          "description": "workflow_execution_timeout is omitted as it shouldn'be overridden from within a workflow.\nTimeout of a single workflow run."
+          "description": "Timeout of a single workflow run."
         },
         "workflowTaskTimeout": {
           "type": "string",
           "description": "Timeout of a single workflow task."
         },
         "backoffStartInterval": {
-          "type": "string"
+          "type": "string",
+          "description": "How long the workflow start will be delayed - not really a \"backoff\" in the traditional sense."
         },
         "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy"
         },
         "initiator": {
-          "$ref": "#/definitions/v1ContinueAsNewInitiator"
+          "$ref": "#/definitions/v1ContinueAsNewInitiator",
+          "title": "Should be removed"
         },
         "failure": {
-          "$ref": "#/definitions/v1Failure"
+          "$ref": "#/definitions/v1Failure",
+          "title": "Should be removed"
         },
         "lastCompletionResult": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "title": "Should be removed"
         },
         "cronSchedule": {
-          "type": "string"
+          "type": "string",
+          "description": "Should be removed. Not necessarily unused but unclear and not exposed by SDKs."
         },
         "header": {
           "$ref": "#/definitions/v1Header"
@@ -1777,7 +1932,8 @@
       }
     },
     "v1DeprecateNamespaceResponse": {
-      "type": "object"
+      "type": "object",
+      "description": "Deprecated."
     },
     "v1DescribeNamespaceResponse": {
       "type": "object",
@@ -1834,6 +1990,9 @@
           "items": {
             "$ref": "#/definitions/v1PendingChildExecutionInfo"
           }
+        },
+        "pendingWorkflowTask": {
+          "$ref": "#/definitions/v1PendingWorkflowTaskInfo"
         }
       }
     },
@@ -1892,17 +2051,20 @@
         "EVENT_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES"
       ],
       "default": "EVENT_TYPE_UNSPECIFIED",
-      "description": "Whenever this list of events is changed do change the function shouldBufferEvent in mutableStateBuilder.go to make sure to do the correct event ordering."
+      "description": "- EVENT_TYPE_UNSPECIFIED: Place holder and should never appear in a Workflow execution history\n - EVENT_TYPE_WORKFLOW_EXECUTION_STARTED: Workflow execution has been triggered/started\nIt contains Workflow execution inputs, as well as Workflow timeout configurations\n - EVENT_TYPE_WORKFLOW_EXECUTION_COMPLETED: Workflow execution has successfully completed and contains Workflow execution results\n - EVENT_TYPE_WORKFLOW_EXECUTION_FAILED: Workflow execution has unsuccessfully completed and contains the Workflow execution error\n - EVENT_TYPE_WORKFLOW_EXECUTION_TIMED_OUT: Workflow execution has timed out by the Temporal Server\nUsually due to the Workflow having not been completed within timeout settings\n - EVENT_TYPE_WORKFLOW_TASK_SCHEDULED: Workflow Task has been scheduled and the SDK client should now be able to process any new history events\n - EVENT_TYPE_WORKFLOW_TASK_STARTED: Workflow Task has started and the SDK client has picked up the Workflow Task and is processing new history events\n - EVENT_TYPE_WORKFLOW_TASK_COMPLETED: Workflow Task has completed\nThe SDK client picked up the Workflow Task and processed new history events\nSDK client may or may not ask the Temporal Server to do additional work, such as:\nEVENT_TYPE_ACTIVITY_TASK_SCHEDULED\nEVENT_TYPE_TIMER_STARTED\nEVENT_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES\nEVENT_TYPE_MARKER_RECORDED\nEVENT_TYPE_START_CHILD_WORKFLOW_EXECUTION_INITIATED\nEVENT_TYPE_REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_INITIATED\nEVENT_TYPE_SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_INITIATED\nEVENT_TYPE_WORKFLOW_EXECUTION_COMPLETED\nEVENT_TYPE_WORKFLOW_EXECUTION_FAILED\nEVENT_TYPE_WORKFLOW_EXECUTION_CANCELED\nEVENT_TYPE_WORKFLOW_EXECUTION_CONTINUED_AS_NEW\n - EVENT_TYPE_WORKFLOW_TASK_TIMED_OUT: Workflow Task encountered a timeout\nEither an SDK client with a local cache was not available at the time, or it took too long for the SDK client to process the task\n - EVENT_TYPE_WORKFLOW_TASK_FAILED: Workflow Task encountered a failure\nUsually this means that the Workflow was non-deterministic\nHowever, the Workflow reset functionality also uses this event\n - EVENT_TYPE_ACTIVITY_TASK_SCHEDULED: Activity Task was scheduled\nThe SDK client should pick up this activity task and execute\nThis event type contains activity inputs, as well as activity timeout configurations\n - EVENT_TYPE_ACTIVITY_TASK_STARTED: Activity Task has started executing\nThe SDK client has picked up the Activity Task and is processing the Activity invocation\n - EVENT_TYPE_ACTIVITY_TASK_COMPLETED: Activity Task has finished successfully\nThe SDK client has picked up and successfully completed the Activity Task\nThis event type contains Activity execution results\n - EVENT_TYPE_ACTIVITY_TASK_FAILED: Activity Task has finished unsuccessfully\nThe SDK picked up the Activity Task but unsuccessfully completed it\nThis event type contains Activity execution errors\n - EVENT_TYPE_ACTIVITY_TASK_TIMED_OUT: Activity has timed out according to the Temporal Server\nActivity did not complete within the timeout settings\n - EVENT_TYPE_ACTIVITY_TASK_CANCEL_REQUESTED: A request to cancel the Activity has occurred\nThe SDK client will be able to confirm cancellation of an Activity during an Activity heartbeat\n - EVENT_TYPE_ACTIVITY_TASK_CANCELED: Activity has been cancelled\n - EVENT_TYPE_TIMER_STARTED: A timer has started\n - EVENT_TYPE_TIMER_FIRED: A timer has fired\n - EVENT_TYPE_TIMER_CANCELED: A time has been cancelled\n - EVENT_TYPE_WORKFLOW_EXECUTION_CANCEL_REQUESTED: A request has been made to cancel the Workflow execution\n - EVENT_TYPE_WORKFLOW_EXECUTION_CANCELED: SDK client has confirmed the cancellation request and the Workflow execution has been cancelled\n - EVENT_TYPE_REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_INITIATED: Workflow has requested that the Temporal Server try to cancel another Workflow\n - EVENT_TYPE_REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED: Temporal Server could not cancel the targeted Workflow\nThis is usually because the target Workflow could not be found\n - EVENT_TYPE_EXTERNAL_WORKFLOW_EXECUTION_CANCEL_REQUESTED: Temporal Server has successfully requested the cancellation of the target Workflow\n - EVENT_TYPE_MARKER_RECORDED: A marker has been recorded.\nThis event type is transparent to the Temporal Server\nThe Server will only store it and will not try to understand it.\n - EVENT_TYPE_WORKFLOW_EXECUTION_SIGNALED: Workflow has received a Signal event\nThe event type contains the Signal name, as well as a Signal payload\n - EVENT_TYPE_WORKFLOW_EXECUTION_TERMINATED: Workflow execution has been forcefully terminated\nThis is usually because the terminate Workflow API was called\n - EVENT_TYPE_WORKFLOW_EXECUTION_CONTINUED_AS_NEW: Workflow has successfully completed and a new Workflow has been started within the same transaction\nContains last Workflow execution results as well as new Workflow execution inputs\n - EVENT_TYPE_START_CHILD_WORKFLOW_EXECUTION_INITIATED: Temporal Server will try to start a child Workflow\n - EVENT_TYPE_START_CHILD_WORKFLOW_EXECUTION_FAILED: Child Workflow execution cannot be started/triggered\nUsually due to a child Workflow ID collision\n - EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_STARTED: Child Workflow execution has successfully started/triggered\n - EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_COMPLETED: Child Workflow execution has successfully completed\n - EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_FAILED: Child Workflow execution has unsuccessfully completed\n - EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_CANCELED: Child Workflow execution has been cancelled\n - EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_TIMED_OUT: Child Workflow execution has timed out by the Temporal Server\n - EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_TERMINATED: Child Workflow execution has been terminated\n - EVENT_TYPE_SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_INITIATED: Temporal Server will try to Signal the targeted Workflow\nContains the Signal name, as well as a Signal payload\n - EVENT_TYPE_SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED: Temporal Server cannot Signal the targeted Workflow\nUsually because the Workflow could not be found\n - EVENT_TYPE_EXTERNAL_WORKFLOW_EXECUTION_SIGNALED: Temporal Server has successfully Signaled the targeted Workflow\n - EVENT_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES: Workflow search attributes should be updated and synchronized with the visibility store",
+      "title": "Whenever this list of events is changed do change the function shouldBufferEvent in mutableStateBuilder.go to make sure to do the correct event ordering"
     },
     "v1ExternalWorkflowExecutionCancelRequestedEventAttributes": {
       "type": "object",
       "properties": {
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "id of the `REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_INITIATED` event this event corresponds\nto"
         },
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "namespace of the to-be-cancelled workflow"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -1914,16 +2076,19 @@
       "properties": {
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "id of the `SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_INITIATED` event this event corresponds to"
         },
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "namespace of the workflow which was signaled"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "control": {
-          "type": "string"
+          "type": "string",
+          "title": "Deprecated"
         }
       }
     },
@@ -2001,6 +2166,12 @@
         "historyShardCount": {
           "type": "integer",
           "format": "int32"
+        },
+        "persistenceStore": {
+          "type": "string"
+        },
+        "visibilityStore": {
+          "type": "string"
         }
       },
       "description": "GetClusterInfoResponse contains information about Temporal cluster."
@@ -2016,6 +2187,19 @@
         }
       }
     },
+    "v1GetSystemInfoResponse": {
+      "type": "object",
+      "properties": {
+        "serverVersion": {
+          "type": "string",
+          "description": "Version of the server."
+        },
+        "capabilities": {
+          "$ref": "#/definitions/GetSystemInfoResponseCapabilities",
+          "description": "All capabilities the system supports."
+        }
+      }
+    },
     "v1GetWorkflowExecutionHistoryResponse": {
       "type": "object",
       "properties": {
@@ -2026,14 +2210,29 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/v1DataBlob"
-          }
+          },
+          "description": "Raw history is an alternate representation of history that may be returned if configured on\nthe frontend. This is not supported by all SDKs. Either this or `history` will be set."
         },
         "nextPageToken": {
           "type": "string",
-          "format": "byte"
+          "format": "byte",
+          "title": "Will be set if there are more history events than were included in this response"
         },
         "archived": {
           "type": "boolean"
+        }
+      }
+    },
+    "v1GetWorkflowExecutionHistoryReverseResponse": {
+      "type": "object",
+      "properties": {
+        "history": {
+          "$ref": "#/definitions/v1History"
+        },
+        "nextPageToken": {
+          "type": "string",
+          "format": "byte",
+          "title": "Will be set if there are more history events than were included in this response"
         }
       }
     },
@@ -2046,7 +2245,8 @@
             "$ref": "#/definitions/v1Payload"
           }
         }
-      }
+      },
+      "description": "Contains metadata that can be attached to a variety of requests, like starting a workflow, and\ncan be propagated between, for example, workflows and activities."
     },
     "v1History": {
       "type": "object",
@@ -2064,7 +2264,8 @@
       "properties": {
         "eventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "Monotonically increasing event number, starts at 1."
         },
         "eventTime": {
           "type": "string",
@@ -2075,11 +2276,13 @@
         },
         "version": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "TODO: What is this? Appears unused by SDKs"
         },
         "taskId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "TODO: What is this? Appears unused by SDKs"
         },
         "workflowExecutionStartedEventAttributes": {
           "$ref": "#/definitions/v1WorkflowExecutionStartedEventAttributes"
@@ -2201,7 +2404,8 @@
         "upsertWorkflowSearchAttributesEventAttributes": {
           "$ref": "#/definitions/v1UpsertWorkflowSearchAttributesEventAttributes"
         }
-      }
+      },
+      "description": "History events are the method by which Temporal SDKs advance (or recreate) workflow state.\nSee the `EventType` enum for more info about what each event is for."
     },
     "v1HistoryEventFilterType": {
       "type": "string",
@@ -2216,7 +2420,7 @@
       "type": "string",
       "enum": [
         "INDEXED_VALUE_TYPE_UNSPECIFIED",
-        "INDEXED_VALUE_TYPE_STRING",
+        "INDEXED_VALUE_TYPE_TEXT",
         "INDEXED_VALUE_TYPE_KEYWORD",
         "INDEXED_VALUE_TYPE_INT",
         "INDEXED_VALUE_TYPE_DOUBLE",
@@ -2321,23 +2525,27 @@
       "type": "object",
       "properties": {
         "markerName": {
-          "type": "string"
+          "type": "string",
+          "description": "Workers use this to identify the \"types\" of various markers. Ex: Local activity, side effect."
         },
         "details": {
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/v1Payloads"
-          }
+          },
+          "title": "Serialized information recorded in the marker"
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "header": {
           "$ref": "#/definitions/v1Header"
         },
         "failure": {
-          "$ref": "#/definitions/v1Failure"
+          "$ref": "#/definitions/v1Failure",
+          "description": "Some uses of markers, like a local activity, could \"fail\". If they did that is recorded here."
         }
       }
     },
@@ -2350,7 +2558,8 @@
             "$ref": "#/definitions/v1Payload"
           }
         }
-      }
+      },
+      "title": "A user-defined set of *unindexed* fields that are exposed when listing/searching workflows"
     },
     "v1NamespaceConfig": {
       "type": "object",
@@ -2415,6 +2624,9 @@
           "items": {
             "$ref": "#/definitions/v1ClusterReplicationConfig"
           }
+        },
+        "state": {
+          "$ref": "#/definitions/v1ReplicationState"
         }
       }
     },
@@ -2437,7 +2649,8 @@
         "PARENT_CLOSE_POLICY_REQUEST_CANCEL"
       ],
       "default": "PARENT_CLOSE_POLICY_UNSPECIFIED",
-      "description": " - PARENT_CLOSE_POLICY_TERMINATE: Terminate means terminating the child workflow.\n - PARENT_CLOSE_POLICY_ABANDON: Abandon means not doing anything on the child workflow.\n - PARENT_CLOSE_POLICY_REQUEST_CANCEL: Cancel means requesting cancellation on the child workflow."
+      "description": "- PARENT_CLOSE_POLICY_TERMINATE: The child workflow will also terminate\n - PARENT_CLOSE_POLICY_ABANDON: The child workflow will do nothing\n - PARENT_CLOSE_POLICY_REQUEST_CANCEL: Cancellation will be requested of the child workflow",
+      "title": "Defines how child workflows will react to their parent completing"
     },
     "v1Payload": {
       "type": "object",
@@ -2453,7 +2666,8 @@
           "type": "string",
           "format": "byte"
         }
-      }
+      },
+      "description": "Represents some binary (byte array) data (ex: activity input parameters or workflow result) with\nmetadata which describes this binary data (format, encoding, encryption, etc). Serialization\nof the data may be user-defined."
     },
     "v1Payloads": {
       "type": "object",
@@ -2464,7 +2678,8 @@
             "$ref": "#/definitions/v1Payload"
           }
         }
-      }
+      },
+      "title": "See `Payload`"
     },
     "v1PendingActivityInfo": {
       "type": "object",
@@ -2545,44 +2760,20 @@
         }
       }
     },
-    "v1PollActivityTaskQueueResponse": {
+    "v1PendingWorkflowTaskInfo": {
       "type": "object",
       "properties": {
-        "taskToken": {
-          "type": "string",
-          "format": "byte"
-        },
-        "workflowNamespace": {
-          "type": "string"
-        },
-        "workflowType": {
-          "$ref": "#/definitions/v1WorkflowType"
-        },
-        "workflowExecution": {
-          "$ref": "#/definitions/v1WorkflowExecution"
-        },
-        "activityType": {
-          "$ref": "#/definitions/v1ActivityType"
-        },
-        "activityId": {
-          "type": "string"
-        },
-        "header": {
-          "$ref": "#/definitions/v1Header"
-        },
-        "input": {
-          "$ref": "#/definitions/v1Payloads"
-        },
-        "heartbeatDetails": {
-          "$ref": "#/definitions/v1Payloads"
+        "state": {
+          "$ref": "#/definitions/v1PendingWorkflowTaskState"
         },
         "scheduledTime": {
           "type": "string",
           "format": "date-time"
         },
-        "currentAttemptScheduledTime": {
+        "originalScheduledTime": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "description": "original_scheduled_time is the scheduled time of the first workflow task during workflow task heartbeat.\nHeartbeat workflow task is done by RespondWorkflowTaskComplete with ForceCreateNewWorkflowTask == true and no command\nIn this case, OriginalScheduledTime won't change. Then when current time - original_scheduled_time exceeds\nsome threshold, the workflow task will be forced timeout."
         },
         "startedTime": {
           "type": "string",
@@ -2591,21 +2782,94 @@
         "attempt": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "v1PendingWorkflowTaskState": {
+      "type": "string",
+      "enum": [
+        "PENDING_WORKFLOW_TASK_STATE_UNSPECIFIED",
+        "PENDING_WORKFLOW_TASK_STATE_SCHEDULED",
+        "PENDING_WORKFLOW_TASK_STATE_STARTED"
+      ],
+      "default": "PENDING_WORKFLOW_TASK_STATE_UNSPECIFIED"
+    },
+    "v1PollActivityTaskQueueResponse": {
+      "type": "object",
+      "properties": {
+        "taskToken": {
+          "type": "string",
+          "format": "byte",
+          "title": "A unique identifier for this task"
+        },
+        "workflowNamespace": {
+          "type": "string",
+          "title": "The namespace the workflow which requested this activity lives in"
+        },
+        "workflowType": {
+          "$ref": "#/definitions/v1WorkflowType",
+          "title": "Type of the requesting workflow"
+        },
+        "workflowExecution": {
+          "$ref": "#/definitions/v1WorkflowExecution",
+          "title": "Execution info of the requesting workflow"
+        },
+        "activityType": {
+          "$ref": "#/definitions/v1ActivityType"
+        },
+        "activityId": {
+          "type": "string",
+          "description": "The autogenerated or user specified identifier of this activity. Can be used to complete the\nactivity via `RespondActivityTaskCompletedById`. May be re-used as long as the last usage\nhas resolved, but unique IDs for every activity invocation is a good idea."
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header",
+          "description": "Headers specified by the scheduling workflow. Commonly used to propagate contextual info\nfrom the workflow to its activities. For example, tracing contexts."
+        },
+        "input": {
+          "$ref": "#/definitions/v1Payloads",
+          "title": "Arguments to the activity invocation"
+        },
+        "heartbeatDetails": {
+          "$ref": "#/definitions/v1Payloads",
+          "description": "Details of the last heartbeat that was recorded for this activity as of the time this task\nwas delivered."
+        },
+        "scheduledTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "When was this task first scheduled"
+        },
+        "currentAttemptScheduledTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "When was this task attempt scheduled"
+        },
+        "startedTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "When was this task started (this attempt)"
+        },
+        "attempt": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Starting at 1, the number of attempts to perform this activity"
         },
         "scheduleToCloseTimeout": {
           "type": "string",
-          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)",
+          "title": "First scheduled -\u003e final result reported timeout"
         },
         "startToCloseTimeout": {
           "type": "string",
-          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)",
+          "title": "Current attempt start -\u003e final result reported timeout"
         },
         "heartbeatTimeout": {
-          "type": "string"
+          "type": "string",
+          "description": "Window within which the activity must report a heartbeat, or be timed out."
         },
         "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy",
-          "description": "This is an actual retry policy the service uses.\nIt can be different from the one provided (or not) during activity scheduling\nas the service can override the provided one in case its values are not specified\nor exceed configured system limits."
+          "description": "This is the retry policy the service uses which may be different from the one provided\n(or not) during activity scheduling. The service can override the provided one if some\nvalues are not specified or exceed configured system limits."
         }
       }
     },
@@ -2614,7 +2878,8 @@
       "properties": {
         "taskToken": {
           "type": "string",
-          "format": "byte"
+          "format": "byte",
+          "title": "A unique identifier for this task"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -2624,46 +2889,57 @@
         },
         "previousStartedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "The last workflow task started event which was processed by some worker for this execution.\nWill be zero if no task has ever started."
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "The id of the most recent workflow task started event, which will have been generated as a\nresult of this poll request being served."
         },
         "attempt": {
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "description": "Starting at 1, the number of attempts to complete this task by any worker."
         },
         "backlogCountHint": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "A hint that there are more tasks already present in this task queue. Can be used to\nprioritize draining a sticky queue before polling from a normal queue."
         },
         "history": {
-          "$ref": "#/definitions/v1History"
+          "$ref": "#/definitions/v1History",
+          "description": "The history for this workflow, which will either be complete or partial. Partial histories\nare sent to workers who have signaled that they are using a sticky queue when completing\na workflow task."
         },
         "nextPageToken": {
           "type": "string",
-          "format": "byte"
+          "format": "byte",
+          "description": "Will be set if there are more history events than were included in this response. Such events\nshould be fetched via `GetWorkflowExecutionHistory`."
         },
         "query": {
-          "$ref": "#/definitions/v1WorkflowQuery"
+          "$ref": "#/definitions/v1WorkflowQuery",
+          "description": "Legacy queries appear in this field. The query must be responded to via\n`RespondQueryTaskCompleted`. If the workflow is already closed (queries are permitted on\nclosed workflows) then the `history` field will be populated with the entire history. It\nmay also be populated if this task originates on a non-sticky queue."
         },
         "workflowExecutionTaskQueue": {
-          "$ref": "#/definitions/v1TaskQueue"
+          "$ref": "#/definitions/v1TaskQueue",
+          "description": "The task queue this task originated from, which will always be the original non-sticky name\nfor the queue, even if this response came from polling a sticky queue."
         },
         "scheduledTime": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "title": "When this task was scheduled by the server"
         },
         "startedTime": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "description": "When the current workflow task started event was generated, meaning the current attempt."
         },
         "queries": {
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/v1WorkflowQuery"
-          }
+          },
+          "title": "Queries that should be executed after applying the history in this task. Responses should be\nattached to `RespondWorkflowTaskCompletedRequest::query_results`"
         }
       }
     },
@@ -2727,7 +3003,8 @@
       "type": "object",
       "properties": {
         "cancelRequested": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Will be set to true if the activity has been asked to cancel itself. The SDK should then\nnotify the activity of cancellation if it is still running."
         }
       }
     },
@@ -2735,7 +3012,8 @@
       "type": "object",
       "properties": {
         "cancelRequested": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Will be set to true if the activity has been asked to cancel itself. The SDK should then\nnotify the activity of cancellation if it is still running."
         }
       }
     },
@@ -2831,12 +3109,22 @@
       },
       "description": "ReleaseInfo contains information about specific version of temporal."
     },
+    "v1ReplicationState": {
+      "type": "string",
+      "enum": [
+        "REPLICATION_STATE_UNSPECIFIED",
+        "REPLICATION_STATE_NORMAL",
+        "REPLICATION_STATE_HANDOVER"
+      ],
+      "default": "REPLICATION_STATE_UNSPECIFIED"
+    },
     "v1RequestCancelActivityTaskCommandAttributes": {
       "type": "object",
       "properties": {
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "The `ACTIVITY_TASK_SCHEDULED` event id for the activity being cancelled."
         }
       }
     },
@@ -2853,10 +3141,12 @@
           "type": "string"
         },
         "control": {
-          "type": "string"
+          "type": "string",
+          "description": "Deprecated."
         },
         "childWorkflowOnly": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Set this to true if the workflow being cancelled is a child of the workflow originating this\ncommand. The request will be rejected if it is set to true and the target workflow is *not*\na child of the requesting workflow."
         }
       }
     },
@@ -2868,20 +3158,24 @@
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "namespace of the workflow which failed to cancel"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "id of the `REQUEST_CANCEL_EXTERNAL_WORKFLOW_EXECUTION_INITIATED` event this failure\ncorresponds to"
         },
         "control": {
-          "type": "string"
+          "type": "string",
+          "title": "Deprecated"
         }
       }
     },
@@ -2890,19 +3184,23 @@
       "properties": {
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "The namespace the workflow to be cancelled lives in"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "control": {
-          "type": "string"
+          "type": "string",
+          "title": "Deprecated"
         },
         "childWorkflowOnly": {
-          "type": "boolean"
+          "type": "boolean",
+          "title": "Workers are expected to set this to true if the workflow they are requesting to cancel is\na child of the workflow which issued the request"
         }
       }
     },
@@ -2948,6 +3246,16 @@
         }
       }
     },
+    "v1ResetReapplyType": {
+      "type": "string",
+      "enum": [
+        "RESET_REAPPLY_TYPE_UNSPECIFIED",
+        "RESET_REAPPLY_TYPE_SIGNAL",
+        "RESET_REAPPLY_TYPE_NONE"
+      ],
+      "default": "RESET_REAPPLY_TYPE_UNSPECIFIED",
+      "title": "TODO: What is this?"
+    },
     "v1ResetStickyTaskQueueResponse": {
       "type": "object"
     },
@@ -2980,10 +3288,28 @@
       "type": "object"
     },
     "v1RespondActivityTaskFailedByIdResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "failures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Failure"
+          },
+          "title": "Server validation failures could include\nlast_heartbeat_details payload is too large, request failure is too large"
+        }
+      }
     },
     "v1RespondActivityTaskFailedResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "failures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Failure"
+          },
+          "title": "Server validation failures could include\nlast_heartbeat_details payload is too large, request failure is too large"
+        }
+      }
     },
     "v1RespondQueryTaskCompletedResponse": {
       "type": "object"
@@ -2992,7 +3318,8 @@
       "type": "object",
       "properties": {
         "workflowTask": {
-          "$ref": "#/definitions/v1PollWorkflowTaskQueueResponse"
+          "$ref": "#/definitions/v1PollWorkflowTaskQueueResponse",
+          "title": "See `RespondWorkflowTaskCompletedResponse::return_new_workflow_task`"
         }
       }
     },
@@ -3025,9 +3352,10 @@
           "items": {
             "type": "string"
           },
-          "description": "Non-Retryable errors types. Will stop retrying if error type matches this list."
+          "description": "Non-Retryable errors types. Will stop retrying if the error type matches this list. Note that\nthis is not a substring match, the error *type* (not message) must match exactly."
         }
-      }
+      },
+      "title": "How retries ought to be handled, usable by both workflows and activities"
     },
     "v1RetryState": {
       "type": "string",
@@ -3081,23 +3409,24 @@
         },
         "scheduleToCloseTimeout": {
           "type": "string",
-          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nIndicates how long the caller is willing to wait for an activity completion.\nLimits for how long retries are happening. Either this or start_to_close_timeout_seconds must be specified.\nWhen not specified defaults to the workflow execution timeout."
+          "description": "Indicates how long the caller is willing to wait for activity completion. The \"schedule\" time\nis when the activity is initially scheduled, not when the most recent retry is scheduled.\nLimits how long retries will be attempted. Either this or `start_to_close_timeout` must be\nspecified. When not specified, defaults to the workflow execution timeout.\n\n(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         },
         "scheduleToStartTimeout": {
           "type": "string",
-          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nLimits time an activity task can stay in a task queue before a worker picks it up.\nThis timeout is always non retryable as all a retry would achieve is to put it back into the same queue.\nDefaults to schedule_to_close_timeout_seconds or workflow execution timeout if not specified."
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)",
+          "title": "Limits the time an activity task can stay in a task queue before a worker picks it up. The\n\"schedule\" time is when the most recent retry is scheduled. This timeout should usually not\nbe set: it's useful in specific scenarios like worker-specific task queues. This timeout is\nalways non retryable, as all a retry would achieve is to put it back into the same queue.\nDefaults to `schedule_to_close_timeout` or workflow execution timeout if that is not\nspecified. More info:\nhttps://docs.temporal.io/docs/content/what-is-a-schedule-to-start-timeout/"
         },
         "startToCloseTimeout": {
           "type": "string",
-          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)\nMaximum time an activity is allowed to execute after a pick up by a worker.\nThis timeout is always retryable. Either this or schedule_to_close_timeout_seconds must be specified."
+          "description": "Maximum time an activity is allowed to execute after being picked up by a worker. This\ntimeout is always retryable. Either this or `schedule_to_close_timeout` must be specified.\n\n(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         },
         "heartbeatTimeout": {
           "type": "string",
-          "description": "Maximum time between successful worker heartbeats."
+          "description": "Maximum permitted time between successful worker heartbeats."
         },
         "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy",
-          "description": "Activities are provided by a default retry policy controlled through the service dynamic configuration.\nRetries are happening up to schedule_to_close_timeout.\nTo disable retries set retry_policy.maximum_attempts to 1."
+          "description": "Activities are provided by a default retry policy which is controlled through the service's\ndynamic configuration. Retries will be attempted until `schedule_to_close_timeout` has\nelapsed. To disable retries set retry_policy.maximum_attempts to 1."
         }
       }
     },
@@ -3110,7 +3439,8 @@
             "$ref": "#/definitions/v1Payload"
           }
         }
-      }
+      },
+      "description": "A user-defined set of *indexed* fields that are used/exposed when listing/searching workflows.\nThe payload is not serialized in a user-defined way."
     },
     "v1ServerFailureInfo": {
       "type": "object",
@@ -3140,16 +3470,24 @@
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "signalName": {
-          "type": "string"
+          "type": "string",
+          "description": "The workflow author-defined name of the signal to send to the workflow."
         },
         "input": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "description": "Serialized value(s) to provide with the signal."
         },
         "control": {
-          "type": "string"
+          "type": "string",
+          "title": "Deprecated"
         },
         "childWorkflowOnly": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Set this to true if the workflow being cancelled is a child of the workflow originating this\ncommand. The request will be rejected if it is set to true and the target workflow is *not*\na child of the requesting workflow."
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header",
+          "description": "Headers that are passed by the workflow that is sending a signal to the external \nworkflow that is receiving this signal."
         }
       }
     },
@@ -3169,7 +3507,8 @@
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "namespace": {
           "type": "string"
@@ -3182,7 +3521,8 @@
           "format": "int64"
         },
         "control": {
-          "type": "string"
+          "type": "string",
+          "title": "Deprecated"
         }
       }
     },
@@ -3191,25 +3531,34 @@
       "properties": {
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "namespace of the to-be-signalled workflow"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "signalName": {
-          "type": "string"
+          "type": "string",
+          "title": "name/type of the signal to fire in the external workflow"
         },
         "input": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "title": "Serialized arguments to provide to the signal handler"
         },
         "control": {
-          "type": "string"
+          "type": "string",
+          "title": "Deprecated"
         },
         "childWorkflowOnly": {
-          "type": "boolean"
+          "type": "boolean",
+          "title": "Workers are expected to set this to true if the workflow they are requesting to cancel is\na child of the workflow which issued the request"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header"
         }
       }
     },
@@ -3269,7 +3618,8 @@
           "$ref": "#/definitions/v1RetryPolicy"
         },
         "cronSchedule": {
-          "type": "string"
+          "type": "string",
+          "description": "Establish a cron schedule for the child workflow."
         },
         "header": {
           "$ref": "#/definitions/v1Header"
@@ -3294,7 +3644,8 @@
       "type": "object",
       "properties": {
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "Namespace of the child workflow"
         },
         "workflowId": {
           "type": "string"
@@ -3306,15 +3657,18 @@
           "$ref": "#/definitions/v1StartChildWorkflowExecutionFailedCause"
         },
         "control": {
-          "type": "string"
+          "type": "string",
+          "title": "Deprecated"
         },
         "initiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "Id of the `START_CHILD_WORKFLOW_EXECUTION_INITIATED` event which this event corresponds to"
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         }
       }
     },
@@ -3322,7 +3676,8 @@
       "type": "object",
       "properties": {
         "namespace": {
-          "type": "string"
+          "type": "string",
+          "title": "Namespace of the child workflow"
         },
         "workflowId": {
           "type": "string"
@@ -3353,11 +3708,13 @@
           "description": "Default: PARENT_CLOSE_POLICY_TERMINATE."
         },
         "control": {
-          "type": "string"
+          "type": "string",
+          "title": "Deprecated"
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "workflowIdReusePolicy": {
           "$ref": "#/definitions/v1WorkflowIdReusePolicy",
@@ -3367,7 +3724,8 @@
           "$ref": "#/definitions/v1RetryPolicy"
         },
         "cronSchedule": {
-          "type": "string"
+          "type": "string",
+          "title": "If this child runs on a cron schedule, it will appear here"
         },
         "header": {
           "$ref": "#/definitions/v1Header"
@@ -3397,11 +3755,12 @@
       "type": "object",
       "properties": {
         "timerId": {
-          "type": "string"
+          "type": "string",
+          "description": "An id for the timer, currently live timers must have different ids. Typically autogenerated\nby the SDK."
         },
         "startToFireTimeout": {
           "type": "string",
-          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+          "description": "How long until the timer fires, producing a `TIMER_FIRED` event.\n\n(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
         }
       }
     },
@@ -3456,7 +3815,8 @@
           "$ref": "#/definitions/v1TaskQueueKind",
           "description": "Default: TASK_QUEUE_KIND_NORMAL."
         }
-      }
+      },
+      "title": "See https://docs.temporal.io/docs/concepts/task-queues/"
     },
     "v1TaskQueueKind": {
       "type": "string",
@@ -3465,16 +3825,20 @@
         "TASK_QUEUE_KIND_NORMAL",
         "TASK_QUEUE_KIND_STICKY"
       ],
-      "default": "TASK_QUEUE_KIND_UNSPECIFIED"
+      "default": "TASK_QUEUE_KIND_UNSPECIFIED",
+      "description": "The task queue specified by the user is always a normal task queue. There can be as many\nworkers as desired for a single normal task queue. All those workers may pick up tasks from\nthat queue.\n - TASK_QUEUE_KIND_STICKY: A sticky queue only includes new history since the last workflow task, and they are\nper-worker.\n\nSticky queues are created dynamically by each worker during their start up. They only exist\nfor the lifetime of the worker process. Tasks in a sticky task queue are only available to\nthe worker that created the sticky queue.\n\nSticky queues are only for workflow tasks. There are no sticky task queues for activities.",
+      "title": "- TASK_QUEUE_KIND_NORMAL: Tasks from a normal workflow task queue always include complete workflow history"
     },
     "v1TaskQueueMetadata": {
       "type": "object",
       "properties": {
         "maxTasksPerSecond": {
           "type": "number",
-          "format": "double"
+          "format": "double",
+          "title": "Allows throttling dispatch of tasks from this queue"
         }
-      }
+      },
+      "title": "Only applies to activity task queues"
     },
     "v1TaskQueuePartitionMetadata": {
       "type": "object",
@@ -3553,18 +3917,22 @@
       "type": "object",
       "properties": {
         "timerId": {
-          "type": "string"
+          "type": "string",
+          "title": "Will match the `timer_id` from `TIMER_STARTED` event for this timer"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `TIMER_STARTED` event itself"
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "The id of the worker who requested this cancel"
         }
       }
     },
@@ -3572,11 +3940,13 @@
       "type": "object",
       "properties": {
         "timerId": {
-          "type": "string"
+          "type": "string",
+          "title": "Will match the `timer_id` from `TIMER_STARTED` event for this timer"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `TIMER_STARTED` event itself"
         }
       }
     },
@@ -3584,15 +3954,18 @@
       "type": "object",
       "properties": {
         "timerId": {
-          "type": "string"
+          "type": "string",
+          "title": "The worker/user assigned id for this timer"
         },
         "startToFireTimeout": {
           "type": "string",
-          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)",
+          "title": "How long until this timer fires"
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         }
       }
     },
@@ -3611,6 +3984,10 @@
             "type": "string"
           },
           "description": "A key-value map for any customized purpose."
+        },
+        "state": {
+          "$ref": "#/definitions/v1NamespaceState",
+          "description": "New namespace state, server will reject if transition is not allowed.\nAllowed transitions are:\n Registered -\u003e [ Deleted | Deprecated | Handover ]\n Handover -\u003e [ Registered ]\nDefault is NAMESPACE_STATE_UNSPECIFIED which is do not change state."
         }
       }
     },
@@ -3648,7 +4025,8 @@
       "properties": {
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
@@ -3689,23 +4067,27 @@
         "runId": {
           "type": "string"
         }
-      }
+      },
+      "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
     },
     "v1WorkflowExecutionCancelRequestedEventAttributes": {
       "type": "object",
       "properties": {
         "cause": {
-          "type": "string"
+          "type": "string",
+          "title": "User provided reason for requesting cancellation"
         },
         "externalInitiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "TODO: Is this the ID of the event in the workflow which initiated this cancel, if there was one?"
         },
         "externalWorkflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "id of the worker or client who requested this cancel"
         }
       }
     },
@@ -3714,7 +4096,8 @@
       "properties": {
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "details": {
           "$ref": "#/definitions/v1Payloads"
@@ -3725,11 +4108,17 @@
       "type": "object",
       "properties": {
         "result": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "title": "Serialized result of workflow completion (ie: The return value of the workflow function)"
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
+        },
+        "newExecutionRunId": {
+          "type": "string",
+          "description": "If another run is started by cron, this contains the new run id."
         }
       }
     },
@@ -3754,7 +4143,8 @@
       "type": "object",
       "properties": {
         "newExecutionRunId": {
-          "type": "string"
+          "type": "string",
+          "title": "The run ID of the new workflow started by this continue-as-new"
         },
         "workflowType": {
           "$ref": "#/definitions/v1WorkflowType"
@@ -3767,7 +4157,7 @@
         },
         "workflowRunTimeout": {
           "type": "string",
-          "description": "workflow_execution_timeout is omitted as it shouldn'be overridden from within a workflow.\nTimeout of a single workflow run."
+          "description": "Timeout of a single workflow run."
         },
         "workflowTaskTimeout": {
           "type": "string",
@@ -3775,19 +4165,23 @@
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "backoffStartInterval": {
-          "type": "string"
+          "type": "string",
+          "title": "TODO: How and is this used?"
         },
         "initiator": {
           "$ref": "#/definitions/v1ContinueAsNewInitiator"
         },
         "failure": {
-          "$ref": "#/definitions/v1Failure"
+          "$ref": "#/definitions/v1Failure",
+          "description": "TODO: David are these right?\nDeprecated. If a workflow's retry policy would cause a new run to start when the current one\nhas failed, this field would be populated with that failure. Now (when supported by server\nand sdk) the final event will be `WORKFLOW_EXECUTION_FAILED` with `new_execution_run_id` set."
         },
         "lastCompletionResult": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "title": "TODO: Is this the result of *this* workflow as it continued-as-new?"
         },
         "header": {
           "$ref": "#/definitions/v1Header"
@@ -3804,14 +4198,20 @@
       "type": "object",
       "properties": {
         "failure": {
-          "$ref": "#/definitions/v1Failure"
+          "$ref": "#/definitions/v1Failure",
+          "title": "Serialized result of workflow failure (ex: An exception thrown, or error returned)"
         },
         "retryState": {
           "$ref": "#/definitions/v1RetryState"
         },
         "workflowTaskCompletedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
+        },
+        "newExecutionRunId": {
+          "type": "string",
+          "description": "If another run is started by cron or retry, this contains the new run id."
         }
       }
     },
@@ -3871,6 +4271,10 @@
         },
         "taskQueue": {
           "type": "string"
+        },
+        "stateTransitionCount": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -3878,13 +4282,20 @@
       "type": "object",
       "properties": {
         "signalName": {
-          "type": "string"
+          "type": "string",
+          "title": "The name/type of the signal to fire"
         },
         "input": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "title": "Will be deserialized and provided as argument(s) to the signal handler"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "id of the worker/client who sent this signal"
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header",
+          "description": "Headers that were passed by the sender of the signal and copied by temporal \nserver into the workflow task."
         }
       }
     },
@@ -3895,20 +4306,23 @@
           "$ref": "#/definitions/v1WorkflowType"
         },
         "parentWorkflowNamespace": {
-          "type": "string"
+          "type": "string",
+          "title": "If this workflow is a child, the namespace our parent lives in"
         },
         "parentWorkflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
         },
         "parentInitiatedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "TODO: What is this? ID of the event that requested this workflow execution if we are a child?"
         },
         "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
         "input": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "title": "SDK will deserialize this and provide it as arguments to the workflow function"
         },
         "workflowExecutionTimeout": {
           "type": "string",
@@ -3923,7 +4337,8 @@
           "description": "Timeout of a single workflow task."
         },
         "continuedExecutionRunId": {
-          "type": "string"
+          "type": "string",
+          "description": "Run id of the previous workflow which continued-as-new or retired or cron executed into this\nworkflow."
         },
         "initiator": {
           "$ref": "#/definitions/v1ContinueAsNewInitiator"
@@ -3936,10 +4351,11 @@
         },
         "originalExecutionRunId": {
           "type": "string",
-          "description": "This is the runId when the WorkflowExecutionStarted event is written."
+          "title": "This is the run id when the WorkflowExecutionStarted event was written"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "Identity of the client who requested this execution"
         },
         "firstExecutionRunId": {
           "type": "string",
@@ -3950,18 +4366,21 @@
         },
         "attempt": {
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "title": "Starting at 1, the number of times we have tried to execute this workflow"
         },
         "workflowExecutionExpirationTime": {
           "type": "string",
           "format": "date-time",
-          "description": "The absolute time at which workflow is timed out.\nThis time is passed without change to the next run/retry of a workflow."
+          "description": "The absolute time at which the workflow will be timed out.\nThis is passed without change to the next run/retry of a workflow."
         },
         "cronSchedule": {
-          "type": "string"
+          "type": "string",
+          "title": "If this workflow runs on a cron schedule, it will appear here"
         },
         "firstWorkflowTaskBackoff": {
-          "type": "string"
+          "type": "string",
+          "description": "For a cron workflow, this contains the amount of time between when this iteration of\nthe cron workflow was scheduled and when it should run next per its cron_schedule."
         },
         "memo": {
           "$ref": "#/definitions/v1Memo"
@@ -3975,7 +4394,8 @@
         "header": {
           "$ref": "#/definitions/v1Header"
         }
-      }
+      },
+      "title": "Always the first event in workflow history"
     },
     "v1WorkflowExecutionStatus": {
       "type": "string",
@@ -3997,13 +4417,15 @@
       "type": "object",
       "properties": {
         "reason": {
-          "type": "string"
+          "type": "string",
+          "title": "User/client provided reason for termination"
         },
         "details": {
           "$ref": "#/definitions/v1Payloads"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "id of the client who requested termination"
         }
       }
     },
@@ -4012,6 +4434,10 @@
       "properties": {
         "retryState": {
           "$ref": "#/definitions/v1RetryState"
+        },
+        "newExecutionRunId": {
+          "type": "string",
+          "description": "If another run is started by cron or retry, this contains the new run id."
         }
       }
     },
@@ -4024,49 +4450,64 @@
         "WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE"
       ],
       "default": "WORKFLOW_ID_REUSE_POLICY_UNSPECIFIED",
-      "description": " - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE: Allow start a workflow execution using the same workflow Id, when workflow not running.\n - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY: Allow start a workflow execution using the same workflow Id, when workflow not running, and the last execution close state is in\n[terminated, cancelled, timed out, failed].\n - WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE: Do not allow start a workflow execution using the same workflow Id at all."
+      "description": "Defines how new runs of a workflow with a particular ID may or may not be allowed. Note that\nit is *never* valid to have two actively running instances of the same workflow id.\n\n - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE: Allow starting a workflow execution using the same workflow id.\n - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY: Allow starting a workflow execution using the same workflow id, only when the last\nexecution's final state is one of [terminated, cancelled, timed out, failed].\n - WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE: Do not permit re-use of the workflow id for this workflow. Future start workflow requests\ncould potentially change the policy, allowing re-use of the workflow id."
     },
     "v1WorkflowQuery": {
       "type": "object",
       "properties": {
         "queryType": {
-          "type": "string"
+          "type": "string",
+          "description": "The workflow-author-defined identifier of the query. Typically a function name."
         },
         "queryArgs": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "description": "Serialized arguments that will be provided to the query handler."
+        },
+        "header": {
+          "$ref": "#/definitions/v1Header",
+          "description": "Headers that were passed by the caller of the query and copied by temporal \nserver into the workflow task."
         }
-      }
+      },
+      "title": "See https://docs.temporal.io/docs/concepts/queries/"
     },
     "v1WorkflowQueryResult": {
       "type": "object",
       "properties": {
         "resultType": {
-          "$ref": "#/definitions/v1QueryResultType"
+          "$ref": "#/definitions/v1QueryResultType",
+          "title": "Did the query succeed or fail?"
         },
         "answer": {
-          "$ref": "#/definitions/v1Payloads"
+          "$ref": "#/definitions/v1Payloads",
+          "title": "Set when the query succeeds with the results"
         },
         "errorMessage": {
-          "type": "string"
+          "type": "string",
+          "description": "Mutually exclusive with `answer`. Set when the query fails."
         }
-      }
+      },
+      "title": "Answer to a `WorkflowQuery`"
     },
     "v1WorkflowTaskCompletedEventAttributes": {
       "type": "object",
       "properties": {
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `WORKFLOW_TASK_SCHEDULED` event this task corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `WORKFLOW_TASK_STARTED` event this task corresponds to"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "Identity of the worker who completed this task"
         },
         "binaryChecksum": {
-          "type": "string"
+          "type": "string",
+          "title": "Binary ID of the worker who completed this task"
         }
       }
     },
@@ -4096,43 +4537,52 @@
         "WORKFLOW_TASK_FAILED_CAUSE_RESET_WORKFLOW",
         "WORKFLOW_TASK_FAILED_CAUSE_BAD_BINARY",
         "WORKFLOW_TASK_FAILED_CAUSE_SCHEDULE_ACTIVITY_DUPLICATE_ID",
-        "WORKFLOW_TASK_FAILED_CAUSE_BAD_SEARCH_ATTRIBUTES"
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_SEARCH_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_NON_DETERMINISTIC_ERROR"
       ],
-      "default": "WORKFLOW_TASK_FAILED_CAUSE_UNSPECIFIED"
+      "default": "WORKFLOW_TASK_FAILED_CAUSE_UNSPECIFIED",
+      "description": "Workflow tasks can fail for various reasons. Note that some of these reasons can only originate\nfrom the server, and some of them can only originate from the SDK/worker.\n\n - WORKFLOW_TASK_FAILED_CAUSE_UNHANDLED_COMMAND: Between starting and completing the workflow task (with a workflow completion command), some\nnew command (like a signal) was processed into workflow history. The outstanding task will be\nfailed with this reason, and a worker must pick up a new task.\n - WORKFLOW_TASK_FAILED_CAUSE_RESET_STICKY_TASK_QUEUE: The worker wishes to fail the task and have the next one be generated on a normal, not sticky\nqueue. Generally workers should prefer to use the explicit `ResetStickyTaskQueue` RPC call.\n - WORKFLOW_TASK_FAILED_CAUSE_NON_DETERMINISTIC_ERROR: The worker encountered a mismatch while replaying history between what was expected, and\nwhat the workflow code actually did."
     },
     "v1WorkflowTaskFailedEventAttributes": {
       "type": "object",
       "properties": {
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `WORKFLOW_TASK_SCHEDULED` event this task corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `WORKFLOW_TASK_STARTED` event this task corresponds to"
         },
         "cause": {
           "$ref": "#/definitions/v1WorkflowTaskFailedCause"
         },
         "failure": {
-          "$ref": "#/definitions/v1Failure"
+          "$ref": "#/definitions/v1Failure",
+          "title": "The failure details"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "If a worker explicitly failed this task, it's identity. TODO: What is this set to if server fails the task?"
         },
         "baseRunId": {
           "type": "string",
-          "description": "For reset workflow."
+          "description": "The original run id of the workflow. For reset workflow."
         },
         "newRunId": {
-          "type": "string"
+          "type": "string",
+          "description": "If the workflow is being reset, the new run id."
         },
         "forkEventVersion": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "TODO: ?"
         },
         "binaryChecksum": {
-          "type": "string"
+          "type": "string",
+          "title": "If a worker explicitly failed this task, it's binary id"
         }
       }
     },
@@ -4140,15 +4590,18 @@
       "type": "object",
       "properties": {
         "taskQueue": {
-          "$ref": "#/definitions/v1TaskQueue"
+          "$ref": "#/definitions/v1TaskQueue",
+          "title": "The task queue this workflow task was enqueued in, which could be a normal or sticky queue"
         },
         "startToCloseTimeout": {
           "type": "string",
-          "title": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)"
+          "description": "(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: \"to\" is used to indicate interval. --)",
+          "title": "How long the worker has to process this task once receiving it before it times out"
         },
         "attempt": {
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "title": "Starting at 1, how many attempts there have been to complete this task"
         }
       }
     },
@@ -4157,13 +4610,16 @@
       "properties": {
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `WORKFLOW_TASK_SCHEDULED` event this task corresponds to"
         },
         "identity": {
-          "type": "string"
+          "type": "string",
+          "title": "Identity of the worker who picked up this task"
         },
         "requestId": {
-          "type": "string"
+          "type": "string",
+          "title": "TODO: ? Appears unused?"
         }
       }
     },
@@ -4172,11 +4628,13 @@
       "properties": {
         "scheduledEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `WORKFLOW_TASK_SCHEDULED` event this task corresponds to"
         },
         "startedEventId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "The id of the `WORKFLOW_TASK_STARTED` event this task corresponds to"
         },
         "timeoutType": {
           "$ref": "#/definitions/v1TimeoutType"
@@ -4189,7 +4647,8 @@
         "name": {
           "type": "string"
         }
-      }
+      },
+      "title": "Represents the identifier used by a workflow author to define the workflow. Typically, the\nname of a function. This is sometimes referred to as the workflow's \"name\""
     },
     "v1WorkflowTypeFilter": {
       "type": "object",

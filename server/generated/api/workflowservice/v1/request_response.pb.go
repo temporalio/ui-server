@@ -459,6 +459,8 @@ type UpdateNamespaceRequest struct {
 	ReplicationConfig *v1.NamespaceReplicationConfig `protobuf:"bytes,4,opt,name=replication_config,json=replicationConfig,proto3" json:"replication_config,omitempty"`
 	SecurityToken     string                         `protobuf:"bytes,5,opt,name=security_token,json=securityToken,proto3" json:"security_token,omitempty"`
 	DeleteBadBinary   string                         `protobuf:"bytes,6,opt,name=delete_bad_binary,json=deleteBadBinary,proto3" json:"delete_bad_binary,omitempty"`
+	// promote local namespace to global namespace. Ignored if namespace is already global namespace.
+	PromoteNamespace bool `protobuf:"varint,7,opt,name=promote_namespace,json=promoteNamespace,proto3" json:"promote_namespace,omitempty"`
 }
 
 func (m *UpdateNamespaceRequest) Reset()      { *m = UpdateNamespaceRequest{} }
@@ -533,6 +535,13 @@ func (m *UpdateNamespaceRequest) GetDeleteBadBinary() string {
 		return m.DeleteBadBinary
 	}
 	return ""
+}
+
+func (m *UpdateNamespaceRequest) GetPromoteNamespace() bool {
+	if m != nil {
+		return m.PromoteNamespace
+	}
+	return false
 }
 
 type UpdateNamespaceResponse struct {
@@ -610,6 +619,7 @@ func (m *UpdateNamespaceResponse) GetIsGlobalNamespace() bool {
 	return false
 }
 
+// Deprecated.
 type DeprecateNamespaceRequest struct {
 	Namespace     string `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	SecurityToken string `protobuf:"bytes,2,opt,name=security_token,json=securityToken,proto3" json:"security_token,omitempty"`
@@ -661,6 +671,7 @@ func (m *DeprecateNamespaceRequest) GetSecurityToken() string {
 	return ""
 }
 
+// Deprecated.
 type DeprecateNamespaceResponse struct {
 }
 
@@ -701,19 +712,23 @@ type StartWorkflowExecutionRequest struct {
 	WorkflowId   string            `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
 	WorkflowType *v13.WorkflowType `protobuf:"bytes,3,opt,name=workflow_type,json=workflowType,proto3" json:"workflow_type,omitempty"`
 	TaskQueue    *v14.TaskQueue    `protobuf:"bytes,4,opt,name=task_queue,json=taskQueue,proto3" json:"task_queue,omitempty"`
-	Input        *v13.Payloads     `protobuf:"bytes,5,opt,name=input,proto3" json:"input,omitempty"`
+	// Serialized arguments to the workflow. These are passed as arguments to the workflow function.
+	Input *v13.Payloads `protobuf:"bytes,5,opt,name=input,proto3" json:"input,omitempty"`
 	// Total workflow execution timeout including retries and continue as new.
 	WorkflowExecutionTimeout *time.Duration `protobuf:"bytes,6,opt,name=workflow_execution_timeout,json=workflowExecutionTimeout,proto3,stdduration" json:"workflow_execution_timeout,omitempty"`
 	// Timeout of a single workflow run.
 	WorkflowRunTimeout *time.Duration `protobuf:"bytes,7,opt,name=workflow_run_timeout,json=workflowRunTimeout,proto3,stdduration" json:"workflow_run_timeout,omitempty"`
 	// Timeout of a single workflow task.
 	WorkflowTaskTimeout *time.Duration `protobuf:"bytes,8,opt,name=workflow_task_timeout,json=workflowTaskTimeout,proto3,stdduration" json:"workflow_task_timeout,omitempty"`
-	Identity            string         `protobuf:"bytes,9,opt,name=identity,proto3" json:"identity,omitempty"`
-	RequestId           string         `protobuf:"bytes,10,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// The identity of the client who initiated this request
+	Identity string `protobuf:"bytes,9,opt,name=identity,proto3" json:"identity,omitempty"`
+	// A unique identifier for this start request. Typically UUIDv4.
+	RequestId string `protobuf:"bytes,10,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	// Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE.
 	WorkflowIdReusePolicy v11.WorkflowIdReusePolicy `protobuf:"varint,11,opt,name=workflow_id_reuse_policy,json=workflowIdReusePolicy,proto3,enum=temporal.api.enums.v1.WorkflowIdReusePolicy" json:"workflow_id_reuse_policy,omitempty"`
-	// Retries up to workflow_execution_timeout_seconds.
-	RetryPolicy      *v13.RetryPolicy      `protobuf:"bytes,12,opt,name=retry_policy,json=retryPolicy,proto3" json:"retry_policy,omitempty"`
+	// The retry policy for the workflow. Will never exceed `workflow_execution_timeout`.
+	RetryPolicy *v13.RetryPolicy `protobuf:"bytes,12,opt,name=retry_policy,json=retryPolicy,proto3" json:"retry_policy,omitempty"`
+	// See https://docs.temporal.io/docs/content/what-is-a-temporal-cron-job/
 	CronSchedule     string                `protobuf:"bytes,13,opt,name=cron_schedule,json=cronSchedule,proto3" json:"cron_schedule,omitempty"`
 	Memo             *v13.Memo             `protobuf:"bytes,14,opt,name=memo,proto3" json:"memo,omitempty"`
 	SearchAttributes *v13.SearchAttributes `protobuf:"bytes,15,opt,name=search_attributes,json=searchAttributes,proto3" json:"search_attributes,omitempty"`
@@ -911,8 +926,13 @@ type GetWorkflowExecutionHistoryRequest struct {
 	Namespace       string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	Execution       *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=execution,proto3" json:"execution,omitempty"`
 	MaximumPageSize int32                  `protobuf:"varint,3,opt,name=maximum_page_size,json=maximumPageSize,proto3" json:"maximum_page_size,omitempty"`
-	NextPageToken   []byte                 `protobuf:"bytes,4,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	WaitNewEvent    bool                   `protobuf:"varint,5,opt,name=wait_new_event,json=waitNewEvent,proto3" json:"wait_new_event,omitempty"`
+	// If a `GetWorkflowExecutionHistoryResponse` or a `PollWorkflowTaskQueueResponse` had one of
+	// these, it should be passed here to fetch the next page.
+	NextPageToken []byte `protobuf:"bytes,4,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// If set to true, the RPC call will not resolve until there is a new event which matches
+	// the `history_event_filter_type`, or a timeout is hit.
+	WaitNewEvent bool `protobuf:"varint,5,opt,name=wait_new_event,json=waitNewEvent,proto3" json:"wait_new_event,omitempty"`
+	// Filter returned events such that they match the specified filter type.
 	// Default: HISTORY_EVENT_FILTER_TYPE_ALL_EVENT.
 	HistoryEventFilterType v11.HistoryEventFilterType `protobuf:"varint,6,opt,name=history_event_filter_type,json=historyEventFilterType,proto3,enum=temporal.api.enums.v1.HistoryEventFilterType" json:"history_event_filter_type,omitempty"`
 	SkipArchival           bool                       `protobuf:"varint,7,opt,name=skip_archival,json=skipArchival,proto3" json:"skip_archival,omitempty"`
@@ -1000,10 +1020,13 @@ func (m *GetWorkflowExecutionHistoryRequest) GetSkipArchival() bool {
 }
 
 type GetWorkflowExecutionHistoryResponse struct {
-	History       *v15.History    `protobuf:"bytes,1,opt,name=history,proto3" json:"history,omitempty"`
-	RawHistory    []*v13.DataBlob `protobuf:"bytes,2,rep,name=raw_history,json=rawHistory,proto3" json:"raw_history,omitempty"`
-	NextPageToken []byte          `protobuf:"bytes,3,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	Archived      bool            `protobuf:"varint,4,opt,name=archived,proto3" json:"archived,omitempty"`
+	History *v15.History `protobuf:"bytes,1,opt,name=history,proto3" json:"history,omitempty"`
+	// Raw history is an alternate representation of history that may be returned if configured on
+	// the frontend. This is not supported by all SDKs. Either this or `history` will be set.
+	RawHistory []*v13.DataBlob `protobuf:"bytes,2,rep,name=raw_history,json=rawHistory,proto3" json:"raw_history,omitempty"`
+	// Will be set if there are more history events than were included in this response
+	NextPageToken []byte `protobuf:"bytes,3,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	Archived      bool   `protobuf:"varint,4,opt,name=archived,proto3" json:"archived,omitempty"`
 }
 
 func (m *GetWorkflowExecutionHistoryResponse) Reset()      { *m = GetWorkflowExecutionHistoryResponse{} }
@@ -1066,17 +1089,142 @@ func (m *GetWorkflowExecutionHistoryResponse) GetArchived() bool {
 	return false
 }
 
+type GetWorkflowExecutionHistoryReverseRequest struct {
+	Namespace       string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	Execution       *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=execution,proto3" json:"execution,omitempty"`
+	MaximumPageSize int32                  `protobuf:"varint,3,opt,name=maximum_page_size,json=maximumPageSize,proto3" json:"maximum_page_size,omitempty"`
+	NextPageToken   []byte                 `protobuf:"bytes,4,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+}
+
+func (m *GetWorkflowExecutionHistoryReverseRequest) Reset() {
+	*m = GetWorkflowExecutionHistoryReverseRequest{}
+}
+func (*GetWorkflowExecutionHistoryReverseRequest) ProtoMessage() {}
+func (*GetWorkflowExecutionHistoryReverseRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2c30b34f996ae016, []int{14}
+}
+func (m *GetWorkflowExecutionHistoryReverseRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetWorkflowExecutionHistoryReverseRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetWorkflowExecutionHistoryReverseRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetWorkflowExecutionHistoryReverseRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetWorkflowExecutionHistoryReverseRequest.Merge(m, src)
+}
+func (m *GetWorkflowExecutionHistoryReverseRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetWorkflowExecutionHistoryReverseRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetWorkflowExecutionHistoryReverseRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetWorkflowExecutionHistoryReverseRequest proto.InternalMessageInfo
+
+func (m *GetWorkflowExecutionHistoryReverseRequest) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+func (m *GetWorkflowExecutionHistoryReverseRequest) GetExecution() *v13.WorkflowExecution {
+	if m != nil {
+		return m.Execution
+	}
+	return nil
+}
+
+func (m *GetWorkflowExecutionHistoryReverseRequest) GetMaximumPageSize() int32 {
+	if m != nil {
+		return m.MaximumPageSize
+	}
+	return 0
+}
+
+func (m *GetWorkflowExecutionHistoryReverseRequest) GetNextPageToken() []byte {
+	if m != nil {
+		return m.NextPageToken
+	}
+	return nil
+}
+
+type GetWorkflowExecutionHistoryReverseResponse struct {
+	History *v15.History `protobuf:"bytes,1,opt,name=history,proto3" json:"history,omitempty"`
+	// Will be set if there are more history events than were included in this response
+	NextPageToken []byte `protobuf:"bytes,3,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+}
+
+func (m *GetWorkflowExecutionHistoryReverseResponse) Reset() {
+	*m = GetWorkflowExecutionHistoryReverseResponse{}
+}
+func (*GetWorkflowExecutionHistoryReverseResponse) ProtoMessage() {}
+func (*GetWorkflowExecutionHistoryReverseResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2c30b34f996ae016, []int{15}
+}
+func (m *GetWorkflowExecutionHistoryReverseResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetWorkflowExecutionHistoryReverseResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetWorkflowExecutionHistoryReverseResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetWorkflowExecutionHistoryReverseResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetWorkflowExecutionHistoryReverseResponse.Merge(m, src)
+}
+func (m *GetWorkflowExecutionHistoryReverseResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetWorkflowExecutionHistoryReverseResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetWorkflowExecutionHistoryReverseResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetWorkflowExecutionHistoryReverseResponse proto.InternalMessageInfo
+
+func (m *GetWorkflowExecutionHistoryReverseResponse) GetHistory() *v15.History {
+	if m != nil {
+		return m.History
+	}
+	return nil
+}
+
+func (m *GetWorkflowExecutionHistoryReverseResponse) GetNextPageToken() []byte {
+	if m != nil {
+		return m.NextPageToken
+	}
+	return nil
+}
+
 type PollWorkflowTaskQueueRequest struct {
-	Namespace      string         `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	TaskQueue      *v14.TaskQueue `protobuf:"bytes,2,opt,name=task_queue,json=taskQueue,proto3" json:"task_queue,omitempty"`
-	Identity       string         `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	BinaryChecksum string         `protobuf:"bytes,4,opt,name=binary_checksum,json=binaryChecksum,proto3" json:"binary_checksum,omitempty"`
+	Namespace string         `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	TaskQueue *v14.TaskQueue `protobuf:"bytes,2,opt,name=task_queue,json=taskQueue,proto3" json:"task_queue,omitempty"`
+	// The identity of the worker/client who is polling this task queue
+	Identity string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Each worker process should provide an ID unique to the specific set of code it is running
+	BinaryChecksum string `protobuf:"bytes,4,opt,name=binary_checksum,json=binaryChecksum,proto3" json:"binary_checksum,omitempty"`
 }
 
 func (m *PollWorkflowTaskQueueRequest) Reset()      { *m = PollWorkflowTaskQueueRequest{} }
 func (*PollWorkflowTaskQueueRequest) ProtoMessage() {}
 func (*PollWorkflowTaskQueueRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{14}
+	return fileDescriptor_2c30b34f996ae016, []int{16}
 }
 func (m *PollWorkflowTaskQueueRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1134,26 +1282,49 @@ func (m *PollWorkflowTaskQueueRequest) GetBinaryChecksum() string {
 }
 
 type PollWorkflowTaskQueueResponse struct {
-	TaskToken                  []byte                        `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
-	WorkflowExecution          *v13.WorkflowExecution        `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
-	WorkflowType               *v13.WorkflowType             `protobuf:"bytes,3,opt,name=workflow_type,json=workflowType,proto3" json:"workflow_type,omitempty"`
-	PreviousStartedEventId     int64                         `protobuf:"varint,4,opt,name=previous_started_event_id,json=previousStartedEventId,proto3" json:"previous_started_event_id,omitempty"`
-	StartedEventId             int64                         `protobuf:"varint,5,opt,name=started_event_id,json=startedEventId,proto3" json:"started_event_id,omitempty"`
-	Attempt                    int32                         `protobuf:"varint,6,opt,name=attempt,proto3" json:"attempt,omitempty"`
-	BacklogCountHint           int64                         `protobuf:"varint,7,opt,name=backlog_count_hint,json=backlogCountHint,proto3" json:"backlog_count_hint,omitempty"`
-	History                    *v15.History                  `protobuf:"bytes,8,opt,name=history,proto3" json:"history,omitempty"`
-	NextPageToken              []byte                        `protobuf:"bytes,9,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	Query                      *v16.WorkflowQuery            `protobuf:"bytes,10,opt,name=query,proto3" json:"query,omitempty"`
-	WorkflowExecutionTaskQueue *v14.TaskQueue                `protobuf:"bytes,11,opt,name=workflow_execution_task_queue,json=workflowExecutionTaskQueue,proto3" json:"workflow_execution_task_queue,omitempty"`
-	ScheduledTime              *time.Time                    `protobuf:"bytes,12,opt,name=scheduled_time,json=scheduledTime,proto3,stdtime" json:"scheduled_time,omitempty"`
-	StartedTime                *time.Time                    `protobuf:"bytes,13,opt,name=started_time,json=startedTime,proto3,stdtime" json:"started_time,omitempty"`
-	Queries                    map[string]*v16.WorkflowQuery `protobuf:"bytes,14,rep,name=queries,proto3" json:"queries,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// A unique identifier for this task
+	TaskToken         []byte                 `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
+	WorkflowExecution *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
+	WorkflowType      *v13.WorkflowType      `protobuf:"bytes,3,opt,name=workflow_type,json=workflowType,proto3" json:"workflow_type,omitempty"`
+	// The last workflow task started event which was processed by some worker for this execution.
+	// Will be zero if no task has ever started.
+	PreviousStartedEventId int64 `protobuf:"varint,4,opt,name=previous_started_event_id,json=previousStartedEventId,proto3" json:"previous_started_event_id,omitempty"`
+	// The id of the most recent workflow task started event, which will have been generated as a
+	// result of this poll request being served.
+	StartedEventId int64 `protobuf:"varint,5,opt,name=started_event_id,json=startedEventId,proto3" json:"started_event_id,omitempty"`
+	// Starting at 1, the number of attempts to complete this task by any worker.
+	Attempt int32 `protobuf:"varint,6,opt,name=attempt,proto3" json:"attempt,omitempty"`
+	// A hint that there are more tasks already present in this task queue. Can be used to
+	// prioritize draining a sticky queue before polling from a normal queue.
+	BacklogCountHint int64 `protobuf:"varint,7,opt,name=backlog_count_hint,json=backlogCountHint,proto3" json:"backlog_count_hint,omitempty"`
+	// The history for this workflow, which will either be complete or partial. Partial histories
+	// are sent to workers who have signaled that they are using a sticky queue when completing
+	// a workflow task.
+	History *v15.History `protobuf:"bytes,8,opt,name=history,proto3" json:"history,omitempty"`
+	// Will be set if there are more history events than were included in this response. Such events
+	// should be fetched via `GetWorkflowExecutionHistory`.
+	NextPageToken []byte `protobuf:"bytes,9,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Legacy queries appear in this field. The query must be responded to via
+	// `RespondQueryTaskCompleted`. If the workflow is already closed (queries are permitted on
+	// closed workflows) then the `history` field will be populated with the entire history. It
+	// may also be populated if this task originates on a non-sticky queue.
+	Query *v16.WorkflowQuery `protobuf:"bytes,10,opt,name=query,proto3" json:"query,omitempty"`
+	// The task queue this task originated from, which will always be the original non-sticky name
+	// for the queue, even if this response came from polling a sticky queue.
+	WorkflowExecutionTaskQueue *v14.TaskQueue `protobuf:"bytes,11,opt,name=workflow_execution_task_queue,json=workflowExecutionTaskQueue,proto3" json:"workflow_execution_task_queue,omitempty"`
+	// When this task was scheduled by the server
+	ScheduledTime *time.Time `protobuf:"bytes,12,opt,name=scheduled_time,json=scheduledTime,proto3,stdtime" json:"scheduled_time,omitempty"`
+	// When the current workflow task started event was generated, meaning the current attempt.
+	StartedTime *time.Time `protobuf:"bytes,13,opt,name=started_time,json=startedTime,proto3,stdtime" json:"started_time,omitempty"`
+	// Queries that should be executed after applying the history in this task. Responses should be
+	// attached to `RespondWorkflowTaskCompletedRequest::query_results`
+	Queries map[string]*v16.WorkflowQuery `protobuf:"bytes,14,rep,name=queries,proto3" json:"queries,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (m *PollWorkflowTaskQueueResponse) Reset()      { *m = PollWorkflowTaskQueueResponse{} }
 func (*PollWorkflowTaskQueueResponse) ProtoMessage() {}
 func (*PollWorkflowTaskQueueResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{15}
+	return fileDescriptor_2c30b34f996ae016, []int{17}
 }
 func (m *PollWorkflowTaskQueueResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1281,21 +1452,34 @@ func (m *PollWorkflowTaskQueueResponse) GetQueries() map[string]*v16.WorkflowQue
 }
 
 type RespondWorkflowTaskCompletedRequest struct {
-	TaskToken                  []byte                              `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
-	Commands                   []*v17.Command                      `protobuf:"bytes,2,rep,name=commands,proto3" json:"commands,omitempty"`
-	Identity                   string                              `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	StickyAttributes           *v14.StickyExecutionAttributes      `protobuf:"bytes,4,opt,name=sticky_attributes,json=stickyAttributes,proto3" json:"sticky_attributes,omitempty"`
-	ReturnNewWorkflowTask      bool                                `protobuf:"varint,5,opt,name=return_new_workflow_task,json=returnNewWorkflowTask,proto3" json:"return_new_workflow_task,omitempty"`
-	ForceCreateNewWorkflowTask bool                                `protobuf:"varint,6,opt,name=force_create_new_workflow_task,json=forceCreateNewWorkflowTask,proto3" json:"force_create_new_workflow_task,omitempty"`
-	BinaryChecksum             string                              `protobuf:"bytes,7,opt,name=binary_checksum,json=binaryChecksum,proto3" json:"binary_checksum,omitempty"`
-	QueryResults               map[string]*v16.WorkflowQueryResult `protobuf:"bytes,8,rep,name=query_results,json=queryResults,proto3" json:"query_results,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	Namespace                  string                              `protobuf:"bytes,9,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// The task token as received in `PollWorkflowTaskQueueResponse`
+	TaskToken []byte `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
+	// A list of commands generated when driving the workflow code in response to the new task
+	Commands []*v17.Command `protobuf:"bytes,2,rep,name=commands,proto3" json:"commands,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	// May be set by workers to indicate that the worker desires future tasks to be provided with
+	// incremental history on a sticky queue.
+	StickyAttributes *v14.StickyExecutionAttributes `protobuf:"bytes,4,opt,name=sticky_attributes,json=stickyAttributes,proto3" json:"sticky_attributes,omitempty"`
+	// If set, the worker wishes to immediately receive the next workflow task as a response to
+	// this completion. This can save on polling round-trips.
+	ReturnNewWorkflowTask bool `protobuf:"varint,5,opt,name=return_new_workflow_task,json=returnNewWorkflowTask,proto3" json:"return_new_workflow_task,omitempty"`
+	// Can be used to *force* creation of a new workflow task, even if no commands have resolved or
+	// one would not otherwise have been generated. This is used when the worker knows it is doing
+	// something useful, but cannot complete it within the workflow task timeout. Local activities
+	// which run for longer than the task timeout being the prime example.
+	ForceCreateNewWorkflowTask bool `protobuf:"varint,6,opt,name=force_create_new_workflow_task,json=forceCreateNewWorkflowTask,proto3" json:"force_create_new_workflow_task,omitempty"`
+	// Worker process' unique binary id
+	BinaryChecksum string `protobuf:"bytes,7,opt,name=binary_checksum,json=binaryChecksum,proto3" json:"binary_checksum,omitempty"`
+	// Responses to the `queries` field in the task being responded to
+	QueryResults map[string]*v16.WorkflowQueryResult `protobuf:"bytes,8,rep,name=query_results,json=queryResults,proto3" json:"query_results,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Namespace    string                              `protobuf:"bytes,9,opt,name=namespace,proto3" json:"namespace,omitempty"`
 }
 
 func (m *RespondWorkflowTaskCompletedRequest) Reset()      { *m = RespondWorkflowTaskCompletedRequest{} }
 func (*RespondWorkflowTaskCompletedRequest) ProtoMessage() {}
 func (*RespondWorkflowTaskCompletedRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{16}
+	return fileDescriptor_2c30b34f996ae016, []int{18}
 }
 func (m *RespondWorkflowTaskCompletedRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1388,13 +1572,14 @@ func (m *RespondWorkflowTaskCompletedRequest) GetNamespace() string {
 }
 
 type RespondWorkflowTaskCompletedResponse struct {
+	// See `RespondWorkflowTaskCompletedResponse::return_new_workflow_task`
 	WorkflowTask *PollWorkflowTaskQueueResponse `protobuf:"bytes,1,opt,name=workflow_task,json=workflowTask,proto3" json:"workflow_task,omitempty"`
 }
 
 func (m *RespondWorkflowTaskCompletedResponse) Reset()      { *m = RespondWorkflowTaskCompletedResponse{} }
 func (*RespondWorkflowTaskCompletedResponse) ProtoMessage() {}
 func (*RespondWorkflowTaskCompletedResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{17}
+	return fileDescriptor_2c30b34f996ae016, []int{19}
 }
 func (m *RespondWorkflowTaskCompletedResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1431,18 +1616,24 @@ func (m *RespondWorkflowTaskCompletedResponse) GetWorkflowTask() *PollWorkflowTa
 }
 
 type RespondWorkflowTaskFailedRequest struct {
-	TaskToken      []byte                      `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
-	Cause          v11.WorkflowTaskFailedCause `protobuf:"varint,2,opt,name=cause,proto3,enum=temporal.api.enums.v1.WorkflowTaskFailedCause" json:"cause,omitempty"`
-	Failure        *v18.Failure                `protobuf:"bytes,3,opt,name=failure,proto3" json:"failure,omitempty"`
-	Identity       string                      `protobuf:"bytes,4,opt,name=identity,proto3" json:"identity,omitempty"`
-	BinaryChecksum string                      `protobuf:"bytes,5,opt,name=binary_checksum,json=binaryChecksum,proto3" json:"binary_checksum,omitempty"`
-	Namespace      string                      `protobuf:"bytes,6,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// The task token as received in `PollWorkflowTaskQueueResponse`
+	TaskToken []byte `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
+	// Why did the task fail? It's important to note that many of the variants in this enum cannot
+	// apply to worker responses. See the type's doc for more.
+	Cause v11.WorkflowTaskFailedCause `protobuf:"varint,2,opt,name=cause,proto3,enum=temporal.api.enums.v1.WorkflowTaskFailedCause" json:"cause,omitempty"`
+	// Failure details
+	Failure *v18.Failure `protobuf:"bytes,3,opt,name=failure,proto3" json:"failure,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,4,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Worker process' unique binary id
+	BinaryChecksum string `protobuf:"bytes,5,opt,name=binary_checksum,json=binaryChecksum,proto3" json:"binary_checksum,omitempty"`
+	Namespace      string `protobuf:"bytes,6,opt,name=namespace,proto3" json:"namespace,omitempty"`
 }
 
 func (m *RespondWorkflowTaskFailedRequest) Reset()      { *m = RespondWorkflowTaskFailedRequest{} }
 func (*RespondWorkflowTaskFailedRequest) ProtoMessage() {}
 func (*RespondWorkflowTaskFailedRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{18}
+	return fileDescriptor_2c30b34f996ae016, []int{20}
 }
 func (m *RespondWorkflowTaskFailedRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1519,7 +1710,7 @@ type RespondWorkflowTaskFailedResponse struct {
 func (m *RespondWorkflowTaskFailedResponse) Reset()      { *m = RespondWorkflowTaskFailedResponse{} }
 func (*RespondWorkflowTaskFailedResponse) ProtoMessage() {}
 func (*RespondWorkflowTaskFailedResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{19}
+	return fileDescriptor_2c30b34f996ae016, []int{21}
 }
 func (m *RespondWorkflowTaskFailedResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1549,8 +1740,9 @@ func (m *RespondWorkflowTaskFailedResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_RespondWorkflowTaskFailedResponse proto.InternalMessageInfo
 
 type PollActivityTaskQueueRequest struct {
-	Namespace         string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	TaskQueue         *v14.TaskQueue         `protobuf:"bytes,2,opt,name=task_queue,json=taskQueue,proto3" json:"task_queue,omitempty"`
+	Namespace string         `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	TaskQueue *v14.TaskQueue `protobuf:"bytes,2,opt,name=task_queue,json=taskQueue,proto3" json:"task_queue,omitempty"`
+	// The identity of the worker/client
 	Identity          string                 `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
 	TaskQueueMetadata *v14.TaskQueueMetadata `protobuf:"bytes,4,opt,name=task_queue_metadata,json=taskQueueMetadata,proto3" json:"task_queue_metadata,omitempty"`
 }
@@ -1558,7 +1750,7 @@ type PollActivityTaskQueueRequest struct {
 func (m *PollActivityTaskQueueRequest) Reset()      { *m = PollActivityTaskQueueRequest{} }
 func (*PollActivityTaskQueueRequest) ProtoMessage() {}
 func (*PollActivityTaskQueueRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{20}
+	return fileDescriptor_2c30b34f996ae016, []int{22}
 }
 func (m *PollActivityTaskQueueRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1616,37 +1808,57 @@ func (m *PollActivityTaskQueueRequest) GetTaskQueueMetadata() *v14.TaskQueueMeta
 }
 
 type PollActivityTaskQueueResponse struct {
-	TaskToken                   []byte                 `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
-	WorkflowNamespace           string                 `protobuf:"bytes,2,opt,name=workflow_namespace,json=workflowNamespace,proto3" json:"workflow_namespace,omitempty"`
-	WorkflowType                *v13.WorkflowType      `protobuf:"bytes,3,opt,name=workflow_type,json=workflowType,proto3" json:"workflow_type,omitempty"`
-	WorkflowExecution           *v13.WorkflowExecution `protobuf:"bytes,4,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
-	ActivityType                *v13.ActivityType      `protobuf:"bytes,5,opt,name=activity_type,json=activityType,proto3" json:"activity_type,omitempty"`
-	ActivityId                  string                 `protobuf:"bytes,6,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
-	Header                      *v13.Header            `protobuf:"bytes,7,opt,name=header,proto3" json:"header,omitempty"`
-	Input                       *v13.Payloads          `protobuf:"bytes,8,opt,name=input,proto3" json:"input,omitempty"`
-	HeartbeatDetails            *v13.Payloads          `protobuf:"bytes,9,opt,name=heartbeat_details,json=heartbeatDetails,proto3" json:"heartbeat_details,omitempty"`
-	ScheduledTime               *time.Time             `protobuf:"bytes,10,opt,name=scheduled_time,json=scheduledTime,proto3,stdtime" json:"scheduled_time,omitempty"`
-	CurrentAttemptScheduledTime *time.Time             `protobuf:"bytes,11,opt,name=current_attempt_scheduled_time,json=currentAttemptScheduledTime,proto3,stdtime" json:"current_attempt_scheduled_time,omitempty"`
-	StartedTime                 *time.Time             `protobuf:"bytes,12,opt,name=started_time,json=startedTime,proto3,stdtime" json:"started_time,omitempty"`
-	Attempt                     int32                  `protobuf:"varint,13,opt,name=attempt,proto3" json:"attempt,omitempty"`
+	// A unique identifier for this task
+	TaskToken []byte `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
+	// The namespace the workflow which requested this activity lives in
+	WorkflowNamespace string `protobuf:"bytes,2,opt,name=workflow_namespace,json=workflowNamespace,proto3" json:"workflow_namespace,omitempty"`
+	// Type of the requesting workflow
+	WorkflowType *v13.WorkflowType `protobuf:"bytes,3,opt,name=workflow_type,json=workflowType,proto3" json:"workflow_type,omitempty"`
+	// Execution info of the requesting workflow
+	WorkflowExecution *v13.WorkflowExecution `protobuf:"bytes,4,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
+	ActivityType      *v13.ActivityType      `protobuf:"bytes,5,opt,name=activity_type,json=activityType,proto3" json:"activity_type,omitempty"`
+	// The autogenerated or user specified identifier of this activity. Can be used to complete the
+	// activity via `RespondActivityTaskCompletedById`. May be re-used as long as the last usage
+	// has resolved, but unique IDs for every activity invocation is a good idea.
+	ActivityId string `protobuf:"bytes,6,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
+	// Headers specified by the scheduling workflow. Commonly used to propagate contextual info
+	// from the workflow to its activities. For example, tracing contexts.
+	Header *v13.Header `protobuf:"bytes,7,opt,name=header,proto3" json:"header,omitempty"`
+	// Arguments to the activity invocation
+	Input *v13.Payloads `protobuf:"bytes,8,opt,name=input,proto3" json:"input,omitempty"`
+	// Details of the last heartbeat that was recorded for this activity as of the time this task
+	// was delivered.
+	HeartbeatDetails *v13.Payloads `protobuf:"bytes,9,opt,name=heartbeat_details,json=heartbeatDetails,proto3" json:"heartbeat_details,omitempty"`
+	// When was this task first scheduled
+	ScheduledTime *time.Time `protobuf:"bytes,10,opt,name=scheduled_time,json=scheduledTime,proto3,stdtime" json:"scheduled_time,omitempty"`
+	// When was this task attempt scheduled
+	CurrentAttemptScheduledTime *time.Time `protobuf:"bytes,11,opt,name=current_attempt_scheduled_time,json=currentAttemptScheduledTime,proto3,stdtime" json:"current_attempt_scheduled_time,omitempty"`
+	// When was this task started (this attempt)
+	StartedTime *time.Time `protobuf:"bytes,12,opt,name=started_time,json=startedTime,proto3,stdtime" json:"started_time,omitempty"`
+	// Starting at 1, the number of attempts to perform this activity
+	Attempt int32 `protobuf:"varint,13,opt,name=attempt,proto3" json:"attempt,omitempty"`
+	// First scheduled -> final result reported timeout
+	//
 	// (-- api-linter: core::0140::prepositions=disabled
 	//     aip.dev/not-precedent: "to" is used to indicate interval. --)
 	ScheduleToCloseTimeout *time.Duration `protobuf:"bytes,14,opt,name=schedule_to_close_timeout,json=scheduleToCloseTimeout,proto3,stdduration" json:"schedule_to_close_timeout,omitempty"`
+	// Current attempt start -> final result reported timeout
+	//
 	// (-- api-linter: core::0140::prepositions=disabled
 	//     aip.dev/not-precedent: "to" is used to indicate interval. --)
 	StartToCloseTimeout *time.Duration `protobuf:"bytes,15,opt,name=start_to_close_timeout,json=startToCloseTimeout,proto3,stdduration" json:"start_to_close_timeout,omitempty"`
-	HeartbeatTimeout    *time.Duration `protobuf:"bytes,16,opt,name=heartbeat_timeout,json=heartbeatTimeout,proto3,stdduration" json:"heartbeat_timeout,omitempty"`
-	// This is an actual retry policy the service uses.
-	// It can be different from the one provided (or not) during activity scheduling
-	// as the service can override the provided one in case its values are not specified
-	// or exceed configured system limits.
+	// Window within which the activity must report a heartbeat, or be timed out.
+	HeartbeatTimeout *time.Duration `protobuf:"bytes,16,opt,name=heartbeat_timeout,json=heartbeatTimeout,proto3,stdduration" json:"heartbeat_timeout,omitempty"`
+	// This is the retry policy the service uses which may be different from the one provided
+	// (or not) during activity scheduling. The service can override the provided one if some
+	// values are not specified or exceed configured system limits.
 	RetryPolicy *v13.RetryPolicy `protobuf:"bytes,17,opt,name=retry_policy,json=retryPolicy,proto3" json:"retry_policy,omitempty"`
 }
 
 func (m *PollActivityTaskQueueResponse) Reset()      { *m = PollActivityTaskQueueResponse{} }
 func (*PollActivityTaskQueueResponse) ProtoMessage() {}
 func (*PollActivityTaskQueueResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{21}
+	return fileDescriptor_2c30b34f996ae016, []int{23}
 }
 func (m *PollActivityTaskQueueResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1795,16 +2007,19 @@ func (m *PollActivityTaskQueueResponse) GetRetryPolicy() *v13.RetryPolicy {
 }
 
 type RecordActivityTaskHeartbeatRequest struct {
-	TaskToken []byte        `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
-	Details   *v13.Payloads `protobuf:"bytes,2,opt,name=details,proto3" json:"details,omitempty"`
-	Identity  string        `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	Namespace string        `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// The task token as received in `PollActivityTaskQueueResponse`
+	TaskToken []byte `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
+	// Arbitrary data, of which the most recent call is kept, to store for this activity
+	Details *v13.Payloads `protobuf:"bytes,2,opt,name=details,proto3" json:"details,omitempty"`
+	// The identity of the worker/client
+	Identity  string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	Namespace string `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
 }
 
 func (m *RecordActivityTaskHeartbeatRequest) Reset()      { *m = RecordActivityTaskHeartbeatRequest{} }
 func (*RecordActivityTaskHeartbeatRequest) ProtoMessage() {}
 func (*RecordActivityTaskHeartbeatRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{22}
+	return fileDescriptor_2c30b34f996ae016, []int{24}
 }
 func (m *RecordActivityTaskHeartbeatRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1862,13 +2077,15 @@ func (m *RecordActivityTaskHeartbeatRequest) GetNamespace() string {
 }
 
 type RecordActivityTaskHeartbeatResponse struct {
+	// Will be set to true if the activity has been asked to cancel itself. The SDK should then
+	// notify the activity of cancellation if it is still running.
 	CancelRequested bool `protobuf:"varint,1,opt,name=cancel_requested,json=cancelRequested,proto3" json:"cancel_requested,omitempty"`
 }
 
 func (m *RecordActivityTaskHeartbeatResponse) Reset()      { *m = RecordActivityTaskHeartbeatResponse{} }
 func (*RecordActivityTaskHeartbeatResponse) ProtoMessage() {}
 func (*RecordActivityTaskHeartbeatResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{23}
+	return fileDescriptor_2c30b34f996ae016, []int{25}
 }
 func (m *RecordActivityTaskHeartbeatResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1905,12 +2122,18 @@ func (m *RecordActivityTaskHeartbeatResponse) GetCancelRequested() bool {
 }
 
 type RecordActivityTaskHeartbeatByIdRequest struct {
-	Namespace  string        `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	WorkflowId string        `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
-	RunId      string        `protobuf:"bytes,3,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
-	ActivityId string        `protobuf:"bytes,4,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
-	Details    *v13.Payloads `protobuf:"bytes,5,opt,name=details,proto3" json:"details,omitempty"`
-	Identity   string        `protobuf:"bytes,6,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Namespace of the workflow which scheduled this activity
+	Namespace string `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// Id of the workflow which scheduled this activity
+	WorkflowId string `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
+	// Run Id of the workflow which scheduled this activity
+	RunId string `protobuf:"bytes,3,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
+	// Id of the activity we're heartbeating
+	ActivityId string `protobuf:"bytes,4,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
+	// Arbitrary data, of which the most recent call is kept, to store for this activity
+	Details *v13.Payloads `protobuf:"bytes,5,opt,name=details,proto3" json:"details,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,6,opt,name=identity,proto3" json:"identity,omitempty"`
 }
 
 func (m *RecordActivityTaskHeartbeatByIdRequest) Reset() {
@@ -1918,7 +2141,7 @@ func (m *RecordActivityTaskHeartbeatByIdRequest) Reset() {
 }
 func (*RecordActivityTaskHeartbeatByIdRequest) ProtoMessage() {}
 func (*RecordActivityTaskHeartbeatByIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{24}
+	return fileDescriptor_2c30b34f996ae016, []int{26}
 }
 func (m *RecordActivityTaskHeartbeatByIdRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1990,6 +2213,8 @@ func (m *RecordActivityTaskHeartbeatByIdRequest) GetIdentity() string {
 }
 
 type RecordActivityTaskHeartbeatByIdResponse struct {
+	// Will be set to true if the activity has been asked to cancel itself. The SDK should then
+	// notify the activity of cancellation if it is still running.
 	CancelRequested bool `protobuf:"varint,1,opt,name=cancel_requested,json=cancelRequested,proto3" json:"cancel_requested,omitempty"`
 }
 
@@ -1998,7 +2223,7 @@ func (m *RecordActivityTaskHeartbeatByIdResponse) Reset() {
 }
 func (*RecordActivityTaskHeartbeatByIdResponse) ProtoMessage() {}
 func (*RecordActivityTaskHeartbeatByIdResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{25}
+	return fileDescriptor_2c30b34f996ae016, []int{27}
 }
 func (m *RecordActivityTaskHeartbeatByIdResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2035,16 +2260,19 @@ func (m *RecordActivityTaskHeartbeatByIdResponse) GetCancelRequested() bool {
 }
 
 type RespondActivityTaskCompletedRequest struct {
-	TaskToken []byte        `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
-	Result    *v13.Payloads `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
-	Identity  string        `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	Namespace string        `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// The task token as received in `PollActivityTaskQueueResponse`
+	TaskToken []byte `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
+	// The result of successfully executing the activity
+	Result *v13.Payloads `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
+	// The identity of the worker/client
+	Identity  string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	Namespace string `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
 }
 
 func (m *RespondActivityTaskCompletedRequest) Reset()      { *m = RespondActivityTaskCompletedRequest{} }
 func (*RespondActivityTaskCompletedRequest) ProtoMessage() {}
 func (*RespondActivityTaskCompletedRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{26}
+	return fileDescriptor_2c30b34f996ae016, []int{28}
 }
 func (m *RespondActivityTaskCompletedRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2107,7 +2335,7 @@ type RespondActivityTaskCompletedResponse struct {
 func (m *RespondActivityTaskCompletedResponse) Reset()      { *m = RespondActivityTaskCompletedResponse{} }
 func (*RespondActivityTaskCompletedResponse) ProtoMessage() {}
 func (*RespondActivityTaskCompletedResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{27}
+	return fileDescriptor_2c30b34f996ae016, []int{29}
 }
 func (m *RespondActivityTaskCompletedResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2137,12 +2365,18 @@ func (m *RespondActivityTaskCompletedResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_RespondActivityTaskCompletedResponse proto.InternalMessageInfo
 
 type RespondActivityTaskCompletedByIdRequest struct {
-	Namespace  string        `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	WorkflowId string        `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
-	RunId      string        `protobuf:"bytes,3,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
-	ActivityId string        `protobuf:"bytes,4,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
-	Result     *v13.Payloads `protobuf:"bytes,5,opt,name=result,proto3" json:"result,omitempty"`
-	Identity   string        `protobuf:"bytes,6,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Namespace of the workflow which scheduled this activity
+	Namespace string `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// Id of the workflow which scheduled this activity
+	WorkflowId string `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
+	// Run Id of the workflow which scheduled this activity
+	RunId string `protobuf:"bytes,3,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
+	// Id of the activity to complete
+	ActivityId string `protobuf:"bytes,4,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
+	// The serialized result of activity execution
+	Result *v13.Payloads `protobuf:"bytes,5,opt,name=result,proto3" json:"result,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,6,opt,name=identity,proto3" json:"identity,omitempty"`
 }
 
 func (m *RespondActivityTaskCompletedByIdRequest) Reset() {
@@ -2150,7 +2384,7 @@ func (m *RespondActivityTaskCompletedByIdRequest) Reset() {
 }
 func (*RespondActivityTaskCompletedByIdRequest) ProtoMessage() {}
 func (*RespondActivityTaskCompletedByIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{28}
+	return fileDescriptor_2c30b34f996ae016, []int{30}
 }
 func (m *RespondActivityTaskCompletedByIdRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2229,7 +2463,7 @@ func (m *RespondActivityTaskCompletedByIdResponse) Reset() {
 }
 func (*RespondActivityTaskCompletedByIdResponse) ProtoMessage() {}
 func (*RespondActivityTaskCompletedByIdResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{29}
+	return fileDescriptor_2c30b34f996ae016, []int{31}
 }
 func (m *RespondActivityTaskCompletedByIdResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2259,16 +2493,21 @@ func (m *RespondActivityTaskCompletedByIdResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_RespondActivityTaskCompletedByIdResponse proto.InternalMessageInfo
 
 type RespondActivityTaskFailedRequest struct {
-	TaskToken []byte       `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
-	Failure   *v18.Failure `protobuf:"bytes,2,opt,name=failure,proto3" json:"failure,omitempty"`
-	Identity  string       `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	Namespace string       `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// The task token as received in `PollActivityTaskQueueResponse`
+	TaskToken []byte `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
+	// Detailed failure information
+	Failure *v18.Failure `protobuf:"bytes,2,opt,name=failure,proto3" json:"failure,omitempty"`
+	// The identity of the worker/client
+	Identity  string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	Namespace string `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// Additional details to be stored as last activity heartbeat
+	LastHeartbeatDetails *v13.Payloads `protobuf:"bytes,5,opt,name=last_heartbeat_details,json=lastHeartbeatDetails,proto3" json:"last_heartbeat_details,omitempty"`
 }
 
 func (m *RespondActivityTaskFailedRequest) Reset()      { *m = RespondActivityTaskFailedRequest{} }
 func (*RespondActivityTaskFailedRequest) ProtoMessage() {}
 func (*RespondActivityTaskFailedRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{30}
+	return fileDescriptor_2c30b34f996ae016, []int{32}
 }
 func (m *RespondActivityTaskFailedRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2325,13 +2564,23 @@ func (m *RespondActivityTaskFailedRequest) GetNamespace() string {
 	return ""
 }
 
+func (m *RespondActivityTaskFailedRequest) GetLastHeartbeatDetails() *v13.Payloads {
+	if m != nil {
+		return m.LastHeartbeatDetails
+	}
+	return nil
+}
+
 type RespondActivityTaskFailedResponse struct {
+	// Server validation failures could include
+	// last_heartbeat_details payload is too large, request failure is too large
+	Failures []*v18.Failure `protobuf:"bytes,1,rep,name=failures,proto3" json:"failures,omitempty"`
 }
 
 func (m *RespondActivityTaskFailedResponse) Reset()      { *m = RespondActivityTaskFailedResponse{} }
 func (*RespondActivityTaskFailedResponse) ProtoMessage() {}
 func (*RespondActivityTaskFailedResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{31}
+	return fileDescriptor_2c30b34f996ae016, []int{33}
 }
 func (m *RespondActivityTaskFailedResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2360,19 +2609,34 @@ func (m *RespondActivityTaskFailedResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_RespondActivityTaskFailedResponse proto.InternalMessageInfo
 
+func (m *RespondActivityTaskFailedResponse) GetFailures() []*v18.Failure {
+	if m != nil {
+		return m.Failures
+	}
+	return nil
+}
+
 type RespondActivityTaskFailedByIdRequest struct {
-	Namespace  string       `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	WorkflowId string       `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
-	RunId      string       `protobuf:"bytes,3,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
-	ActivityId string       `protobuf:"bytes,4,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
-	Failure    *v18.Failure `protobuf:"bytes,5,opt,name=failure,proto3" json:"failure,omitempty"`
-	Identity   string       `protobuf:"bytes,6,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Namespace of the workflow which scheduled this activity
+	Namespace string `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// Id of the workflow which scheduled this activity
+	WorkflowId string `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
+	// Run Id of the workflow which scheduled this activity
+	RunId string `protobuf:"bytes,3,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
+	// Id of the activity to fail
+	ActivityId string `protobuf:"bytes,4,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
+	// Detailed failure information
+	Failure *v18.Failure `protobuf:"bytes,5,opt,name=failure,proto3" json:"failure,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,6,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Additional details to be stored as last activity heartbeat
+	LastHeartbeatDetails *v13.Payloads `protobuf:"bytes,7,opt,name=last_heartbeat_details,json=lastHeartbeatDetails,proto3" json:"last_heartbeat_details,omitempty"`
 }
 
 func (m *RespondActivityTaskFailedByIdRequest) Reset()      { *m = RespondActivityTaskFailedByIdRequest{} }
 func (*RespondActivityTaskFailedByIdRequest) ProtoMessage() {}
 func (*RespondActivityTaskFailedByIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{32}
+	return fileDescriptor_2c30b34f996ae016, []int{34}
 }
 func (m *RespondActivityTaskFailedByIdRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2443,13 +2707,23 @@ func (m *RespondActivityTaskFailedByIdRequest) GetIdentity() string {
 	return ""
 }
 
+func (m *RespondActivityTaskFailedByIdRequest) GetLastHeartbeatDetails() *v13.Payloads {
+	if m != nil {
+		return m.LastHeartbeatDetails
+	}
+	return nil
+}
+
 type RespondActivityTaskFailedByIdResponse struct {
+	// Server validation failures could include
+	// last_heartbeat_details payload is too large, request failure is too large
+	Failures []*v18.Failure `protobuf:"bytes,1,rep,name=failures,proto3" json:"failures,omitempty"`
 }
 
 func (m *RespondActivityTaskFailedByIdResponse) Reset()      { *m = RespondActivityTaskFailedByIdResponse{} }
 func (*RespondActivityTaskFailedByIdResponse) ProtoMessage() {}
 func (*RespondActivityTaskFailedByIdResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{33}
+	return fileDescriptor_2c30b34f996ae016, []int{35}
 }
 func (m *RespondActivityTaskFailedByIdResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2478,17 +2752,27 @@ func (m *RespondActivityTaskFailedByIdResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_RespondActivityTaskFailedByIdResponse proto.InternalMessageInfo
 
+func (m *RespondActivityTaskFailedByIdResponse) GetFailures() []*v18.Failure {
+	if m != nil {
+		return m.Failures
+	}
+	return nil
+}
+
 type RespondActivityTaskCanceledRequest struct {
-	TaskToken []byte        `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
-	Details   *v13.Payloads `protobuf:"bytes,2,opt,name=details,proto3" json:"details,omitempty"`
-	Identity  string        `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	Namespace string        `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// The task token as received in `PollActivityTaskQueueResponse`
+	TaskToken []byte `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
+	// Serialized additional information to attach to the cancellation
+	Details *v13.Payloads `protobuf:"bytes,2,opt,name=details,proto3" json:"details,omitempty"`
+	// The identity of the worker/client
+	Identity  string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	Namespace string `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
 }
 
 func (m *RespondActivityTaskCanceledRequest) Reset()      { *m = RespondActivityTaskCanceledRequest{} }
 func (*RespondActivityTaskCanceledRequest) ProtoMessage() {}
 func (*RespondActivityTaskCanceledRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{34}
+	return fileDescriptor_2c30b34f996ae016, []int{36}
 }
 func (m *RespondActivityTaskCanceledRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2551,7 +2835,7 @@ type RespondActivityTaskCanceledResponse struct {
 func (m *RespondActivityTaskCanceledResponse) Reset()      { *m = RespondActivityTaskCanceledResponse{} }
 func (*RespondActivityTaskCanceledResponse) ProtoMessage() {}
 func (*RespondActivityTaskCanceledResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{35}
+	return fileDescriptor_2c30b34f996ae016, []int{37}
 }
 func (m *RespondActivityTaskCanceledResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2581,12 +2865,18 @@ func (m *RespondActivityTaskCanceledResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_RespondActivityTaskCanceledResponse proto.InternalMessageInfo
 
 type RespondActivityTaskCanceledByIdRequest struct {
-	Namespace  string        `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	WorkflowId string        `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
-	RunId      string        `protobuf:"bytes,3,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
-	ActivityId string        `protobuf:"bytes,4,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
-	Details    *v13.Payloads `protobuf:"bytes,5,opt,name=details,proto3" json:"details,omitempty"`
-	Identity   string        `protobuf:"bytes,6,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Namespace of the workflow which scheduled this activity
+	Namespace string `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// Id of the workflow which scheduled this activity
+	WorkflowId string `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
+	// Run Id of the workflow which scheduled this activity
+	RunId string `protobuf:"bytes,3,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
+	// Id of the activity to confirm is cancelled
+	ActivityId string `protobuf:"bytes,4,opt,name=activity_id,json=activityId,proto3" json:"activity_id,omitempty"`
+	// Serialized additional information to attach to the cancellation
+	Details *v13.Payloads `protobuf:"bytes,5,opt,name=details,proto3" json:"details,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,6,opt,name=identity,proto3" json:"identity,omitempty"`
 }
 
 func (m *RespondActivityTaskCanceledByIdRequest) Reset() {
@@ -2594,7 +2884,7 @@ func (m *RespondActivityTaskCanceledByIdRequest) Reset() {
 }
 func (*RespondActivityTaskCanceledByIdRequest) ProtoMessage() {}
 func (*RespondActivityTaskCanceledByIdRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{36}
+	return fileDescriptor_2c30b34f996ae016, []int{38}
 }
 func (m *RespondActivityTaskCanceledByIdRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2673,7 +2963,7 @@ func (m *RespondActivityTaskCanceledByIdResponse) Reset() {
 }
 func (*RespondActivityTaskCanceledByIdResponse) ProtoMessage() {}
 func (*RespondActivityTaskCanceledByIdResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{37}
+	return fileDescriptor_2c30b34f996ae016, []int{39}
 }
 func (m *RespondActivityTaskCanceledByIdResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2703,17 +2993,22 @@ func (m *RespondActivityTaskCanceledByIdResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_RespondActivityTaskCanceledByIdResponse proto.InternalMessageInfo
 
 type RequestCancelWorkflowExecutionRequest struct {
-	Namespace           string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	WorkflowExecution   *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
-	Identity            string                 `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	RequestId           string                 `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	FirstExecutionRunId string                 `protobuf:"bytes,5,opt,name=first_execution_run_id,json=firstExecutionRunId,proto3" json:"first_execution_run_id,omitempty"`
+	Namespace         string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	WorkflowExecution *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Used to de-dupe cancellation requests
+	RequestId string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// If set, this call will error if the most recent (if no run id is set on
+	// `workflow_execution`), or specified (if it is) workflow execution is not part of the same
+	// execution chain as this id.
+	FirstExecutionRunId string `protobuf:"bytes,5,opt,name=first_execution_run_id,json=firstExecutionRunId,proto3" json:"first_execution_run_id,omitempty"`
 }
 
 func (m *RequestCancelWorkflowExecutionRequest) Reset()      { *m = RequestCancelWorkflowExecutionRequest{} }
 func (*RequestCancelWorkflowExecutionRequest) ProtoMessage() {}
 func (*RequestCancelWorkflowExecutionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{38}
+	return fileDescriptor_2c30b34f996ae016, []int{40}
 }
 func (m *RequestCancelWorkflowExecutionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2785,7 +3080,7 @@ func (m *RequestCancelWorkflowExecutionResponse) Reset() {
 }
 func (*RequestCancelWorkflowExecutionResponse) ProtoMessage() {}
 func (*RequestCancelWorkflowExecutionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{39}
+	return fileDescriptor_2c30b34f996ae016, []int{41}
 }
 func (m *RequestCancelWorkflowExecutionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2817,17 +3112,25 @@ var xxx_messageInfo_RequestCancelWorkflowExecutionResponse proto.InternalMessage
 type SignalWorkflowExecutionRequest struct {
 	Namespace         string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	WorkflowExecution *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
-	SignalName        string                 `protobuf:"bytes,3,opt,name=signal_name,json=signalName,proto3" json:"signal_name,omitempty"`
-	Input             *v13.Payloads          `protobuf:"bytes,4,opt,name=input,proto3" json:"input,omitempty"`
-	Identity          string                 `protobuf:"bytes,5,opt,name=identity,proto3" json:"identity,omitempty"`
-	RequestId         string                 `protobuf:"bytes,6,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	Control           string                 `protobuf:"bytes,7,opt,name=control,proto3" json:"control,omitempty"`
+	// The workflow author-defined name of the signal to send to the workflow
+	SignalName string `protobuf:"bytes,3,opt,name=signal_name,json=signalName,proto3" json:"signal_name,omitempty"`
+	// Serialized value(s) to provide with the signal
+	Input *v13.Payloads `protobuf:"bytes,4,opt,name=input,proto3" json:"input,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,5,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Used to de-dupe sent signals
+	RequestId string `protobuf:"bytes,6,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Deprecated
+	Control string `protobuf:"bytes,7,opt,name=control,proto3" json:"control,omitempty"`
+	// Headers that are passed with the signal to the processing workflow.
+	// These can include things like auth or tracing tokens.
+	Header *v13.Header `protobuf:"bytes,8,opt,name=header,proto3" json:"header,omitempty"`
 }
 
 func (m *SignalWorkflowExecutionRequest) Reset()      { *m = SignalWorkflowExecutionRequest{} }
 func (*SignalWorkflowExecutionRequest) ProtoMessage() {}
 func (*SignalWorkflowExecutionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{40}
+	return fileDescriptor_2c30b34f996ae016, []int{42}
 }
 func (m *SignalWorkflowExecutionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2905,13 +3208,20 @@ func (m *SignalWorkflowExecutionRequest) GetControl() string {
 	return ""
 }
 
+func (m *SignalWorkflowExecutionRequest) GetHeader() *v13.Header {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
 type SignalWorkflowExecutionResponse struct {
 }
 
 func (m *SignalWorkflowExecutionResponse) Reset()      { *m = SignalWorkflowExecutionResponse{} }
 func (*SignalWorkflowExecutionResponse) ProtoMessage() {}
 func (*SignalWorkflowExecutionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{41}
+	return fileDescriptor_2c30b34f996ae016, []int{43}
 }
 func (m *SignalWorkflowExecutionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2944,22 +3254,30 @@ type SignalWithStartWorkflowExecutionRequest struct {
 	Namespace    string            `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	WorkflowId   string            `protobuf:"bytes,2,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
 	WorkflowType *v13.WorkflowType `protobuf:"bytes,3,opt,name=workflow_type,json=workflowType,proto3" json:"workflow_type,omitempty"`
-	TaskQueue    *v14.TaskQueue    `protobuf:"bytes,4,opt,name=task_queue,json=taskQueue,proto3" json:"task_queue,omitempty"`
-	Input        *v13.Payloads     `protobuf:"bytes,5,opt,name=input,proto3" json:"input,omitempty"`
+	// The task queue to start this workflow on, if it will be started
+	TaskQueue *v14.TaskQueue `protobuf:"bytes,4,opt,name=task_queue,json=taskQueue,proto3" json:"task_queue,omitempty"`
+	// Serialized arguments to the workflow. These are passed as arguments to the workflow function.
+	Input *v13.Payloads `protobuf:"bytes,5,opt,name=input,proto3" json:"input,omitempty"`
 	// Total workflow execution timeout including retries and continue as new
 	WorkflowExecutionTimeout *time.Duration `protobuf:"bytes,6,opt,name=workflow_execution_timeout,json=workflowExecutionTimeout,proto3,stdduration" json:"workflow_execution_timeout,omitempty"`
 	// Timeout of a single workflow run
 	WorkflowRunTimeout *time.Duration `protobuf:"bytes,7,opt,name=workflow_run_timeout,json=workflowRunTimeout,proto3,stdduration" json:"workflow_run_timeout,omitempty"`
 	// Timeout of a single workflow task
-	WorkflowTaskTimeout   *time.Duration            `protobuf:"bytes,8,opt,name=workflow_task_timeout,json=workflowTaskTimeout,proto3,stdduration" json:"workflow_task_timeout,omitempty"`
-	Identity              string                    `protobuf:"bytes,9,opt,name=identity,proto3" json:"identity,omitempty"`
+	WorkflowTaskTimeout *time.Duration `protobuf:"bytes,8,opt,name=workflow_task_timeout,json=workflowTaskTimeout,proto3,stdduration" json:"workflow_task_timeout,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,9,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Used to de-dupe signal w/ start requests
 	RequestId             string                    `protobuf:"bytes,10,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	WorkflowIdReusePolicy v11.WorkflowIdReusePolicy `protobuf:"varint,11,opt,name=workflow_id_reuse_policy,json=workflowIdReusePolicy,proto3,enum=temporal.api.enums.v1.WorkflowIdReusePolicy" json:"workflow_id_reuse_policy,omitempty"`
-	SignalName            string                    `protobuf:"bytes,12,opt,name=signal_name,json=signalName,proto3" json:"signal_name,omitempty"`
-	SignalInput           *v13.Payloads             `protobuf:"bytes,13,opt,name=signal_input,json=signalInput,proto3" json:"signal_input,omitempty"`
-	Control               string                    `protobuf:"bytes,14,opt,name=control,proto3" json:"control,omitempty"`
-	// Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE.
-	RetryPolicy      *v13.RetryPolicy      `protobuf:"bytes,15,opt,name=retry_policy,json=retryPolicy,proto3" json:"retry_policy,omitempty"`
+	// The workflow author-defined name of the signal to send to the workflow
+	SignalName string `protobuf:"bytes,12,opt,name=signal_name,json=signalName,proto3" json:"signal_name,omitempty"`
+	// Serialized value(s) to provide with the signal
+	SignalInput *v13.Payloads `protobuf:"bytes,13,opt,name=signal_input,json=signalInput,proto3" json:"signal_input,omitempty"`
+	// Deprecated
+	Control string `protobuf:"bytes,14,opt,name=control,proto3" json:"control,omitempty"`
+	// Retry policy for the workflow Default: WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE.
+	RetryPolicy *v13.RetryPolicy `protobuf:"bytes,15,opt,name=retry_policy,json=retryPolicy,proto3" json:"retry_policy,omitempty"`
+	// See https://docs.temporal.io/docs/content/what-is-a-temporal-cron-job/
 	CronSchedule     string                `protobuf:"bytes,16,opt,name=cron_schedule,json=cronSchedule,proto3" json:"cron_schedule,omitempty"`
 	Memo             *v13.Memo             `protobuf:"bytes,17,opt,name=memo,proto3" json:"memo,omitempty"`
 	SearchAttributes *v13.SearchAttributes `protobuf:"bytes,18,opt,name=search_attributes,json=searchAttributes,proto3" json:"search_attributes,omitempty"`
@@ -2971,7 +3289,7 @@ func (m *SignalWithStartWorkflowExecutionRequest) Reset() {
 }
 func (*SignalWithStartWorkflowExecutionRequest) ProtoMessage() {}
 func (*SignalWithStartWorkflowExecutionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{42}
+	return fileDescriptor_2c30b34f996ae016, []int{44}
 }
 func (m *SignalWithStartWorkflowExecutionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3142,7 +3460,7 @@ func (m *SignalWithStartWorkflowExecutionResponse) Reset() {
 }
 func (*SignalWithStartWorkflowExecutionResponse) ProtoMessage() {}
 func (*SignalWithStartWorkflowExecutionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{43}
+	return fileDescriptor_2c30b34f996ae016, []int{45}
 }
 func (m *SignalWithStartWorkflowExecutionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3179,17 +3497,22 @@ func (m *SignalWithStartWorkflowExecutionResponse) GetRunId() string {
 }
 
 type ResetWorkflowExecutionRequest struct {
-	Namespace                 string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	WorkflowExecution         *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
-	Reason                    string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
-	WorkflowTaskFinishEventId int64                  `protobuf:"varint,4,opt,name=workflow_task_finish_event_id,json=workflowTaskFinishEventId,proto3" json:"workflow_task_finish_event_id,omitempty"`
-	RequestId                 string                 `protobuf:"bytes,5,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	Namespace         string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	WorkflowExecution *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
+	Reason            string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
+	// The id of a `WORKFLOW_TASK_COMPLETED`,`WORKFLOW_TASK_TIMED_OUT`, `WORKFLOW_TASK_FAILED`, or
+	// `WORKFLOW_TASK_STARTED` event to reset to.
+	WorkflowTaskFinishEventId int64 `protobuf:"varint,4,opt,name=workflow_task_finish_event_id,json=workflowTaskFinishEventId,proto3" json:"workflow_task_finish_event_id,omitempty"`
+	// Used to de-dupe reset requests
+	RequestId string `protobuf:"bytes,5,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Should be removed. Appears unused.
+	ResetReapplyType v11.ResetReapplyType `protobuf:"varint,6,opt,name=reset_reapply_type,json=resetReapplyType,proto3,enum=temporal.api.enums.v1.ResetReapplyType" json:"reset_reapply_type,omitempty"`
 }
 
 func (m *ResetWorkflowExecutionRequest) Reset()      { *m = ResetWorkflowExecutionRequest{} }
 func (*ResetWorkflowExecutionRequest) ProtoMessage() {}
 func (*ResetWorkflowExecutionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{44}
+	return fileDescriptor_2c30b34f996ae016, []int{46}
 }
 func (m *ResetWorkflowExecutionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3253,6 +3576,13 @@ func (m *ResetWorkflowExecutionRequest) GetRequestId() string {
 	return ""
 }
 
+func (m *ResetWorkflowExecutionRequest) GetResetReapplyType() v11.ResetReapplyType {
+	if m != nil {
+		return m.ResetReapplyType
+	}
+	return v11.RESET_REAPPLY_TYPE_UNSPECIFIED
+}
+
 type ResetWorkflowExecutionResponse struct {
 	RunId string `protobuf:"bytes,1,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
 }
@@ -3260,7 +3590,7 @@ type ResetWorkflowExecutionResponse struct {
 func (m *ResetWorkflowExecutionResponse) Reset()      { *m = ResetWorkflowExecutionResponse{} }
 func (*ResetWorkflowExecutionResponse) ProtoMessage() {}
 func (*ResetWorkflowExecutionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{45}
+	return fileDescriptor_2c30b34f996ae016, []int{47}
 }
 func (m *ResetWorkflowExecutionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3297,18 +3627,23 @@ func (m *ResetWorkflowExecutionResponse) GetRunId() string {
 }
 
 type TerminateWorkflowExecutionRequest struct {
-	Namespace           string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	WorkflowExecution   *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
-	Reason              string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
-	Details             *v13.Payloads          `protobuf:"bytes,4,opt,name=details,proto3" json:"details,omitempty"`
-	Identity            string                 `protobuf:"bytes,5,opt,name=identity,proto3" json:"identity,omitempty"`
-	FirstExecutionRunId string                 `protobuf:"bytes,6,opt,name=first_execution_run_id,json=firstExecutionRunId,proto3" json:"first_execution_run_id,omitempty"`
+	Namespace         string                 `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	WorkflowExecution *v13.WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
+	Reason            string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
+	// Serialized additional information to attach to the termination event
+	Details *v13.Payloads `protobuf:"bytes,4,opt,name=details,proto3" json:"details,omitempty"`
+	// The identity of the worker/client
+	Identity string `protobuf:"bytes,5,opt,name=identity,proto3" json:"identity,omitempty"`
+	// If set, this call will error if the most recent (if no run id is set on
+	// `workflow_execution`), or specified (if it is) workflow execution is not part of the same
+	// execution chain as this id.
+	FirstExecutionRunId string `protobuf:"bytes,6,opt,name=first_execution_run_id,json=firstExecutionRunId,proto3" json:"first_execution_run_id,omitempty"`
 }
 
 func (m *TerminateWorkflowExecutionRequest) Reset()      { *m = TerminateWorkflowExecutionRequest{} }
 func (*TerminateWorkflowExecutionRequest) ProtoMessage() {}
 func (*TerminateWorkflowExecutionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{46}
+	return fileDescriptor_2c30b34f996ae016, []int{48}
 }
 func (m *TerminateWorkflowExecutionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3385,7 +3720,7 @@ type TerminateWorkflowExecutionResponse struct {
 func (m *TerminateWorkflowExecutionResponse) Reset()      { *m = TerminateWorkflowExecutionResponse{} }
 func (*TerminateWorkflowExecutionResponse) ProtoMessage() {}
 func (*TerminateWorkflowExecutionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{47}
+	return fileDescriptor_2c30b34f996ae016, []int{49}
 }
 func (m *TerminateWorkflowExecutionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3428,7 +3763,7 @@ type ListOpenWorkflowExecutionsRequest struct {
 func (m *ListOpenWorkflowExecutionsRequest) Reset()      { *m = ListOpenWorkflowExecutionsRequest{} }
 func (*ListOpenWorkflowExecutionsRequest) ProtoMessage() {}
 func (*ListOpenWorkflowExecutionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{48}
+	return fileDescriptor_2c30b34f996ae016, []int{50}
 }
 func (m *ListOpenWorkflowExecutionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3540,7 +3875,7 @@ type ListOpenWorkflowExecutionsResponse struct {
 func (m *ListOpenWorkflowExecutionsResponse) Reset()      { *m = ListOpenWorkflowExecutionsResponse{} }
 func (*ListOpenWorkflowExecutionsResponse) ProtoMessage() {}
 func (*ListOpenWorkflowExecutionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{49}
+	return fileDescriptor_2c30b34f996ae016, []int{51}
 }
 func (m *ListOpenWorkflowExecutionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3598,7 +3933,7 @@ type ListClosedWorkflowExecutionsRequest struct {
 func (m *ListClosedWorkflowExecutionsRequest) Reset()      { *m = ListClosedWorkflowExecutionsRequest{} }
 func (*ListClosedWorkflowExecutionsRequest) ProtoMessage() {}
 func (*ListClosedWorkflowExecutionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{50}
+	return fileDescriptor_2c30b34f996ae016, []int{52}
 }
 func (m *ListClosedWorkflowExecutionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3724,7 +4059,7 @@ type ListClosedWorkflowExecutionsResponse struct {
 func (m *ListClosedWorkflowExecutionsResponse) Reset()      { *m = ListClosedWorkflowExecutionsResponse{} }
 func (*ListClosedWorkflowExecutionsResponse) ProtoMessage() {}
 func (*ListClosedWorkflowExecutionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{51}
+	return fileDescriptor_2c30b34f996ae016, []int{53}
 }
 func (m *ListClosedWorkflowExecutionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3777,7 +4112,7 @@ type ListWorkflowExecutionsRequest struct {
 func (m *ListWorkflowExecutionsRequest) Reset()      { *m = ListWorkflowExecutionsRequest{} }
 func (*ListWorkflowExecutionsRequest) ProtoMessage() {}
 func (*ListWorkflowExecutionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{52}
+	return fileDescriptor_2c30b34f996ae016, []int{54}
 }
 func (m *ListWorkflowExecutionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3842,7 +4177,7 @@ type ListWorkflowExecutionsResponse struct {
 func (m *ListWorkflowExecutionsResponse) Reset()      { *m = ListWorkflowExecutionsResponse{} }
 func (*ListWorkflowExecutionsResponse) ProtoMessage() {}
 func (*ListWorkflowExecutionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{53}
+	return fileDescriptor_2c30b34f996ae016, []int{55}
 }
 func (m *ListWorkflowExecutionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3895,7 +4230,7 @@ type ListArchivedWorkflowExecutionsRequest struct {
 func (m *ListArchivedWorkflowExecutionsRequest) Reset()      { *m = ListArchivedWorkflowExecutionsRequest{} }
 func (*ListArchivedWorkflowExecutionsRequest) ProtoMessage() {}
 func (*ListArchivedWorkflowExecutionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{54}
+	return fileDescriptor_2c30b34f996ae016, []int{56}
 }
 func (m *ListArchivedWorkflowExecutionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3962,7 +4297,7 @@ func (m *ListArchivedWorkflowExecutionsResponse) Reset() {
 }
 func (*ListArchivedWorkflowExecutionsResponse) ProtoMessage() {}
 func (*ListArchivedWorkflowExecutionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{55}
+	return fileDescriptor_2c30b34f996ae016, []int{57}
 }
 func (m *ListArchivedWorkflowExecutionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4015,7 +4350,7 @@ type ScanWorkflowExecutionsRequest struct {
 func (m *ScanWorkflowExecutionsRequest) Reset()      { *m = ScanWorkflowExecutionsRequest{} }
 func (*ScanWorkflowExecutionsRequest) ProtoMessage() {}
 func (*ScanWorkflowExecutionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{56}
+	return fileDescriptor_2c30b34f996ae016, []int{58}
 }
 func (m *ScanWorkflowExecutionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4080,7 +4415,7 @@ type ScanWorkflowExecutionsResponse struct {
 func (m *ScanWorkflowExecutionsResponse) Reset()      { *m = ScanWorkflowExecutionsResponse{} }
 func (*ScanWorkflowExecutionsResponse) ProtoMessage() {}
 func (*ScanWorkflowExecutionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{57}
+	return fileDescriptor_2c30b34f996ae016, []int{59}
 }
 func (m *ScanWorkflowExecutionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4131,7 +4466,7 @@ type CountWorkflowExecutionsRequest struct {
 func (m *CountWorkflowExecutionsRequest) Reset()      { *m = CountWorkflowExecutionsRequest{} }
 func (*CountWorkflowExecutionsRequest) ProtoMessage() {}
 func (*CountWorkflowExecutionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{58}
+	return fileDescriptor_2c30b34f996ae016, []int{60}
 }
 func (m *CountWorkflowExecutionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4181,7 +4516,7 @@ type CountWorkflowExecutionsResponse struct {
 func (m *CountWorkflowExecutionsResponse) Reset()      { *m = CountWorkflowExecutionsResponse{} }
 func (*CountWorkflowExecutionsResponse) ProtoMessage() {}
 func (*CountWorkflowExecutionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{59}
+	return fileDescriptor_2c30b34f996ae016, []int{61}
 }
 func (m *CountWorkflowExecutionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4223,7 +4558,7 @@ type GetSearchAttributesRequest struct {
 func (m *GetSearchAttributesRequest) Reset()      { *m = GetSearchAttributesRequest{} }
 func (*GetSearchAttributesRequest) ProtoMessage() {}
 func (*GetSearchAttributesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{60}
+	return fileDescriptor_2c30b34f996ae016, []int{62}
 }
 func (m *GetSearchAttributesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4259,7 +4594,7 @@ type GetSearchAttributesResponse struct {
 func (m *GetSearchAttributesResponse) Reset()      { *m = GetSearchAttributesResponse{} }
 func (*GetSearchAttributesResponse) ProtoMessage() {}
 func (*GetSearchAttributesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{61}
+	return fileDescriptor_2c30b34f996ae016, []int{63}
 }
 func (m *GetSearchAttributesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4295,7 +4630,6 @@ func (m *GetSearchAttributesResponse) GetKeys() map[string]v11.IndexedValueType 
 	return nil
 }
 
-// TODO:  deprecated APIs
 type RespondQueryTaskCompletedRequest struct {
 	TaskToken     []byte              `protobuf:"bytes,1,opt,name=task_token,json=taskToken,proto3" json:"task_token,omitempty"`
 	CompletedType v11.QueryResultType `protobuf:"varint,2,opt,name=completed_type,json=completedType,proto3,enum=temporal.api.enums.v1.QueryResultType" json:"completed_type,omitempty"`
@@ -4307,7 +4641,7 @@ type RespondQueryTaskCompletedRequest struct {
 func (m *RespondQueryTaskCompletedRequest) Reset()      { *m = RespondQueryTaskCompletedRequest{} }
 func (*RespondQueryTaskCompletedRequest) ProtoMessage() {}
 func (*RespondQueryTaskCompletedRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{62}
+	return fileDescriptor_2c30b34f996ae016, []int{64}
 }
 func (m *RespondQueryTaskCompletedRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4377,7 +4711,7 @@ type RespondQueryTaskCompletedResponse struct {
 func (m *RespondQueryTaskCompletedResponse) Reset()      { *m = RespondQueryTaskCompletedResponse{} }
 func (*RespondQueryTaskCompletedResponse) ProtoMessage() {}
 func (*RespondQueryTaskCompletedResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{63}
+	return fileDescriptor_2c30b34f996ae016, []int{65}
 }
 func (m *RespondQueryTaskCompletedResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4414,7 +4748,7 @@ type ResetStickyTaskQueueRequest struct {
 func (m *ResetStickyTaskQueueRequest) Reset()      { *m = ResetStickyTaskQueueRequest{} }
 func (*ResetStickyTaskQueueRequest) ProtoMessage() {}
 func (*ResetStickyTaskQueueRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{64}
+	return fileDescriptor_2c30b34f996ae016, []int{66}
 }
 func (m *ResetStickyTaskQueueRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4463,7 +4797,7 @@ type ResetStickyTaskQueueResponse struct {
 func (m *ResetStickyTaskQueueResponse) Reset()      { *m = ResetStickyTaskQueueResponse{} }
 func (*ResetStickyTaskQueueResponse) ProtoMessage() {}
 func (*ResetStickyTaskQueueResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{65}
+	return fileDescriptor_2c30b34f996ae016, []int{67}
 }
 func (m *ResetStickyTaskQueueResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4504,7 +4838,7 @@ type QueryWorkflowRequest struct {
 func (m *QueryWorkflowRequest) Reset()      { *m = QueryWorkflowRequest{} }
 func (*QueryWorkflowRequest) ProtoMessage() {}
 func (*QueryWorkflowRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{66}
+	return fileDescriptor_2c30b34f996ae016, []int{68}
 }
 func (m *QueryWorkflowRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4569,7 +4903,7 @@ type QueryWorkflowResponse struct {
 func (m *QueryWorkflowResponse) Reset()      { *m = QueryWorkflowResponse{} }
 func (*QueryWorkflowResponse) ProtoMessage() {}
 func (*QueryWorkflowResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{67}
+	return fileDescriptor_2c30b34f996ae016, []int{69}
 }
 func (m *QueryWorkflowResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4620,7 +4954,7 @@ type DescribeWorkflowExecutionRequest struct {
 func (m *DescribeWorkflowExecutionRequest) Reset()      { *m = DescribeWorkflowExecutionRequest{} }
 func (*DescribeWorkflowExecutionRequest) ProtoMessage() {}
 func (*DescribeWorkflowExecutionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{68}
+	return fileDescriptor_2c30b34f996ae016, []int{70}
 }
 func (m *DescribeWorkflowExecutionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4668,12 +5002,13 @@ type DescribeWorkflowExecutionResponse struct {
 	WorkflowExecutionInfo *v110.WorkflowExecutionInfo       `protobuf:"bytes,2,opt,name=workflow_execution_info,json=workflowExecutionInfo,proto3" json:"workflow_execution_info,omitempty"`
 	PendingActivities     []*v110.PendingActivityInfo       `protobuf:"bytes,3,rep,name=pending_activities,json=pendingActivities,proto3" json:"pending_activities,omitempty"`
 	PendingChildren       []*v110.PendingChildExecutionInfo `protobuf:"bytes,4,rep,name=pending_children,json=pendingChildren,proto3" json:"pending_children,omitempty"`
+	PendingWorkflowTask   *v110.PendingWorkflowTaskInfo     `protobuf:"bytes,5,opt,name=pending_workflow_task,json=pendingWorkflowTask,proto3" json:"pending_workflow_task,omitempty"`
 }
 
 func (m *DescribeWorkflowExecutionResponse) Reset()      { *m = DescribeWorkflowExecutionResponse{} }
 func (*DescribeWorkflowExecutionResponse) ProtoMessage() {}
 func (*DescribeWorkflowExecutionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{69}
+	return fileDescriptor_2c30b34f996ae016, []int{71}
 }
 func (m *DescribeWorkflowExecutionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4730,6 +5065,13 @@ func (m *DescribeWorkflowExecutionResponse) GetPendingChildren() []*v110.Pending
 	return nil
 }
 
+func (m *DescribeWorkflowExecutionResponse) GetPendingWorkflowTask() *v110.PendingWorkflowTaskInfo {
+	if m != nil {
+		return m.PendingWorkflowTask
+	}
+	return nil
+}
+
 type DescribeTaskQueueRequest struct {
 	Namespace              string            `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	TaskQueue              *v14.TaskQueue    `protobuf:"bytes,2,opt,name=task_queue,json=taskQueue,proto3" json:"task_queue,omitempty"`
@@ -4740,7 +5082,7 @@ type DescribeTaskQueueRequest struct {
 func (m *DescribeTaskQueueRequest) Reset()      { *m = DescribeTaskQueueRequest{} }
 func (*DescribeTaskQueueRequest) ProtoMessage() {}
 func (*DescribeTaskQueueRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{70}
+	return fileDescriptor_2c30b34f996ae016, []int{72}
 }
 func (m *DescribeTaskQueueRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4805,7 +5147,7 @@ type DescribeTaskQueueResponse struct {
 func (m *DescribeTaskQueueResponse) Reset()      { *m = DescribeTaskQueueResponse{} }
 func (*DescribeTaskQueueResponse) ProtoMessage() {}
 func (*DescribeTaskQueueResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{71}
+	return fileDescriptor_2c30b34f996ae016, []int{73}
 }
 func (m *DescribeTaskQueueResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4854,7 +5196,7 @@ type GetClusterInfoRequest struct {
 func (m *GetClusterInfoRequest) Reset()      { *m = GetClusterInfoRequest{} }
 func (*GetClusterInfoRequest) ProtoMessage() {}
 func (*GetClusterInfoRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{72}
+	return fileDescriptor_2c30b34f996ae016, []int{74}
 }
 func (m *GetClusterInfoRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4893,12 +5235,14 @@ type GetClusterInfoResponse struct {
 	VersionInfo       *v111.VersionInfo `protobuf:"bytes,4,opt,name=version_info,json=versionInfo,proto3" json:"version_info,omitempty"`
 	ClusterName       string            `protobuf:"bytes,5,opt,name=cluster_name,json=clusterName,proto3" json:"cluster_name,omitempty"`
 	HistoryShardCount int32             `protobuf:"varint,6,opt,name=history_shard_count,json=historyShardCount,proto3" json:"history_shard_count,omitempty"`
+	PersistenceStore  string            `protobuf:"bytes,7,opt,name=persistence_store,json=persistenceStore,proto3" json:"persistence_store,omitempty"`
+	VisibilityStore   string            `protobuf:"bytes,8,opt,name=visibility_store,json=visibilityStore,proto3" json:"visibility_store,omitempty"`
 }
 
 func (m *GetClusterInfoResponse) Reset()      { *m = GetClusterInfoResponse{} }
 func (*GetClusterInfoResponse) ProtoMessage() {}
 func (*GetClusterInfoResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{73}
+	return fileDescriptor_2c30b34f996ae016, []int{75}
 }
 func (m *GetClusterInfoResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -4969,6 +5313,175 @@ func (m *GetClusterInfoResponse) GetHistoryShardCount() int32 {
 	return 0
 }
 
+func (m *GetClusterInfoResponse) GetPersistenceStore() string {
+	if m != nil {
+		return m.PersistenceStore
+	}
+	return ""
+}
+
+func (m *GetClusterInfoResponse) GetVisibilityStore() string {
+	if m != nil {
+		return m.VisibilityStore
+	}
+	return ""
+}
+
+type GetSystemInfoRequest struct {
+}
+
+func (m *GetSystemInfoRequest) Reset()      { *m = GetSystemInfoRequest{} }
+func (*GetSystemInfoRequest) ProtoMessage() {}
+func (*GetSystemInfoRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2c30b34f996ae016, []int{76}
+}
+func (m *GetSystemInfoRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetSystemInfoRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetSystemInfoRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetSystemInfoRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetSystemInfoRequest.Merge(m, src)
+}
+func (m *GetSystemInfoRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetSystemInfoRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetSystemInfoRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetSystemInfoRequest proto.InternalMessageInfo
+
+type GetSystemInfoResponse struct {
+	// Version of the server.
+	ServerVersion string `protobuf:"bytes,1,opt,name=server_version,json=serverVersion,proto3" json:"server_version,omitempty"`
+	// All capabilities the system supports.
+	Capabilities *GetSystemInfoResponse_Capabilities `protobuf:"bytes,2,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
+}
+
+func (m *GetSystemInfoResponse) Reset()      { *m = GetSystemInfoResponse{} }
+func (*GetSystemInfoResponse) ProtoMessage() {}
+func (*GetSystemInfoResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2c30b34f996ae016, []int{77}
+}
+func (m *GetSystemInfoResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetSystemInfoResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetSystemInfoResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetSystemInfoResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetSystemInfoResponse.Merge(m, src)
+}
+func (m *GetSystemInfoResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetSystemInfoResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetSystemInfoResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetSystemInfoResponse proto.InternalMessageInfo
+
+func (m *GetSystemInfoResponse) GetServerVersion() string {
+	if m != nil {
+		return m.ServerVersion
+	}
+	return ""
+}
+
+func (m *GetSystemInfoResponse) GetCapabilities() *GetSystemInfoResponse_Capabilities {
+	if m != nil {
+		return m.Capabilities
+	}
+	return nil
+}
+
+// System capability details.
+type GetSystemInfoResponse_Capabilities struct {
+	// True if signal and query headers are supported.
+	SignalAndQueryHeader bool `protobuf:"varint,1,opt,name=signal_and_query_header,json=signalAndQueryHeader,proto3" json:"signal_and_query_header,omitempty"`
+	// True if internal errors are differentiated from other types of errors for purposes of
+	// retrying non-internal errors.
+	//
+	// When unset/false, clients retry all failures. When true, clients should only retry
+	// non-internal errors.
+	InternalErrorDifferentiation bool `protobuf:"varint,2,opt,name=internal_error_differentiation,json=internalErrorDifferentiation,proto3" json:"internal_error_differentiation,omitempty"`
+	// True if RespondActivityTaskFailed API supports including heartbeat details
+	ActivityFailureIncludeHeartbeat bool `protobuf:"varint,3,opt,name=activity_failure_include_heartbeat,json=activityFailureIncludeHeartbeat,proto3" json:"activity_failure_include_heartbeat,omitempty"`
+}
+
+func (m *GetSystemInfoResponse_Capabilities) Reset()      { *m = GetSystemInfoResponse_Capabilities{} }
+func (*GetSystemInfoResponse_Capabilities) ProtoMessage() {}
+func (*GetSystemInfoResponse_Capabilities) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2c30b34f996ae016, []int{77, 0}
+}
+func (m *GetSystemInfoResponse_Capabilities) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetSystemInfoResponse_Capabilities) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetSystemInfoResponse_Capabilities.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetSystemInfoResponse_Capabilities) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetSystemInfoResponse_Capabilities.Merge(m, src)
+}
+func (m *GetSystemInfoResponse_Capabilities) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetSystemInfoResponse_Capabilities) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetSystemInfoResponse_Capabilities.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetSystemInfoResponse_Capabilities proto.InternalMessageInfo
+
+func (m *GetSystemInfoResponse_Capabilities) GetSignalAndQueryHeader() bool {
+	if m != nil {
+		return m.SignalAndQueryHeader
+	}
+	return false
+}
+
+func (m *GetSystemInfoResponse_Capabilities) GetInternalErrorDifferentiation() bool {
+	if m != nil {
+		return m.InternalErrorDifferentiation
+	}
+	return false
+}
+
+func (m *GetSystemInfoResponse_Capabilities) GetActivityFailureIncludeHeartbeat() bool {
+	if m != nil {
+		return m.ActivityFailureIncludeHeartbeat
+	}
+	return false
+}
+
 type ListTaskQueuePartitionsRequest struct {
 	Namespace string         `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
 	TaskQueue *v14.TaskQueue `protobuf:"bytes,2,opt,name=task_queue,json=taskQueue,proto3" json:"task_queue,omitempty"`
@@ -4977,7 +5490,7 @@ type ListTaskQueuePartitionsRequest struct {
 func (m *ListTaskQueuePartitionsRequest) Reset()      { *m = ListTaskQueuePartitionsRequest{} }
 func (*ListTaskQueuePartitionsRequest) ProtoMessage() {}
 func (*ListTaskQueuePartitionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{74}
+	return fileDescriptor_2c30b34f996ae016, []int{78}
 }
 func (m *ListTaskQueuePartitionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -5028,7 +5541,7 @@ type ListTaskQueuePartitionsResponse struct {
 func (m *ListTaskQueuePartitionsResponse) Reset()      { *m = ListTaskQueuePartitionsResponse{} }
 func (*ListTaskQueuePartitionsResponse) ProtoMessage() {}
 func (*ListTaskQueuePartitionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2c30b34f996ae016, []int{75}
+	return fileDescriptor_2c30b34f996ae016, []int{79}
 }
 func (m *ListTaskQueuePartitionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -5087,6 +5600,8 @@ func init() {
 	proto.RegisterType((*StartWorkflowExecutionResponse)(nil), "temporal.api.workflowservice.v1.StartWorkflowExecutionResponse")
 	proto.RegisterType((*GetWorkflowExecutionHistoryRequest)(nil), "temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryRequest")
 	proto.RegisterType((*GetWorkflowExecutionHistoryResponse)(nil), "temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryResponse")
+	proto.RegisterType((*GetWorkflowExecutionHistoryReverseRequest)(nil), "temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryReverseRequest")
+	proto.RegisterType((*GetWorkflowExecutionHistoryReverseResponse)(nil), "temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryReverseResponse")
 	proto.RegisterType((*PollWorkflowTaskQueueRequest)(nil), "temporal.api.workflowservice.v1.PollWorkflowTaskQueueRequest")
 	proto.RegisterType((*PollWorkflowTaskQueueResponse)(nil), "temporal.api.workflowservice.v1.PollWorkflowTaskQueueResponse")
 	proto.RegisterMapType((map[string]*v16.WorkflowQuery)(nil), "temporal.api.workflowservice.v1.PollWorkflowTaskQueueResponse.QueriesEntry")
@@ -5151,6 +5666,9 @@ func init() {
 	proto.RegisterType((*GetClusterInfoRequest)(nil), "temporal.api.workflowservice.v1.GetClusterInfoRequest")
 	proto.RegisterType((*GetClusterInfoResponse)(nil), "temporal.api.workflowservice.v1.GetClusterInfoResponse")
 	proto.RegisterMapType((map[string]string)(nil), "temporal.api.workflowservice.v1.GetClusterInfoResponse.SupportedClientsEntry")
+	proto.RegisterType((*GetSystemInfoRequest)(nil), "temporal.api.workflowservice.v1.GetSystemInfoRequest")
+	proto.RegisterType((*GetSystemInfoResponse)(nil), "temporal.api.workflowservice.v1.GetSystemInfoResponse")
+	proto.RegisterType((*GetSystemInfoResponse_Capabilities)(nil), "temporal.api.workflowservice.v1.GetSystemInfoResponse.Capabilities")
 	proto.RegisterType((*ListTaskQueuePartitionsRequest)(nil), "temporal.api.workflowservice.v1.ListTaskQueuePartitionsRequest")
 	proto.RegisterType((*ListTaskQueuePartitionsResponse)(nil), "temporal.api.workflowservice.v1.ListTaskQueuePartitionsResponse")
 }
@@ -5160,267 +5678,287 @@ func init() {
 }
 
 var fileDescriptor_2c30b34f996ae016 = []byte{
-	// 4149 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x5c, 0x4d, 0x6c, 0x1c, 0x47,
-	0x76, 0x56, 0xcf, 0x70, 0x48, 0xce, 0x9b, 0xe1, 0x90, 0x6c, 0x91, 0xf4, 0x70, 0x24, 0x0d, 0xa9,
-	0xd6, 0x1f, 0xe5, 0xd8, 0xc3, 0x95, 0x1c, 0x5b, 0xbb, 0xcc, 0xdf, 0x92, 0x94, 0x25, 0x31, 0xb6,
-	0x6c, 0xaa, 0x49, 0xcb, 0x81, 0xe1, 0xa4, 0xdd, 0xec, 0x2e, 0x0e, 0x2b, 0x9c, 0xe9, 0x1e, 0x75,
-	0x57, 0x93, 0x1e, 0xe7, 0x12, 0x20, 0xc1, 0x06, 0x41, 0x0e, 0xf1, 0x61, 0x0f, 0xbb, 0xc0, 0xe6,
-	0xf7, 0x10, 0x6c, 0x72, 0xc9, 0x25, 0x40, 0x12, 0xe4, 0x92, 0xd3, 0x22, 0x47, 0x1f, 0x17, 0xc8,
-	0x21, 0xb1, 0x7c, 0x59, 0xe4, 0x10, 0x78, 0x11, 0x24, 0x39, 0x04, 0x41, 0x82, 0xfa, 0xe9, 0xff,
-	0x9e, 0x3f, 0x92, 0x1b, 0x31, 0x0b, 0xdf, 0xa6, 0xab, 0xde, 0xfb, 0xea, 0xd5, 0xab, 0x57, 0xef,
-	0xbd, 0xaa, 0x7e, 0x3d, 0xf0, 0x06, 0x41, 0xed, 0x8e, 0xed, 0xe8, 0xad, 0x55, 0xbd, 0x83, 0x57,
-	0x8f, 0x6d, 0xe7, 0x70, 0xbf, 0x65, 0x1f, 0xbb, 0xc8, 0x39, 0xc2, 0x06, 0x5a, 0x3d, 0xba, 0xb3,
-	0xea, 0xa0, 0x67, 0x1e, 0x72, 0x89, 0xe6, 0x20, 0xb7, 0x63, 0x5b, 0x2e, 0x6a, 0x74, 0x1c, 0x9b,
-	0xd8, 0xf2, 0x92, 0xcf, 0xd7, 0xd0, 0x3b, 0xb8, 0x91, 0xe0, 0x6b, 0x1c, 0xdd, 0xa9, 0x5d, 0x8f,
-	0x01, 0x23, 0xcb, 0x6b, 0xbb, 0x14, 0xce, 0xa7, 0xe4, 0x30, 0xb5, 0x1b, 0xd9, 0x54, 0x96, 0xde,
-	0x46, 0x6e, 0x47, 0x37, 0xc4, 0x68, 0xb5, 0x95, 0x6c, 0xb2, 0x7d, 0x1d, 0xb7, 0x90, 0xa9, 0x19,
-	0xba, 0xe7, 0xcb, 0x55, 0x53, 0xb2, 0x29, 0x0d, 0xbb, 0xdd, 0xb6, 0x2d, 0x41, 0x73, 0x35, 0x9b,
-	0xe6, 0x99, 0x87, 0x9c, 0xae, 0x20, 0xb9, 0x99, 0x4d, 0x42, 0x74, 0xf7, 0x50, 0x7b, 0xe6, 0x21,
-	0xcf, 0x1f, 0x2e, 0x3e, 0x4b, 0x3e, 0x0a, 0x25, 0x6c, 0x23, 0xd7, 0xd5, 0x9b, 0x28, 0x73, 0x96,
-	0x07, 0xd8, 0x25, 0xb6, 0xd3, 0x4d, 0x93, 0xdd, 0xcc, 0x5c, 0x8b, 0x41, 0x70, 0x74, 0x50, 0xdd,
-	0x32, 0x07, 0x91, 0x51, 0x5d, 0x79, 0x0e, 0x4a, 0x93, 0xc5, 0xa7, 0xb0, 0x8f, 0x5b, 0x04, 0x39,
-	0x69, 0xaa, 0x5b, 0x31, 0xaa, 0x60, 0x7d, 0xd2, 0x84, 0xd7, 0x62, 0x84, 0x4c, 0xa7, 0x69, 0xa2,
-	0xdb, 0x31, 0x22, 0x07, 0x75, 0x5a, 0xd8, 0xd0, 0x09, 0xce, 0xd2, 0x5d, 0x7c, 0x60, 0xba, 0x00,
-	0x4c, 0xff, 0x83, 0xa6, 0x7b, 0x84, 0x1c, 0x37, 0x13, 0xaf, 0xde, 0xb4, 0xed, 0x66, 0x0b, 0xad,
-	0xb2, 0xa7, 0x3d, 0x6f, 0x7f, 0xd5, 0xf4, 0x1c, 0x36, 0xb4, 0xe8, 0x5f, 0x4a, 0xf6, 0x13, 0xdc,
-	0x46, 0x2e, 0xd1, 0xdb, 0x1d, 0x41, 0xf0, 0x6a, 0x13, 0x93, 0x03, 0x6f, 0xaf, 0x61, 0xd8, 0xed,
-	0xd5, 0xa6, 0xdd, 0xb4, 0x43, 0x4a, 0xfa, 0xc4, 0x1e, 0xd8, 0x2f, 0x4e, 0xae, 0xfc, 0xcf, 0x38,
-	0x54, 0x55, 0xd4, 0xc4, 0x2e, 0x41, 0xce, 0x3b, 0xbe, 0xda, 0x54, 0xbe, 0xa9, 0xe4, 0xcb, 0x50,
-	0x0c, 0x54, 0x59, 0x95, 0x96, 0xa5, 0x95, 0xa2, 0x1a, 0x36, 0xc8, 0xcb, 0x50, 0x32, 0x91, 0x6b,
-	0x38, 0xb8, 0x43, 0xe5, 0xab, 0xe6, 0x58, 0x7f, 0xb4, 0x49, 0x5e, 0x82, 0x92, 0x7d, 0x6c, 0x21,
-	0x47, 0x43, 0x6d, 0x1d, 0xb7, 0xaa, 0x79, 0x46, 0x01, 0xac, 0xe9, 0x4d, 0xda, 0x22, 0x5b, 0x70,
-	0xcd, 0xb7, 0x23, 0x0d, 0x7d, 0x8c, 0x0c, 0x8f, 0xb2, 0x69, 0x0e, 0x22, 0xc8, 0x62, 0xbf, 0x3a,
-	0xc8, 0xc1, 0xb6, 0x59, 0x1d, 0x5b, 0x96, 0x56, 0x4a, 0x77, 0x17, 0x1b, 0x7c, 0xee, 0x0d, 0x7f,
-	0x46, 0x8d, 0xfb, 0x42, 0x37, 0x1b, 0x63, 0xdf, 0xf9, 0xa7, 0x25, 0x49, 0x5d, 0xf6, 0xb1, 0xde,
-	0xf4, 0xa1, 0x54, 0x1f, 0x69, 0x9b, 0x01, 0xc9, 0x4f, 0x60, 0xd2, 0x68, 0x79, 0x74, 0xae, 0x6e,
-	0xb5, 0xb0, 0x9c, 0x5f, 0x29, 0xdd, 0x7d, 0xbd, 0x11, 0xf3, 0x14, 0x91, 0xb5, 0x6e, 0x1c, 0xdd,
-	0x69, 0x6c, 0x72, 0x62, 0x35, 0x6c, 0xdd, 0xb4, 0xad, 0x7d, 0xdc, 0x54, 0x03, 0x18, 0xb9, 0x01,
-	0x17, 0x75, 0x83, 0xe0, 0x23, 0xa4, 0x89, 0x26, 0x8d, 0x6a, 0xa8, 0x3a, 0xce, 0xe6, 0x3a, 0xcb,
-	0xbb, 0x04, 0x0c, 0xd5, 0xaf, 0xfc, 0x3e, 0x8c, 0x99, 0x3a, 0xd1, 0xab, 0x13, 0x6c, 0xf8, 0xcd,
-	0xc6, 0x00, 0x47, 0xd5, 0xe8, 0xb5, 0x38, 0x8d, 0xfb, 0x3a, 0xd1, 0xdf, 0xb4, 0x88, 0xd3, 0x55,
-	0x19, 0xa0, 0x7c, 0x03, 0x2a, 0x2e, 0x32, 0x3c, 0x07, 0x93, 0xae, 0x46, 0xec, 0x43, 0x64, 0x55,
-	0x27, 0x99, 0x0c, 0x53, 0x7e, 0xeb, 0x2e, 0x6d, 0xa4, 0xf2, 0x62, 0x57, 0x6b, 0xb6, 0xec, 0x3d,
-	0xbd, 0xa5, 0x85, 0xab, 0x5b, 0x5c, 0x96, 0x56, 0x26, 0xd5, 0x59, 0xec, 0x3e, 0x64, 0x3d, 0xc1,
-	0x68, 0xf2, 0x07, 0xb0, 0x20, 0x3c, 0x82, 0xa6, 0x3b, 0xc6, 0x01, 0x3e, 0xd2, 0x5b, 0x9a, 0x4b,
-	0x74, 0x82, 0xaa, 0xb0, 0x2c, 0xad, 0x54, 0xee, 0x5e, 0x8f, 0xcf, 0x80, 0xf9, 0x22, 0x2a, 0xf7,
-	0xba, 0x20, 0xde, 0xa1, 0xb4, 0xea, 0x9c, 0xc0, 0x88, 0xb5, 0xca, 0x5f, 0x83, 0xb9, 0x14, 0xb6,
-	0xe7, 0xe0, 0x6a, 0x89, 0x09, 0x2e, 0x27, 0x78, 0xde, 0x73, 0xb0, 0xfc, 0x11, 0x2c, 0x1e, 0x61,
-	0x17, 0xef, 0xe1, 0x16, 0x9d, 0x66, 0x42, 0xa0, 0xf2, 0x08, 0x02, 0xbd, 0x14, 0xc2, 0xc4, 0x65,
-	0x7a, 0x03, 0x5e, 0xca, 0x1a, 0x81, 0x8a, 0x35, 0xc5, 0xc4, 0x9a, 0x4f, 0x73, 0xbe, 0xe7, 0xe0,
-	0xda, 0x3d, 0x28, 0x06, 0x2b, 0x22, 0xcf, 0x40, 0xfe, 0x10, 0x75, 0xc5, 0x96, 0xa1, 0x3f, 0xe5,
-	0x39, 0x28, 0x1c, 0xe9, 0x2d, 0x0f, 0x89, 0x6d, 0xc2, 0x1f, 0xd6, 0x72, 0x5f, 0x97, 0x94, 0x4b,
-	0xb0, 0x98, 0xb1, 0xc6, 0x3c, 0x9a, 0x29, 0x1f, 0xc2, 0xfc, 0xdb, 0xd8, 0x25, 0x41, 0x87, 0xeb,
-	0x6f, 0xcd, 0x4b, 0x50, 0xec, 0xe8, 0x4d, 0xa4, 0xb9, 0xf8, 0x13, 0xbe, 0x35, 0x0b, 0xea, 0x24,
-	0x6d, 0xd8, 0xc1, 0x9f, 0x20, 0xf9, 0x26, 0x4c, 0x5b, 0xe8, 0x63, 0xa2, 0x31, 0x0a, 0x6e, 0x0b,
-	0x74, 0xd8, 0xb2, 0x3a, 0x45, 0x9b, 0xb7, 0xf5, 0x26, 0x62, 0xb6, 0xa0, 0x7c, 0x4f, 0x82, 0x85,
-	0x24, 0x3c, 0x1f, 0x58, 0xfe, 0x00, 0x20, 0x30, 0x0e, 0xb7, 0x2a, 0x31, 0x63, 0x5d, 0x1b, 0x68,
-	0xac, 0xf7, 0xd9, 0xe6, 0xdf, 0x43, 0xa9, 0x89, 0xa8, 0x11, 0xb4, 0xa1, 0xc5, 0x7b, 0x04, 0xd5,
-	0x0c, 0xc0, 0x61, 0x5c, 0x53, 0x05, 0x72, 0xd8, 0x14, 0xaa, 0xce, 0x61, 0x53, 0xf9, 0xb7, 0x1c,
-	0x2c, 0xf6, 0x94, 0x4d, 0x7e, 0x17, 0x2a, 0x01, 0xab, 0x86, 0xad, 0x7d, 0x9b, 0x01, 0x96, 0xee,
-	0xae, 0xc4, 0xe7, 0x1b, 0x46, 0xfd, 0xa3, 0x3b, 0x8d, 0x00, 0x65, 0xcb, 0xda, 0xb7, 0xd5, 0x29,
-	0x2b, 0xfa, 0x28, 0x6f, 0xc0, 0xb8, 0xc1, 0xfc, 0x04, 0x13, 0xa1, 0x74, 0xf7, 0xe5, 0x61, 0x80,
-	0x84, 0x67, 0x11, 0x9c, 0xf2, 0x3e, 0xc8, 0x11, 0x67, 0xa4, 0x09, 0xbc, 0x3c, 0xc3, 0xbb, 0xd7,
-	0xd7, 0x69, 0x45, 0x26, 0x98, 0x74, 0x5b, 0xb3, 0x4e, 0xb2, 0x49, 0xbe, 0x0d, 0x33, 0x34, 0xf6,
-	0xda, 0x47, 0xc8, 0xd1, 0x44, 0x54, 0x62, 0xfe, 0x36, 0xaf, 0x4e, 0xfb, 0xed, 0x4f, 0x79, 0x73,
-	0x2f, 0xd7, 0x51, 0xe8, 0xe1, 0x3a, 0x94, 0x6f, 0xe5, 0x61, 0xe1, 0xbd, 0x8e, 0xa9, 0x93, 0x51,
-	0x97, 0xef, 0x5d, 0x28, 0x79, 0x8c, 0x8f, 0xaf, 0x06, 0x57, 0x62, 0xa3, 0x8f, 0x12, 0x13, 0xa3,
-	0xb0, 0x35, 0x01, 0x0e, 0x91, 0x58, 0x90, 0xfc, 0x19, 0x2f, 0xc8, 0xd8, 0x99, 0x2f, 0x48, 0xda,
-	0x8f, 0x17, 0xb2, 0xfc, 0xf8, 0xcb, 0x30, 0x6b, 0xa2, 0x16, 0x22, 0x48, 0xdb, 0xd3, 0x4d, 0x6d,
-	0x0f, 0x5b, 0xba, 0xd3, 0x15, 0x51, 0x67, 0x9a, 0x77, 0x6c, 0xe8, 0xe6, 0x06, 0x6b, 0x56, 0x7e,
-	0x9c, 0x83, 0x97, 0x52, 0x0b, 0xf1, 0x95, 0xf1, 0xff, 0x44, 0x8d, 0xff, 0x23, 0xea, 0x71, 0x3a,
-	0x0e, 0x32, 0x46, 0x37, 0xff, 0xb4, 0x05, 0xe4, 0x32, 0x2c, 0x40, 0xb9, 0x0c, 0xb5, 0xac, 0x11,
-	0x44, 0xe4, 0xf8, 0xef, 0x09, 0xb8, 0xb2, 0x43, 0x74, 0x87, 0xbc, 0x9f, 0x4e, 0x8a, 0x86, 0x11,
-	0x62, 0x09, 0x4a, 0x41, 0x6a, 0x16, 0xf8, 0x52, 0xf0, 0x9b, 0xb6, 0x4c, 0x79, 0x0b, 0xa6, 0x02,
-	0x02, 0xd2, 0xed, 0x20, 0xb1, 0x3c, 0x89, 0xf0, 0x2b, 0x4e, 0x36, 0x47, 0x77, 0x1a, 0xbe, 0x1c,
-	0xbb, 0xdd, 0x0e, 0x52, 0xcb, 0xc7, 0x91, 0x27, 0x79, 0x13, 0x20, 0x3c, 0xba, 0x88, 0x2d, 0x95,
-	0xc0, 0x09, 0x32, 0x6b, 0x0a, 0xb5, 0xab, 0xbb, 0x87, 0x4f, 0xe8, 0x83, 0x5a, 0x24, 0xfe, 0x4f,
-	0xf9, 0x0d, 0x28, 0x60, 0xab, 0xe3, 0x11, 0xb6, 0x24, 0xa5, 0xbb, 0xcb, 0xbd, 0xe4, 0xd8, 0xd6,
-	0xbb, 0x2d, 0x5b, 0x37, 0x5d, 0x95, 0x93, 0xcb, 0xbf, 0x0a, 0xb5, 0x8c, 0x1c, 0x94, 0xa6, 0xd5,
-	0xb6, 0x47, 0xd8, 0x8e, 0x1a, 0x22, 0xf5, 0xac, 0xa6, 0x52, 0xcf, 0x5d, 0x0e, 0x20, 0x3f, 0x81,
-	0xb9, 0x00, 0xde, 0xf1, 0x42, 0xe0, 0x89, 0xe1, 0x80, 0x65, 0x9f, 0x59, 0xf5, 0x02, 0xc8, 0x1d,
-	0x98, 0x0f, 0x35, 0x4f, 0xf5, 0xe6, 0x63, 0x4e, 0x0e, 0x87, 0x79, 0x31, 0x50, 0xbe, 0xee, 0x1e,
-	0xfa, 0xa0, 0x35, 0x98, 0xc4, 0x26, 0x4d, 0x96, 0x49, 0x97, 0x25, 0x83, 0x45, 0x35, 0x78, 0x96,
-	0xaf, 0x00, 0xf8, 0xe7, 0x6c, 0x6c, 0xb2, 0xbc, 0xaf, 0xa8, 0x16, 0x45, 0xcb, 0x96, 0x29, 0x23,
-	0xa8, 0x46, 0x4c, 0x45, 0x73, 0x90, 0xe7, 0x22, 0xad, 0x63, 0xb7, 0xb0, 0xd1, 0x65, 0xa9, 0x5c,
-	0xe5, 0xee, 0x2b, 0x3d, 0x72, 0xb2, 0xf7, 0x03, 0x73, 0x52, 0x29, 0xd3, 0x36, 0xe3, 0x51, 0xe7,
-	0x8f, 0xb3, 0x9a, 0xe5, 0x07, 0x50, 0x76, 0x10, 0x71, 0xba, 0x3e, 0x74, 0x99, 0xcd, 0xf6, 0x5a,
-	0xaf, 0x75, 0x56, 0x29, 0xad, 0x40, 0x2c, 0x39, 0xe1, 0x83, 0x7c, 0x0d, 0xa6, 0x0c, 0xc7, 0xb6,
-	0x34, 0xd7, 0x38, 0x40, 0xa6, 0xd7, 0x42, 0x22, 0xaf, 0x2b, 0xd3, 0xc6, 0x1d, 0xd1, 0x26, 0x7f,
-	0x0d, 0xc6, 0xda, 0xa8, 0x6d, 0x57, 0x2b, 0x6c, 0x90, 0xcb, 0xbd, 0x06, 0x79, 0x8c, 0xda, 0xb6,
-	0xca, 0x28, 0xe5, 0xf7, 0x60, 0xd6, 0x45, 0x34, 0x5f, 0xd4, 0x74, 0x42, 0x1c, 0xbc, 0xe7, 0x11,
-	0xe4, 0x56, 0xa7, 0xb3, 0x7c, 0x69, 0xc8, 0xbe, 0xc3, 0x18, 0xd6, 0x03, 0x7a, 0x75, 0xc6, 0x4d,
-	0xb4, 0xc8, 0x6f, 0xc0, 0xf8, 0x01, 0xd2, 0x4d, 0xe4, 0x54, 0x67, 0x18, 0x56, 0xbd, 0x17, 0xd6,
-	0x23, 0x46, 0xa5, 0x0a, 0x6a, 0xe5, 0x1e, 0xd4, 0x7b, 0x6d, 0x7f, 0xe1, 0xf9, 0xe7, 0x61, 0x9c,
-	0x1a, 0x24, 0x36, 0xc5, 0xe6, 0x2f, 0x38, 0x9e, 0xb5, 0x65, 0x2a, 0xdf, 0xce, 0x83, 0xf2, 0x10,
-	0xa5, 0xf9, 0x1e, 0xf1, 0x6c, 0x7c, 0x38, 0xef, 0xf1, 0x10, 0x8a, 0xc1, 0x5e, 0x12, 0x71, 0xe0,
-	0xf6, 0x20, 0xc7, 0x10, 0x4a, 0x18, 0xf2, 0xd2, 0x30, 0xd7, 0xd6, 0x3f, 0xc6, 0x6d, 0xaf, 0xad,
-	0x85, 0xf9, 0x6e, 0x9e, 0xe5, 0xbb, 0xd3, 0xa2, 0x63, 0xbb, 0x4f, 0xda, 0x3b, 0x96, 0x91, 0x57,
-	0xca, 0xd7, 0xa1, 0x72, 0xac, 0x63, 0xa2, 0x59, 0xe8, 0x58, 0x43, 0x47, 0xc8, 0x22, 0xc2, 0x8b,
-	0x97, 0x69, 0xeb, 0x3b, 0xe8, 0xf8, 0x4d, 0xda, 0x26, 0x1f, 0xc0, 0xa2, 0x7f, 0x38, 0x61, 0x44,
-	0x1a, 0xbf, 0x7b, 0xe0, 0xbe, 0x6e, 0x9c, 0x99, 0xf5, 0xab, 0x3d, 0xcc, 0x5a, 0xa8, 0x8a, 0xe1,
-	0x3c, 0x60, 0x5c, 0xcc, 0xe9, 0xf9, 0x07, 0xa9, 0x44, 0x3b, 0x35, 0x48, 0xf7, 0x10, 0x77, 0x82,
-	0xc3, 0x06, 0xf3, 0x0d, 0x93, 0x6a, 0x99, 0x36, 0xfa, 0x47, 0x0c, 0xe5, 0x47, 0x12, 0x5c, 0xeb,
-	0xbb, 0x2c, 0x62, 0x55, 0xd7, 0x60, 0x42, 0x0c, 0x23, 0x02, 0x79, 0xc2, 0x11, 0x8a, 0xce, 0x88,
-	0x98, 0xaa, 0xcf, 0x20, 0xaf, 0x43, 0xc9, 0xd1, 0x8f, 0x35, 0x9f, 0x3f, 0xc7, 0xb2, 0xfe, 0x9e,
-	0x8e, 0x94, 0x1e, 0x77, 0x36, 0x5a, 0xf6, 0x9e, 0x0a, 0x8e, 0x7e, 0x2c, 0xb0, 0xb2, 0xd6, 0x20,
-	0x9f, 0xb5, 0x06, 0x35, 0x98, 0xe4, 0xd3, 0x45, 0xfc, 0x78, 0x3f, 0xa9, 0x06, 0xcf, 0xca, 0x0f,
-	0x24, 0xb8, 0xbc, 0x6d, 0xb7, 0x5a, 0xef, 0x47, 0xdc, 0x14, 0x77, 0xf7, 0x43, 0xd9, 0x5e, 0x3c,
-	0x9a, 0xe4, 0x4e, 0x16, 0x4d, 0xa2, 0xee, 0x30, 0x9f, 0x70, 0x87, 0xb7, 0x60, 0x9a, 0xe7, 0x5b,
-	0x9a, 0x71, 0x80, 0x8c, 0x43, 0xd7, 0x6b, 0xb3, 0x29, 0x14, 0xd5, 0x0a, 0x6f, 0xde, 0x14, 0xad,
-	0xca, 0x97, 0x13, 0x70, 0xa5, 0xc7, 0x44, 0xc4, 0x6a, 0x5d, 0x11, 0xb2, 0x72, 0x4d, 0x49, 0x4c,
-	0x53, 0x4c, 0x0a, 0xae, 0xa5, 0x5f, 0x01, 0x39, 0x1d, 0x9b, 0x46, 0xdf, 0x4f, 0xb3, 0xa9, 0xe8,
-	0x74, 0x96, 0xd1, 0xfb, 0x1b, 0xb0, 0xd8, 0x71, 0xd0, 0x11, 0xb6, 0x3d, 0x97, 0x1e, 0xc4, 0x1d,
-	0x82, 0x4c, 0xb1, 0x63, 0xb0, 0x29, 0xb2, 0xa9, 0x05, 0x9f, 0x60, 0x87, 0xf7, 0xb3, 0x1d, 0xb0,
-	0x65, 0xca, 0x2b, 0x30, 0x93, 0xe2, 0x28, 0x30, 0x8e, 0x8a, 0x1b, 0xa7, 0xac, 0xc2, 0x84, 0x4e,
-	0xa8, 0x6c, 0x3c, 0x24, 0x17, 0x54, 0xff, 0x51, 0x7e, 0x05, 0xe4, 0x3d, 0xdd, 0x38, 0x6c, 0xd9,
-	0x4d, 0xcd, 0xb0, 0x3d, 0x8b, 0x68, 0x07, 0xd8, 0xe2, 0xe1, 0x35, 0xaf, 0xce, 0x88, 0x9e, 0x4d,
-	0xda, 0xf1, 0x08, 0x5b, 0x24, 0xba, 0x3d, 0x26, 0x47, 0xdd, 0x1e, 0x19, 0xb6, 0x5d, 0xcc, 0xb2,
-	0xed, 0x35, 0x28, 0xb0, 0x8b, 0x45, 0x16, 0x29, 0x53, 0x3a, 0xe5, 0xf7, 0xb8, 0x11, 0x95, 0x3e,
-	0xa1, 0x0d, 0x2a, 0x67, 0x91, 0x9b, 0x70, 0x25, 0x2b, 0x1b, 0x09, 0xed, 0xb9, 0x34, 0x82, 0x3d,
-	0xd7, 0xd2, 0x59, 0x49, 0x60, 0xe0, 0x0f, 0xa1, 0xe2, 0x07, 0x40, 0x93, 0x25, 0x10, 0x22, 0x9e,
-	0xd6, 0x52, 0xd9, 0xc3, 0xae, 0x7f, 0xc3, 0xb8, 0x31, 0xf6, 0x29, 0x4d, 0x1f, 0xa6, 0x02, 0x3e,
-	0xda, 0x23, 0x6f, 0x42, 0xd9, 0x5f, 0x43, 0x06, 0x33, 0x35, 0x24, 0x4c, 0x49, 0x70, 0x31, 0x10,
-	0x04, 0x13, 0x74, 0xfe, 0x18, 0xb9, 0xd5, 0x0a, 0xf3, 0x3a, 0x6f, 0x0d, 0xbc, 0x6b, 0xe8, 0xbb,
-	0xb1, 0x1a, 0x4f, 0x38, 0x1a, 0xbf, 0x20, 0xf3, 0xb1, 0x6b, 0x1f, 0x41, 0x39, 0xda, 0x91, 0x71,
-	0x4f, 0xb3, 0x16, 0xbd, 0xa7, 0x19, 0x7a, 0xed, 0xc2, 0xdb, 0x9c, 0xbf, 0x2c, 0xc0, 0x35, 0x2e,
-	0x84, 0x19, 0x15, 0x6e, 0xd3, 0x6e, 0x77, 0xe8, 0x99, 0xcc, 0xf4, 0x5d, 0xd8, 0x80, 0x8d, 0xff,
-	0xf3, 0x30, 0x29, 0x2e, 0xce, 0xdd, 0xde, 0x6e, 0x58, 0xb7, 0x4c, 0x76, 0x49, 0xc9, 0x7f, 0xaa,
-	0x01, 0x47, 0x5f, 0xe7, 0xa5, 0xc3, 0xac, 0x4b, 0xb0, 0x71, 0xd8, 0x8d, 0xa6, 0x29, 0x3c, 0xe5,
-	0xfe, 0xd9, 0x3e, 0x46, 0xb5, 0xc3, 0x78, 0x02, 0x3b, 0x8a, 0xa5, 0x2c, 0xac, 0x2b, 0x92, 0xb2,
-	0xdc, 0x83, 0xaa, 0x83, 0x88, 0xe7, 0x58, 0x2c, 0xc2, 0xc6, 0x52, 0x55, 0x11, 0x69, 0xe7, 0x79,
-	0xff, 0x3b, 0xe8, 0x38, 0xaa, 0x24, 0x79, 0x03, 0xea, 0xfb, 0xb6, 0x63, 0x20, 0xcd, 0x70, 0x10,
-	0x3d, 0xfd, 0xa7, 0xd9, 0xc7, 0x19, 0x7b, 0x8d, 0x51, 0x6d, 0x32, 0xa2, 0x24, 0x46, 0x86, 0x73,
-	0x9e, 0xc8, 0x72, 0xce, 0xf2, 0x6f, 0xc0, 0x14, 0x5b, 0x4e, 0xcd, 0x41, 0xae, 0xd7, 0x22, 0x6e,
-	0x75, 0x92, 0xe9, 0xf9, 0xe9, 0x10, 0x37, 0xb2, 0x03, 0x97, 0xb7, 0xc1, 0xed, 0x82, 0x03, 0x73,
-	0x1b, 0x2c, 0x3f, 0x8b, 0x34, 0xc5, 0x23, 0x58, 0x31, 0x11, 0xc1, 0x6a, 0x87, 0x30, 0x9b, 0x02,
-	0xc8, 0xb0, 0xd5, 0x6f, 0xc6, 0x6d, 0xf5, 0xe5, 0xa1, 0x6c, 0x95, 0x41, 0x46, 0x2d, 0xf6, 0xf7,
-	0x24, 0xb8, 0xde, 0x7f, 0x4a, 0x22, 0x56, 0x19, 0xd1, 0x90, 0x41, 0x17, 0x83, 0xe7, 0x17, 0xbf,
-	0x78, 0xba, 0x9d, 0x1a, 0x09, 0x26, 0xba, 0x7b, 0xa8, 0xfc, 0x59, 0x0e, 0x96, 0x33, 0xa4, 0x79,
-	0xc0, 0x5e, 0xa5, 0x0d, 0xb9, 0x79, 0xee, 0x43, 0x81, 0xbd, 0x73, 0x63, 0x7a, 0xa9, 0x24, 0x2f,
-	0x8e, 0x52, 0x87, 0x8f, 0x10, 0x7f, 0x93, 0x72, 0xa9, 0x9c, 0x99, 0x46, 0x0a, 0xf1, 0x52, 0x4a,
-	0xc4, 0xc6, 0xc4, 0x0e, 0x14, 0x9d, 0x14, 0xe9, 0x01, 0xff, 0xa9, 0xfa, 0x0c, 0xb1, 0x0d, 0x38,
-	0x36, 0x38, 0x7b, 0x28, 0x64, 0x1a, 0x68, 0xcc, 0x46, 0xc6, 0x13, 0x36, 0xa2, 0x5c, 0x83, 0xab,
-	0x7d, 0xf4, 0x24, 0x2e, 0x01, 0xfe, 0x4b, 0x64, 0x52, 0xeb, 0x06, 0xc1, 0x47, 0x98, 0x74, 0xcf,
-	0x5b, 0x26, 0xf5, 0x21, 0x5c, 0x0c, 0x07, 0xd0, 0xda, 0x88, 0xe8, 0xec, 0xdd, 0x08, 0x77, 0x47,
-	0xaf, 0x0c, 0x33, 0xd2, 0x63, 0xc1, 0xa3, 0xce, 0x92, 0x64, 0x93, 0xf2, 0xed, 0x22, 0x4f, 0xbf,
-	0x32, 0x66, 0x3f, 0x5c, 0xfa, 0xf5, 0x6a, 0x24, 0xfd, 0x0a, 0xd5, 0xc4, 0xaf, 0x42, 0x82, 0x9c,
-	0x2a, 0x7c, 0x55, 0x72, 0x86, 0x39, 0x55, 0x76, 0xe2, 0x37, 0x76, 0x36, 0x89, 0x9f, 0x2e, 0xf4,
-	0xc1, 0x85, 0x2c, 0xf4, 0x17, 0x32, 0x50, 0x1e, 0x13, 0x52, 0x8f, 0x3c, 0xc9, 0x4b, 0x50, 0x0a,
-	0xa0, 0xb0, 0x29, 0x4c, 0x14, 0xfc, 0xa6, 0x2d, 0x33, 0x72, 0x76, 0x9d, 0x18, 0xe5, 0xec, 0x1a,
-	0x5e, 0xe5, 0x4c, 0x8e, 0x76, 0x95, 0xf3, 0x18, 0x66, 0x0f, 0x90, 0xee, 0x90, 0x3d, 0xa4, 0x13,
-	0xcd, 0x44, 0x44, 0xc7, 0x2d, 0x97, 0x79, 0xd7, 0x61, 0x30, 0x66, 0x02, 0xd6, 0xfb, 0x9c, 0x33,
-	0x23, 0x45, 0x82, 0x93, 0xa5, 0x48, 0x08, 0xea, 0x86, 0xe7, 0x38, 0x34, 0xc1, 0x15, 0x59, 0xab,
-	0x96, 0x00, 0x2e, 0x0d, 0x09, 0x7c, 0x49, 0xe0, 0xac, 0x73, 0x98, 0x9d, 0xbe, 0x99, 0x58, 0xf9,
-	0x24, 0x99, 0x58, 0x24, 0xd1, 0x9e, 0x8a, 0x27, 0xda, 0x1f, 0xc0, 0xa2, 0x2f, 0xb5, 0x46, 0x6c,
-	0xcd, 0x68, 0xd9, 0x2e, 0x0a, 0xae, 0x9e, 0x2a, 0xc3, 0x5d, 0x3d, 0x2d, 0xf8, 0x08, 0xbb, 0xf6,
-	0x26, 0xe5, 0xf7, 0x6f, 0x9f, 0x76, 0x61, 0x81, 0x09, 0x91, 0x06, 0x9e, 0x1e, 0xf2, 0x4e, 0x8b,
-	0xb1, 0x27, 0x50, 0xdf, 0x8e, 0xda, 0x83, 0x0f, 0x38, 0x33, 0x1c, 0x60, 0x68, 0x0e, 0x3e, 0x5a,
-	0xf2, 0xfe, 0x69, 0xf6, 0x64, 0xf7, 0x4f, 0xca, 0xdf, 0x4a, 0xa0, 0xa8, 0xc8, 0xb0, 0x1d, 0x33,
-	0xea, 0x98, 0x1e, 0xf9, 0xc3, 0x0d, 0x19, 0xe4, 0xd6, 0x60, 0xc2, 0xb7, 0xf0, 0xdc, 0x90, 0x16,
-	0xee, 0x33, 0xf4, 0x75, 0xc9, 0xb1, 0x88, 0x30, 0x96, 0x8c, 0x3a, 0xdb, 0x34, 0xbb, 0xed, 0x23,
-	0xba, 0xf0, 0xab, 0xb7, 0x61, 0xc6, 0xd0, 0x2d, 0x03, 0xb5, 0x34, 0x71, 0x4b, 0x88, 0xf8, 0x25,
-	0xd3, 0xa4, 0x3a, 0xcd, 0xdb, 0x55, 0xbf, 0x59, 0xf9, 0x4f, 0x09, 0x6e, 0xf6, 0x81, 0xdc, 0xe8,
-	0x6e, 0x99, 0x67, 0x74, 0x61, 0x1d, 0xde, 0x77, 0xe5, 0x23, 0xf7, 0x5d, 0x49, 0x2f, 0x36, 0x96,
-	0xf2, 0x62, 0x11, 0x4d, 0x17, 0x4e, 0xa3, 0xe9, 0xf1, 0xb8, 0xa6, 0x95, 0x5d, 0xb8, 0x35, 0x70,
-	0xe2, 0xa3, 0xeb, 0xf3, 0x6f, 0xa4, 0xe0, 0x00, 0x12, 0xc5, 0x1d, 0xf5, 0x00, 0xf2, 0x75, 0x18,
-	0xe7, 0x79, 0xf1, 0xd0, 0xd6, 0x25, 0xe8, 0x4f, 0x61, 0x5c, 0x37, 0x83, 0x44, 0xb4, 0x87, 0xe4,
-	0x22, 0xab, 0xf9, 0x0f, 0x89, 0x6a, 0xae, 0x37, 0xe1, 0x39, 0xb0, 0x99, 0x50, 0x7d, 0x85, 0x53,
-	0xa8, 0x2f, 0x69, 0x31, 0x2f, 0xc3, 0xca, 0xe0, 0x79, 0x0b, 0x25, 0xfd, 0xb5, 0x14, 0x24, 0xd2,
-	0x51, 0xe2, 0x91, 0x12, 0xe9, 0x48, 0x0a, 0x9c, 0x3b, 0x4d, 0x0a, 0x3c, 0x9a, 0x19, 0x84, 0x99,
-	0x6d, 0x96, 0xe0, 0x62, 0x7a, 0xff, 0x2e, 0x65, 0x1a, 0x0b, 0xa7, 0x3a, 0x1f, 0x4e, 0xc3, 0x57,
-	0x5d, 0xe1, 0x34, 0xaa, 0x4b, 0x9a, 0xc0, 0x2d, 0xb8, 0x31, 0x60, 0xda, 0x42, 0x41, 0x3c, 0xca,
-	0xa4, 0x8d, 0x85, 0xb9, 0x8b, 0x51, 0x2c, 0xe0, 0x05, 0x44, 0x99, 0x1b, 0xd9, 0x2e, 0x2c, 0x10,
-	0x5d, 0x4c, 0x91, 0x87, 0x8e, 0x9e, 0x74, 0x3f, 0xc5, 0xa1, 0xe3, 0x76, 0xb6, 0x03, 0x8c, 0x4d,
-	0x5c, 0x28, 0xe9, 0xf7, 0x73, 0xd4, 0x62, 0x98, 0x16, 0x78, 0xff, 0x09, 0xdf, 0x07, 0xff, 0xe4,
-	0xae, 0xa2, 0xfb, 0xd9, 0x49, 0xfc, 0xcd, 0xe3, 0x58, 0xf2, 0xcd, 0xe3, 0x6b, 0xb0, 0xb0, 0x8f,
-	0x1d, 0x97, 0x44, 0x8b, 0x07, 0xf9, 0x3a, 0xf1, 0x23, 0xf5, 0x45, 0xd6, 0x1b, 0x8e, 0xce, 0x5e,
-	0x70, 0xad, 0x50, 0xab, 0xe9, 0xaf, 0x10, 0xa1, 0xbb, 0x1f, 0xe4, 0xa0, 0xbe, 0x83, 0x9b, 0x96,
-	0x7e, 0xfe, 0x94, 0xb6, 0x04, 0x25, 0x97, 0x49, 0xc6, 0xcb, 0x0d, 0x45, 0x69, 0x25, 0x6f, 0x62,
-	0x75, 0x86, 0xc1, 0x19, 0x6a, 0x6c, 0xb4, 0x33, 0x54, 0x74, 0x35, 0x0a, 0x7d, 0x57, 0x63, 0x3c,
-	0xb9, 0x1a, 0x55, 0x98, 0x30, 0x6c, 0x8b, 0x38, 0x76, 0x4b, 0x5c, 0xb9, 0xf9, 0x8f, 0xca, 0x55,
-	0x58, 0xea, 0xa9, 0x47, 0xa1, 0xeb, 0xdf, 0x29, 0xc2, 0x2d, 0x41, 0x83, 0xc9, 0xc1, 0x57, 0x95,
-	0x0b, 0x5f, 0x55, 0x2e, 0xfc, 0xf4, 0x54, 0x2e, 0x24, 0x36, 0x6b, 0x39, 0xb5, 0x59, 0xe9, 0xc9,
-	0x9d, 0x13, 0x70, 0x43, 0x98, 0x1a, 0xd2, 0x10, 0x04, 0xec, 0x16, 0x33, 0x87, 0xc8, 0xf6, 0xab,
-	0xc4, 0xb6, 0x5f, 0xea, 0xe4, 0x3a, 0x7d, 0x56, 0x95, 0x13, 0x33, 0x7d, 0x2a, 0x27, 0x66, 0x4f,
-	0x57, 0x39, 0x21, 0x9f, 0x61, 0xe5, 0xc4, 0xc5, 0x91, 0x2a, 0x27, 0xd6, 0x61, 0x65, 0xb0, 0x23,
-	0xea, 0x5f, 0x43, 0xf1, 0x69, 0x0e, 0xae, 0xa8, 0xc8, 0x45, 0xe4, 0xdc, 0xc5, 0x8d, 0x05, 0x7a,
-	0x30, 0xd1, 0x5d, 0xdb, 0x12, 0x21, 0x43, 0x3c, 0xc9, 0xdf, 0x8c, 0xbc, 0x77, 0x64, 0x3b, 0x73,
-	0x1f, 0x5b, 0xd8, 0x3d, 0x48, 0xbe, 0xc8, 0x5d, 0x8c, 0x6e, 0xc0, 0x07, 0x8c, 0xc4, 0x7f, 0x43,
-	0x1b, 0xdf, 0x6a, 0x85, 0xc4, 0x56, 0x53, 0xee, 0x41, 0xbd, 0x97, 0x46, 0xfa, 0xeb, 0xf2, 0xef,
-	0x73, 0x70, 0x75, 0x17, 0x39, 0x6d, 0x6c, 0xe9, 0x04, 0xfd, 0xbf, 0xd1, 0x67, 0x24, 0xf3, 0x1b,
-	0x3b, 0x4d, 0xe6, 0x97, 0x0c, 0xc1, 0xbd, 0x33, 0x9e, 0xf1, 0xde, 0x19, 0xcf, 0x75, 0x50, 0xfa,
-	0x69, 0x50, 0x44, 0xe0, 0x3f, 0xcd, 0xc3, 0xd5, 0xb7, 0xb1, 0x4b, 0xde, 0xed, 0x20, 0x2b, 0x45,
-	0xe5, 0x0e, 0xa7, 0xe8, 0xcc, 0x72, 0x9d, 0xdc, 0xd0, 0xe5, 0x3a, 0x99, 0xa5, 0x22, 0x3b, 0x30,
-	0x2b, 0xee, 0x06, 0x71, 0x1b, 0x89, 0x2a, 0x1c, 0xa1, 0xd4, 0x5b, 0x89, 0x43, 0x15, 0xeb, 0xe3,
-	0xaf, 0x2b, 0x75, 0x87, 0x5d, 0xdc, 0xf1, 0x32, 0x1b, 0x75, 0xda, 0x8d, 0x37, 0xc8, 0x1f, 0xc2,
-	0x4c, 0xa8, 0x41, 0x81, 0xc9, 0xc3, 0xef, 0x6a, 0x2f, 0xcc, 0x94, 0x4e, 0x38, 0xd4, 0xa3, 0x0b,
-	0xea, 0x34, 0x8a, 0x37, 0xc9, 0x8f, 0xa1, 0x44, 0x13, 0x0b, 0x1f, 0x78, 0x3c, 0xeb, 0xfd, 0x5c,
-	0x1a, 0x98, 0x66, 0x14, 0x01, 0x26, 0x90, 0xe0, 0x69, 0xa3, 0x08, 0x13, 0x9c, 0xda, 0x55, 0xfe,
-	0x40, 0x02, 0xa5, 0xdf, 0x22, 0x05, 0x55, 0xbd, 0x10, 0xc8, 0xe4, 0x97, 0xef, 0xaf, 0x66, 0xbf,
-	0xa8, 0xcb, 0x9c, 0x1a, 0xaf, 0xa0, 0x0e, 0x21, 0x86, 0xae, 0xd9, 0xff, 0x71, 0x1e, 0xae, 0x51,
-	0xf9, 0xd8, 0x3d, 0xac, 0xf9, 0x95, 0x19, 0x9d, 0x23, 0x33, 0x92, 0xdf, 0x82, 0x29, 0x97, 0xe8,
-	0xc4, 0x73, 0x7d, 0xc0, 0x89, 0xac, 0x7c, 0x35, 0x36, 0x7b, 0xe2, 0xb9, 0x01, 0x54, 0xd9, 0x8d,
-	0x3c, 0x47, 0x6d, 0xf2, 0x8f, 0x24, 0xb8, 0xde, 0x7f, 0xcd, 0x5f, 0xb4, 0x55, 0x7e, 0x47, 0x82,
-	0x2b, 0x54, 0xc2, 0x93, 0xda, 0x63, 0xec, 0x6b, 0x9b, 0xdc, 0xe0, 0xaf, 0x6d, 0x32, 0x0d, 0x70,
-	0xce, 0x2f, 0x0b, 0xe2, 0xc7, 0x58, 0xfe, 0xa0, 0x7c, 0x57, 0x82, 0x7a, 0x2f, 0xd1, 0x5e, 0xb4,
-	0xda, 0xfe, 0x58, 0x82, 0x1b, 0x54, 0xb6, 0x75, 0x51, 0x99, 0x77, 0x0e, 0xd5, 0xf7, 0x27, 0x12,
-	0xdc, 0x1c, 0x24, 0xe2, 0x79, 0xb0, 0xbe, 0x1d, 0x43, 0xb7, 0xce, 0xa9, 0xf5, 0xf5, 0x12, 0xed,
-	0x45, 0xab, 0x6d, 0x17, 0xea, 0xac, 0x6e, 0xef, 0xa4, 0x6a, 0x0b, 0x66, 0x9c, 0x8b, 0xce, 0xf8,
-	0x1e, 0x2c, 0xf5, 0x44, 0x15, 0x33, 0x9e, 0x83, 0x02, 0xab, 0x24, 0x64, 0x90, 0x79, 0x95, 0x3f,
-	0x28, 0x97, 0xa1, 0xf6, 0x10, 0x91, 0xd4, 0xb9, 0x83, 0x8b, 0xa2, 0xfc, 0xa3, 0x04, 0x97, 0x32,
-	0xbb, 0x83, 0xef, 0xe9, 0xc6, 0x0e, 0x51, 0xd7, 0xd7, 0xdf, 0x83, 0x81, 0x35, 0x33, 0x7d, 0xb0,
-	0x1a, 0x6f, 0xa1, 0xae, 0x28, 0x2a, 0x62, 0x98, 0xb5, 0x8f, 0xa0, 0x18, 0x34, 0x65, 0x94, 0x09,
-	0xfd, 0x42, 0xb4, 0x4c, 0xa8, 0x92, 0x0c, 0x76, 0xc1, 0x89, 0x76, 0xcb, 0x32, 0xd1, 0xc7, 0xc8,
-	0x7c, 0x4a, 0x49, 0xd9, 0x4d, 0x47, 0xa4, 0x46, 0xe8, 0x0f, 0xc3, 0xaa, 0x1c, 0x56, 0x45, 0x74,
-	0x92, 0x37, 0x4a, 0x8f, 0xa1, 0x62, 0xf8, 0x2c, 0xfc, 0xda, 0x85, 0xcb, 0x73, 0xb3, 0x87, 0x3c,
-	0x91, 0x72, 0x25, 0x26, 0xce, 0x54, 0xc0, 0x2d, 0x6e, 0x5e, 0xca, 0xd1, 0xf2, 0xad, 0xec, 0x1a,
-	0x9d, 0xac, 0x23, 0x73, 0xa4, 0x0e, 0x8b, 0x1e, 0x68, 0x91, 0xe3, 0xd8, 0x8e, 0x26, 0x3e, 0xc2,
-	0x16, 0x9b, 0xa3, 0xcc, 0x1a, 0x1f, 0xf3, 0xb6, 0xfe, 0x75, 0x38, 0xbf, 0x3c, 0x36, 0x59, 0x98,
-	0x19, 0x8f, 0xbc, 0xb3, 0xc8, 0xd2, 0x8f, 0x48, 0xb0, 0x7f, 0x5b, 0x82, 0x4b, 0xec, 0x0c, 0xc4,
-	0x8b, 0xe9, 0x46, 0x2c, 0xc6, 0x39, 0xab, 0x92, 0x7a, 0xa5, 0x0e, 0x97, 0xb3, 0xa5, 0x10, 0x62,
-	0x7e, 0x2f, 0x07, 0x73, 0x6c, 0x16, 0x3e, 0xca, 0xff, 0x71, 0xc9, 0x7f, 0x50, 0x3e, 0x9b, 0x1f,
-	0xbd, 0x7c, 0x56, 0x87, 0x05, 0xdf, 0x2a, 0x7e, 0x1d, 0x19, 0x44, 0x33, 0x6c, 0xcb, 0xc4, 0x41,
-	0xed, 0x4c, 0xe5, 0xee, 0xcf, 0xf4, 0x37, 0x36, 0xca, 0xb3, 0xe9, 0xb3, 0xa8, 0x73, 0xcf, 0x32,
-	0x5a, 0x95, 0x3f, 0x97, 0x60, 0x3e, 0xa1, 0x1e, 0xb1, 0xc7, 0x93, 0x26, 0x29, 0x9d, 0xc4, 0x24,
-	0xdf, 0x82, 0x4a, 0x74, 0x06, 0xc8, 0x1c, 0x50, 0x89, 0x1a, 0x91, 0x1c, 0x99, 0xea, 0xd4, 0xb3,
-	0xe8, 0xa3, 0xf2, 0xbb, 0x12, 0x2c, 0xfb, 0xdf, 0xbd, 0x9e, 0xf0, 0xe8, 0x7c, 0x66, 0x66, 0xf7,
-	0xfd, 0x3c, 0x5c, 0xed, 0x23, 0x8b, 0xd0, 0x61, 0x2c, 0xa1, 0x16, 0xdf, 0xfd, 0x71, 0x3d, 0xde,
-	0x19, 0x21, 0xe6, 0x88, 0x2f, 0xfe, 0xc2, 0x84, 0x5a, 0x7c, 0xef, 0xd7, 0x84, 0x97, 0x32, 0x6e,
-	0x4c, 0x23, 0x1f, 0x99, 0x8e, 0x1c, 0xd8, 0xe6, 0x8f, 0xb3, 0x9a, 0xe5, 0x0f, 0x41, 0xee, 0x20,
-	0xcb, 0xc4, 0x56, 0x53, 0x13, 0xaf, 0x83, 0x30, 0x72, 0xab, 0x79, 0xe6, 0xfc, 0x5f, 0xed, 0x3d,
-	0xc6, 0x36, 0xe7, 0xf1, 0x5f, 0xea, 0xb0, 0x11, 0x66, 0x3b, 0xb1, 0x46, 0x8c, 0x5c, 0xf9, 0xd7,
-	0x60, 0xc6, 0x47, 0x37, 0x0e, 0x70, 0xcb, 0x74, 0xd8, 0x97, 0x2e, 0x14, 0xfb, 0xb5, 0x81, 0xd8,
-	0x9b, 0x94, 0x21, 0x3e, 0x87, 0xe9, 0x4e, 0xa4, 0xcb, 0x41, 0x96, 0xf2, 0xad, 0x5c, 0xf8, 0xe5,
-	0xf5, 0x8b, 0x28, 0x19, 0x7c, 0x1b, 0xa6, 0x23, 0x65, 0x81, 0xc1, 0x15, 0x7d, 0xef, 0x6f, 0xfb,
-	0x03, 0x14, 0x1e, 0x29, 0x48, 0xf4, 0x51, 0xfe, 0x06, 0x2c, 0x62, 0xcb, 0x68, 0x79, 0x26, 0x8a,
-	0xd4, 0xd1, 0x6b, 0xfc, 0x30, 0x23, 0xbe, 0x3d, 0x59, 0x10, 0x04, 0x01, 0x0e, 0x3f, 0xfa, 0x28,
-	0x7f, 0x25, 0x85, 0xdf, 0x8d, 0xa7, 0xab, 0x07, 0x7f, 0x09, 0x26, 0x3a, 0x76, 0xab, 0x85, 0x1c,
-	0x3f, 0xac, 0xdf, 0xe8, 0x33, 0xd1, 0x6d, 0x46, 0xc9, 0xf4, 0xed, 0x73, 0xc9, 0x4f, 0x61, 0x36,
-	0x2d, 0x51, 0x66, 0x31, 0x6f, 0xb6, 0xce, 0xb8, 0x94, 0xea, 0x34, 0x49, 0x88, 0xfd, 0x12, 0xcc,
-	0x3f, 0x44, 0x44, 0xfc, 0xeb, 0x04, 0x1b, 0x52, 0x64, 0x29, 0x7f, 0x97, 0x87, 0x85, 0x64, 0x8f,
-	0x98, 0xcc, 0x27, 0x30, 0xeb, 0x7a, 0x9d, 0x8e, 0xcd, 0xca, 0xc7, 0x8c, 0x16, 0x46, 0x16, 0xf1,
-	0xa7, 0xf5, 0x78, 0x98, 0x6c, 0x25, 0x03, 0xb3, 0xb1, 0xe3, 0x03, 0x6e, 0x72, 0x3c, 0x9e, 0xb4,
-	0xcc, 0xb8, 0x89, 0x66, 0xfe, 0xc1, 0xab, 0x13, 0xfd, 0x08, 0x37, 0xf8, 0xe0, 0xd5, 0x89, 0x7c,
-	0x82, 0x7b, 0x05, 0xc0, 0xff, 0x8f, 0x8d, 0xe0, 0x4d, 0x6c, 0x51, 0xb4, 0x6c, 0x99, 0xf2, 0x43,
-	0x28, 0x0b, 0x76, 0xbe, 0xa3, 0x33, 0xdf, 0xc6, 0x08, 0x0a, 0x2a, 0xb4, 0x80, 0x65, 0x12, 0x97,
-	0x8e, 0xc2, 0x07, 0xf9, 0x2a, 0x94, 0x63, 0xff, 0xe5, 0xc1, 0xef, 0xe0, 0x4a, 0x46, 0xe4, 0x5f,
-	0x3c, 0x1a, 0x70, 0xd1, 0xff, 0x38, 0xcc, 0x3d, 0xd0, 0x1d, 0x93, 0x7f, 0x7a, 0x22, 0x3e, 0x4d,
-	0x99, 0x15, 0x5d, 0x3b, 0xb4, 0x87, 0x25, 0x9b, 0xb5, 0x4d, 0x98, 0xcf, 0x54, 0xc6, 0x48, 0xff,
-	0x14, 0xf1, 0x5b, 0xe2, 0xa8, 0x18, 0xac, 0xff, 0xb6, 0xee, 0x10, 0x3c, 0x42, 0x46, 0x7c, 0x16,
-	0x9b, 0x53, 0xf9, 0x6e, 0x0e, 0x96, 0x7a, 0x4a, 0x11, 0x18, 0x53, 0x3d, 0x2c, 0x32, 0x0d, 0x2d,
-	0xbc, 0x13, 0x50, 0x0a, 0xcb, 0x7a, 0x7d, 0x98, 0xc1, 0x03, 0xfc, 0xa0, 0xd6, 0xf7, 0x92, 0x9e,
-	0xac, 0xe8, 0x0d, 0x65, 0xa0, 0x63, 0xc7, 0x6f, 0xb2, 0x53, 0x63, 0xe7, 0x4e, 0x35, 0xf6, 0x71,
-	0xb2, 0x92, 0x3d, 0x1c, 0x7b, 0xe3, 0x5f, 0xa5, 0xcf, 0x3e, 0xaf, 0x5f, 0xf8, 0xe1, 0xe7, 0xf5,
-	0x0b, 0x5f, 0x7e, 0x5e, 0x97, 0x7e, 0xf3, 0x79, 0x5d, 0xfa, 0xfe, 0xf3, 0xba, 0xf4, 0x0f, 0xcf,
-	0xeb, 0xd2, 0x67, 0xcf, 0xeb, 0xd2, 0x3f, 0x3f, 0xaf, 0x4b, 0x3f, 0x7a, 0x5e, 0xbf, 0xf0, 0xe5,
-	0xf3, 0xba, 0xf4, 0xe9, 0x17, 0xf5, 0x0b, 0x9f, 0x7d, 0x51, 0xbf, 0xf0, 0xc3, 0x2f, 0xea, 0x17,
-	0x40, 0xc1, 0xf6, 0xa0, 0x2d, 0xb6, 0x31, 0x27, 0x96, 0xd8, 0xd7, 0xf1, 0xb6, 0x63, 0x13, 0x7b,
-	0x5b, 0xfa, 0xe0, 0xf5, 0x66, 0x84, 0x17, 0xdb, 0x3d, 0xfe, 0x27, 0xeb, 0xe7, 0x12, 0x4d, 0x7f,
-	0x91, 0x5b, 0xda, 0xf5, 0x99, 0xd6, 0x3b, 0x38, 0x08, 0x6e, 0x3b, 0x62, 0xc0, 0xa7, 0x77, 0xfe,
-	0x25, 0xa7, 0xf8, 0x14, 0x6b, 0x6b, 0xeb, 0x1d, 0xbc, 0xb6, 0x96, 0xa0, 0x59, 0x5b, 0x7b, 0x7a,
-	0x67, 0x6f, 0x9c, 0xbd, 0xa9, 0x7b, 0xed, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x62, 0xb6, 0x21,
-	0x1c, 0xa8, 0x4b, 0x00, 0x00,
+	// 4466 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x3c, 0x4b, 0x6c, 0x1c, 0x47,
+	0x76, 0xea, 0x19, 0x0e, 0x3f, 0x6f, 0x86, 0xbf, 0x16, 0x49, 0x8d, 0x28, 0x69, 0x48, 0xb5, 0x3e,
+	0xa6, 0xb4, 0xf6, 0x68, 0x25, 0xc7, 0xd6, 0x2e, 0xb3, 0x49, 0x96, 0x1c, 0xfd, 0x18, 0x59, 0x36,
+	0xd5, 0xa4, 0xe4, 0xc0, 0x70, 0xd2, 0x6e, 0x76, 0x17, 0x87, 0x15, 0xce, 0x74, 0x8f, 0xba, 0x6b,
+	0x48, 0x8f, 0x73, 0x09, 0x92, 0x20, 0x41, 0x90, 0xc3, 0x1a, 0xc8, 0x1e, 0x76, 0x81, 0xcd, 0xf7,
+	0x10, 0x24, 0xb9, 0xe4, 0x90, 0x1c, 0x92, 0x5b, 0x4e, 0x41, 0x2e, 0x01, 0x7c, 0x34, 0x90, 0x43,
+	0x62, 0x19, 0x48, 0x16, 0x39, 0x04, 0x5e, 0x04, 0x48, 0x0e, 0x41, 0x3e, 0xa8, 0x5f, 0xff, 0xe7,
+	0x47, 0x72, 0x57, 0xda, 0x85, 0x6f, 0xd3, 0xaf, 0xde, 0x7b, 0xf5, 0xea, 0xbd, 0x57, 0xaf, 0x5e,
+	0x55, 0xbd, 0x1a, 0x78, 0x93, 0xa0, 0x66, 0xcb, 0xf5, 0xcc, 0xc6, 0x0d, 0xb3, 0x85, 0x6f, 0x1c,
+	0xba, 0xde, 0xfe, 0x6e, 0xc3, 0x3d, 0xf4, 0x91, 0x77, 0x80, 0x2d, 0x74, 0xe3, 0xe0, 0xe6, 0x0d,
+	0x0f, 0x3d, 0x6b, 0x23, 0x9f, 0x18, 0x1e, 0xf2, 0x5b, 0xae, 0xe3, 0xa3, 0x6a, 0xcb, 0x73, 0x89,
+	0xab, 0x2e, 0x49, 0xba, 0xaa, 0xd9, 0xc2, 0xd5, 0x04, 0x5d, 0xf5, 0xe0, 0xe6, 0xe2, 0xe5, 0x18,
+	0x63, 0xe4, 0xb4, 0x9b, 0x3e, 0x65, 0x27, 0x31, 0x39, 0x9b, 0xc5, 0x2b, 0xd9, 0x58, 0x8e, 0xd9,
+	0x44, 0x7e, 0xcb, 0xb4, 0x44, 0x6f, 0x8b, 0x2b, 0xd9, 0x68, 0xbb, 0x26, 0x6e, 0x20, 0xdb, 0xb0,
+	0xcc, 0xb6, 0x94, 0x6b, 0x51, 0xcb, 0xc6, 0xb4, 0xdc, 0x66, 0xd3, 0x75, 0x04, 0xce, 0xc5, 0x6c,
+	0x9c, 0x67, 0x6d, 0xe4, 0x75, 0x7a, 0xa3, 0x78, 0xc8, 0x47, 0x44, 0xa0, 0x5c, 0xcd, 0x46, 0x21,
+	0xa6, 0xbf, 0x6f, 0x3c, 0x6b, 0xa3, 0xb6, 0x94, 0x28, 0xae, 0x08, 0x2e, 0x08, 0x45, 0x6c, 0x22,
+	0xdf, 0x37, 0xeb, 0x28, 0x53, 0x11, 0x7b, 0xd8, 0x27, 0xae, 0xd7, 0x49, 0xa3, 0x5d, 0xcd, 0x34,
+	0x57, 0x3f, 0x76, 0xb4, 0x53, 0xd3, 0xb1, 0xfb, 0xa1, 0x51, 0x75, 0xb6, 0x3d, 0x94, 0x46, 0x8b,
+	0x0f, 0x61, 0x17, 0x37, 0x08, 0xf2, 0xd2, 0x58, 0xaf, 0xc4, 0xb0, 0x02, 0x13, 0xa6, 0x11, 0x2f,
+	0xc5, 0x10, 0x99, 0xda, 0xd3, 0x48, 0xd7, 0x62, 0x48, 0x1e, 0x6a, 0x35, 0xb0, 0x65, 0x12, 0x9c,
+	0xa5, 0xbb, 0x78, 0xc7, 0xd4, 0x00, 0x4c, 0xff, 0xfd, 0x86, 0x7b, 0x80, 0x3c, 0x3f, 0x93, 0x5f,
+	0xa5, 0xee, 0xba, 0xf5, 0x06, 0xba, 0xc1, 0xbe, 0x76, 0xda, 0xbb, 0x37, 0xec, 0xb6, 0xc7, 0xba,
+	0x16, 0xed, 0x4b, 0xc9, 0x76, 0x82, 0x9b, 0xc8, 0x27, 0x66, 0xb3, 0x25, 0x10, 0x5e, 0xab, 0x63,
+	0xb2, 0xd7, 0xde, 0xa9, 0x5a, 0x6e, 0xf3, 0x46, 0xdd, 0xad, 0xbb, 0x21, 0x26, 0xfd, 0x62, 0x1f,
+	0xec, 0x17, 0x47, 0xd7, 0xfe, 0x6f, 0x14, 0xca, 0x3a, 0xaa, 0x63, 0x9f, 0x20, 0xef, 0x6d, 0xa9,
+	0x36, 0x9d, 0xcf, 0x3b, 0xf5, 0x3c, 0x4c, 0x04, 0xaa, 0x2c, 0x2b, 0xcb, 0xca, 0xca, 0x84, 0x1e,
+	0x02, 0xd4, 0x65, 0x28, 0xda, 0xc8, 0xb7, 0x3c, 0xdc, 0xa2, 0xf2, 0x95, 0x73, 0xac, 0x3d, 0x0a,
+	0x52, 0x97, 0xa0, 0xe8, 0x1e, 0x3a, 0xc8, 0x33, 0x50, 0xd3, 0xc4, 0x8d, 0x72, 0x9e, 0x61, 0x00,
+	0x03, 0xdd, 0xa5, 0x10, 0xd5, 0x81, 0x4b, 0xd2, 0x8f, 0x0c, 0xf4, 0x21, 0xb2, 0xda, 0x94, 0xcc,
+	0xf0, 0x10, 0x41, 0x0e, 0xfb, 0xd5, 0x42, 0x1e, 0x76, 0xed, 0xf2, 0xc8, 0xb2, 0xb2, 0x52, 0xbc,
+	0x75, 0xb6, 0xca, 0xc7, 0x5e, 0x95, 0x23, 0xaa, 0xde, 0x11, 0xba, 0x59, 0x1f, 0xf9, 0xce, 0x3f,
+	0x2d, 0x29, 0xfa, 0xb2, 0xe4, 0x75, 0x57, 0xb2, 0xd2, 0x25, 0xa7, 0x4d, 0xc6, 0x48, 0x7d, 0x0c,
+	0xe3, 0x56, 0xa3, 0x4d, 0xc7, 0xea, 0x97, 0x0b, 0xcb, 0xf9, 0x95, 0xe2, 0xad, 0x37, 0xaa, 0xb1,
+	0x60, 0x12, 0xb1, 0x75, 0xf5, 0xe0, 0x66, 0xb5, 0xc6, 0x91, 0xf5, 0x10, 0x5a, 0x73, 0x9d, 0x5d,
+	0x5c, 0xd7, 0x03, 0x36, 0x6a, 0x15, 0x4e, 0x9b, 0x16, 0xc1, 0x07, 0xc8, 0x10, 0x20, 0x83, 0x6a,
+	0xa8, 0x3c, 0xca, 0xc6, 0x3a, 0xcb, 0x9b, 0x04, 0x1b, 0xaa, 0x5f, 0xf5, 0x5d, 0x18, 0xb1, 0x4d,
+	0x62, 0x96, 0xc7, 0x58, 0xf7, 0xb5, 0x6a, 0x9f, 0x58, 0x56, 0xed, 0x66, 0x9c, 0xea, 0x1d, 0x93,
+	0x98, 0x77, 0x1d, 0xe2, 0x75, 0x74, 0xc6, 0x50, 0xbd, 0x02, 0x53, 0x3e, 0xb2, 0xda, 0x1e, 0x26,
+	0x1d, 0x83, 0xb8, 0xfb, 0xc8, 0x29, 0x8f, 0x33, 0x19, 0x26, 0x25, 0x74, 0x9b, 0x02, 0xa9, 0xbc,
+	0xd8, 0x37, 0xea, 0x0d, 0x77, 0xc7, 0x6c, 0x18, 0xa1, 0x75, 0x27, 0x96, 0x95, 0x95, 0x71, 0x7d,
+	0x16, 0xfb, 0xf7, 0x59, 0x4b, 0xd0, 0x9b, 0xfa, 0x1e, 0x2c, 0x88, 0x88, 0x60, 0x98, 0x9e, 0xb5,
+	0x87, 0x0f, 0xcc, 0x86, 0xe1, 0x13, 0x93, 0xa0, 0x32, 0x2c, 0x2b, 0x2b, 0x53, 0xb7, 0x2e, 0xc7,
+	0x47, 0xc0, 0x62, 0x11, 0x95, 0x7b, 0x4d, 0x20, 0x6f, 0x51, 0x5c, 0x7d, 0x4e, 0xf0, 0x88, 0x41,
+	0xd5, 0xaf, 0xc2, 0x5c, 0x8a, 0x77, 0xdb, 0xc3, 0xe5, 0x22, 0x13, 0x5c, 0x4d, 0xd0, 0x3c, 0xf1,
+	0xb0, 0xfa, 0x01, 0x9c, 0x3d, 0xc0, 0x3e, 0xde, 0xc1, 0x0d, 0x3a, 0xcc, 0x84, 0x40, 0xa5, 0x21,
+	0x04, 0x3a, 0x13, 0xb2, 0x89, 0xcb, 0xf4, 0x26, 0x9c, 0xc9, 0xea, 0x81, 0x8a, 0x35, 0xc9, 0xc4,
+	0x9a, 0x4f, 0x53, 0x3e, 0xf1, 0xf0, 0xe2, 0x6d, 0x98, 0x08, 0x2c, 0xa2, 0xce, 0x40, 0x7e, 0x1f,
+	0x75, 0xc4, 0x94, 0xa1, 0x3f, 0xd5, 0x39, 0x28, 0x1c, 0x98, 0x8d, 0x36, 0x12, 0xd3, 0x84, 0x7f,
+	0xac, 0xe6, 0xbe, 0xa6, 0x68, 0xe7, 0xe0, 0x6c, 0x86, 0x8d, 0xf9, 0x82, 0xa7, 0xbd, 0x0f, 0xf3,
+	0x6f, 0x61, 0x9f, 0x04, 0x0d, 0xbe, 0x9c, 0x9a, 0xe7, 0x60, 0xa2, 0x65, 0xd6, 0x91, 0xe1, 0xe3,
+	0x8f, 0xf8, 0xd4, 0x2c, 0xe8, 0xe3, 0x14, 0xb0, 0x85, 0x3f, 0x42, 0xea, 0x55, 0x98, 0x76, 0xd0,
+	0x87, 0xc4, 0x60, 0x18, 0xdc, 0x17, 0x68, 0xb7, 0x25, 0x7d, 0x92, 0x82, 0x37, 0xcd, 0x3a, 0x62,
+	0xbe, 0xa0, 0x7d, 0x4f, 0x81, 0x85, 0x24, 0x7b, 0xde, 0xb1, 0xfa, 0x1e, 0x40, 0xe0, 0x1c, 0x7e,
+	0x59, 0x61, 0xce, 0xba, 0xda, 0xd7, 0x59, 0xef, 0xb0, 0xc9, 0xbf, 0x83, 0x52, 0x03, 0xd1, 0x23,
+	0xdc, 0x06, 0x16, 0xef, 0x01, 0x94, 0x33, 0x18, 0x0e, 0x12, 0x9a, 0xa6, 0x20, 0x87, 0x6d, 0xa1,
+	0xea, 0x1c, 0xb6, 0xb5, 0xff, 0xc8, 0xc1, 0xd9, 0xae, 0xb2, 0xa9, 0xef, 0xc0, 0x54, 0x40, 0x6a,
+	0x60, 0x67, 0xd7, 0x65, 0x0c, 0x8b, 0xb7, 0x56, 0xe2, 0xe3, 0x0d, 0x13, 0x83, 0x83, 0x9b, 0xd5,
+	0x80, 0xcb, 0x86, 0xb3, 0xeb, 0xea, 0x93, 0x4e, 0xf4, 0x53, 0x5d, 0x87, 0x51, 0x8b, 0xc5, 0x09,
+	0x26, 0x42, 0xf1, 0xd6, 0xf5, 0x41, 0x18, 0x89, 0xc8, 0x22, 0x28, 0xd5, 0x5d, 0x50, 0x23, 0xc1,
+	0xc8, 0x10, 0xfc, 0xf2, 0x8c, 0xdf, 0xed, 0x9e, 0x41, 0x2b, 0x32, 0xc0, 0x64, 0xd8, 0x9a, 0xf5,
+	0x92, 0x20, 0xf5, 0x1a, 0xcc, 0xd0, 0xb5, 0xd7, 0x3d, 0x40, 0x9e, 0x21, 0x56, 0x25, 0x16, 0x6f,
+	0xf3, 0xfa, 0xb4, 0x84, 0x3f, 0xe5, 0xe0, 0x6e, 0xa1, 0xa3, 0xd0, 0x25, 0x74, 0x68, 0x7f, 0x99,
+	0x87, 0x85, 0x27, 0x2d, 0xdb, 0x24, 0xc3, 0x9a, 0xef, 0x1d, 0x28, 0xb6, 0x19, 0x1d, 0xb7, 0x06,
+	0x57, 0x62, 0xb5, 0x87, 0x12, 0x13, 0xbd, 0x30, 0x9b, 0x00, 0x67, 0x91, 0x30, 0x48, 0xfe, 0x84,
+	0x0d, 0x32, 0x72, 0xe2, 0x06, 0x49, 0xc7, 0xf1, 0x42, 0x56, 0x1c, 0xbf, 0x0e, 0xb3, 0x36, 0x6a,
+	0x20, 0x82, 0x8c, 0x1d, 0xd3, 0x36, 0x76, 0xb0, 0x63, 0x7a, 0x1d, 0xb1, 0xea, 0x4c, 0xf3, 0x86,
+	0x75, 0xd3, 0x5e, 0x67, 0x60, 0xf5, 0x2b, 0x30, 0xdb, 0xf2, 0xdc, 0xa6, 0x4b, 0x50, 0xc4, 0x6c,
+	0x63, 0xcc, 0x6c, 0x33, 0xa2, 0x21, 0xb4, 0xda, 0x0f, 0x72, 0x70, 0x26, 0x65, 0xb5, 0x2f, 0x67,
+	0xca, 0x0f, 0x75, 0xa6, 0x7c, 0x40, 0xc3, 0x53, 0xcb, 0x43, 0xd6, 0xf0, 0x73, 0x25, 0xed, 0x2e,
+	0xb9, 0x0c, 0x77, 0xd1, 0xce, 0xc3, 0x62, 0x56, 0x0f, 0x62, 0x99, 0xf9, 0x9f, 0x31, 0xb8, 0xb0,
+	0x45, 0x4c, 0x8f, 0xbc, 0x9b, 0xce, 0xa0, 0x06, 0x11, 0x62, 0x09, 0x8a, 0x41, 0x1e, 0x17, 0x04,
+	0x5e, 0x90, 0xa0, 0x0d, 0x5b, 0xdd, 0x80, 0xc9, 0x00, 0x81, 0x74, 0x5a, 0x48, 0x98, 0x27, 0xb1,
+	0x56, 0x8b, 0x9d, 0xd2, 0xc1, 0xcd, 0xaa, 0x94, 0x63, 0xbb, 0xd3, 0x42, 0x7a, 0xe9, 0x30, 0xf2,
+	0xa5, 0xd6, 0x00, 0xc2, 0x7d, 0x8e, 0x98, 0x7f, 0x09, 0x3e, 0x41, 0x1a, 0x4e, 0x59, 0x6d, 0x9b,
+	0xfe, 0xfe, 0x63, 0xfa, 0xa1, 0x4f, 0x10, 0xf9, 0x53, 0x7d, 0x13, 0x0a, 0xd8, 0x69, 0xb5, 0x09,
+	0x33, 0x49, 0xf1, 0xd6, 0x72, 0x37, 0x39, 0x36, 0xcd, 0x4e, 0xc3, 0x35, 0x6d, 0x5f, 0xe7, 0xe8,
+	0xea, 0x2f, 0xc2, 0x62, 0x46, 0xc2, 0x4a, 0x73, 0x70, 0xb7, 0x4d, 0xd8, 0xf4, 0x1b, 0x20, 0x4f,
+	0x2d, 0xa7, 0xf2, 0xd4, 0x6d, 0xce, 0x40, 0x7d, 0x0c, 0x73, 0x01, 0x7b, 0xaf, 0x1d, 0x32, 0x1e,
+	0x1b, 0x8c, 0xb1, 0x2a, 0x89, 0xf5, 0x76, 0xc0, 0x72, 0x0b, 0xe6, 0x43, 0xcd, 0x53, 0xbd, 0x49,
+	0x9e, 0xe3, 0x83, 0xf1, 0x3c, 0x1d, 0x28, 0xdf, 0xf4, 0xf7, 0x25, 0xd3, 0x45, 0x18, 0xc7, 0x36,
+	0xcd, 0xac, 0x49, 0x87, 0x65, 0x8e, 0x13, 0x7a, 0xf0, 0xad, 0x5e, 0x00, 0x90, 0xfb, 0x76, 0x6c,
+	0xb3, 0x24, 0x71, 0x42, 0x9f, 0x10, 0x90, 0x0d, 0x5b, 0x45, 0x50, 0x8e, 0xb8, 0x8a, 0xe1, 0xa1,
+	0xb6, 0x8f, 0x8c, 0x96, 0xdb, 0xc0, 0x56, 0x87, 0xe5, 0x7d, 0x53, 0xb7, 0x5e, 0xed, 0x92, 0xc0,
+	0xbd, 0x1b, 0xb8, 0x93, 0x4e, 0x89, 0x36, 0x19, 0x8d, 0x3e, 0x7f, 0x98, 0x05, 0x56, 0xef, 0x41,
+	0xc9, 0x43, 0xc4, 0xeb, 0x48, 0xd6, 0x25, 0x36, 0xda, 0x4b, 0xdd, 0xec, 0xac, 0x53, 0x5c, 0xc1,
+	0xb1, 0xe8, 0x85, 0x1f, 0xea, 0x25, 0x98, 0xb4, 0x3c, 0xd7, 0x31, 0x7c, 0x6b, 0x0f, 0xd9, 0xed,
+	0x06, 0x12, 0x49, 0x60, 0x89, 0x02, 0xb7, 0x04, 0x4c, 0xfd, 0x2a, 0x8c, 0x34, 0x51, 0xd3, 0x2d,
+	0x4f, 0xb1, 0x4e, 0xce, 0x77, 0xeb, 0xe4, 0x11, 0x6a, 0xba, 0x3a, 0xc3, 0x54, 0x9f, 0xc0, 0xac,
+	0x8f, 0x68, 0x72, 0x69, 0x98, 0x84, 0x78, 0x78, 0xa7, 0x4d, 0x90, 0x5f, 0x9e, 0xce, 0x8a, 0xa5,
+	0x21, 0xf9, 0x16, 0x23, 0x58, 0x0b, 0xf0, 0xf5, 0x19, 0x3f, 0x01, 0x51, 0xdf, 0x84, 0xd1, 0x3d,
+	0x64, 0xda, 0xc8, 0x2b, 0xcf, 0x30, 0x5e, 0x95, 0x6e, 0xbc, 0x1e, 0x30, 0x2c, 0x5d, 0x60, 0x6b,
+	0xb7, 0xa1, 0xd2, 0x6d, 0xfa, 0x8b, 0xc8, 0x3f, 0x0f, 0xa3, 0xd4, 0x21, 0xb1, 0x2d, 0x26, 0x7f,
+	0xc1, 0x6b, 0x3b, 0x1b, 0xb6, 0xf6, 0xed, 0x3c, 0x68, 0xf7, 0x51, 0x9a, 0xee, 0x01, 0x4f, 0xdd,
+	0x07, 0x8b, 0x1e, 0xf7, 0x61, 0x22, 0x98, 0x4b, 0x62, 0x1d, 0xb8, 0xd6, 0x2f, 0x30, 0x84, 0x12,
+	0x86, 0xb4, 0x74, 0x4d, 0x6c, 0x9a, 0x1f, 0xe2, 0x66, 0xbb, 0x69, 0x84, 0xc9, 0x71, 0x9e, 0x25,
+	0xc7, 0xd3, 0xa2, 0x61, 0xb3, 0x47, 0x8e, 0x3c, 0x92, 0x91, 0x84, 0xaa, 0x97, 0x61, 0xea, 0xd0,
+	0xc4, 0xc4, 0x70, 0xd0, 0xa1, 0x81, 0x0e, 0x90, 0x43, 0x44, 0x14, 0x2f, 0x51, 0xe8, 0xdb, 0xe8,
+	0xf0, 0x2e, 0x85, 0xa9, 0x7b, 0x70, 0x56, 0xee, 0x64, 0x18, 0x92, 0xc1, 0x0f, 0x2a, 0x78, 0xac,
+	0x1b, 0x65, 0x6e, 0xfd, 0x5a, 0x17, 0xb7, 0x16, 0xaa, 0x62, 0x7c, 0xee, 0x31, 0x2a, 0x16, 0xf4,
+	0xe4, 0xae, 0x2b, 0x01, 0xa7, 0x0e, 0xe9, 0xef, 0xe3, 0x56, 0xb0, 0x33, 0x11, 0xeb, 0x78, 0x89,
+	0x02, 0xe5, 0x7e, 0x44, 0xfb, 0xbe, 0x02, 0x97, 0x7a, 0x9a, 0x45, 0x58, 0x75, 0x15, 0xc6, 0x44,
+	0x37, 0x62, 0x21, 0x4f, 0x04, 0x42, 0xd1, 0x18, 0x11, 0x53, 0x97, 0x04, 0xea, 0x1a, 0x14, 0x3d,
+	0xf3, 0xd0, 0x90, 0xf4, 0x39, 0xb6, 0x45, 0xe8, 0x1a, 0x48, 0xe9, 0xde, 0x68, 0xbd, 0xe1, 0xee,
+	0xe8, 0xe0, 0x99, 0x87, 0x82, 0x57, 0x96, 0x0d, 0xf2, 0x59, 0x36, 0x58, 0x84, 0x71, 0x3e, 0x5c,
+	0xc4, 0xcf, 0x02, 0xc6, 0xf5, 0xe0, 0x5b, 0xfb, 0x17, 0x05, 0xae, 0xf5, 0x1c, 0x2a, 0x5d, 0xaa,
+	0xd1, 0x8f, 0xbf, 0x23, 0x6a, 0x1f, 0x2b, 0x70, 0x7d, 0x90, 0x81, 0x9e, 0x80, 0x69, 0x07, 0xb4,
+	0x8b, 0xf6, 0x77, 0x0a, 0x9c, 0xdf, 0x74, 0x1b, 0x8d, 0x77, 0x23, 0x4b, 0x04, 0x5f, 0x6a, 0x07,
+	0x52, 0x77, 0x7c, 0x25, 0xcf, 0x1d, 0x6d, 0x25, 0x8f, 0x2e, 0x45, 0xf9, 0xc4, 0x52, 0xf4, 0x0a,
+	0x4c, 0xf3, 0xc4, 0xd8, 0xb0, 0xf6, 0x90, 0xb5, 0xef, 0xb7, 0x9b, 0x4c, 0xb5, 0x13, 0xfa, 0x14,
+	0x07, 0xd7, 0x04, 0x54, 0xfb, 0x62, 0x0c, 0x2e, 0x74, 0x19, 0x88, 0x50, 0xe7, 0x05, 0x21, 0x2b,
+	0xd7, 0x86, 0xc2, 0xb4, 0xc1, 0xa4, 0xe0, 0x1e, 0xfa, 0x0b, 0xa0, 0xa6, 0xf3, 0x82, 0xe1, 0x5d,
+	0x68, 0x36, 0x95, 0x19, 0x9c, 0x64, 0xe6, 0xf4, 0x75, 0x38, 0xdb, 0xf2, 0xd0, 0x01, 0x76, 0xdb,
+	0xbe, 0xe1, 0xd3, 0x70, 0x8f, 0x6c, 0x11, 0xad, 0xb0, 0x2d, 0x32, 0xd9, 0x05, 0x89, 0xb0, 0xc5,
+	0xdb, 0x59, 0xf4, 0xd9, 0xb0, 0xd5, 0x15, 0x98, 0x49, 0x51, 0x14, 0x18, 0xc5, 0x94, 0x1f, 0xc7,
+	0x2c, 0xc3, 0x98, 0x49, 0xa8, 0x6c, 0x3c, 0x1d, 0x2a, 0xe8, 0xf2, 0x53, 0x7d, 0x15, 0xd4, 0x1d,
+	0xd3, 0xda, 0x6f, 0xb8, 0x75, 0xc3, 0x72, 0xdb, 0x0e, 0x31, 0xf6, 0xb0, 0xc3, 0x53, 0x9b, 0xbc,
+	0x3e, 0x23, 0x5a, 0x6a, 0xb4, 0xe1, 0x01, 0x76, 0x48, 0xd4, 0x7f, 0xc7, 0x4f, 0xc0, 0x7f, 0x27,
+	0xb2, 0xe2, 0xca, 0x2a, 0x14, 0xd8, 0x09, 0x30, 0xcb, 0x52, 0x52, 0x3a, 0xe5, 0x67, 0xf2, 0x11,
+	0x95, 0x3e, 0xa6, 0x00, 0x9d, 0x93, 0xa8, 0x75, 0xb8, 0x90, 0x95, 0x09, 0x86, 0xfe, 0x5c, 0x1c,
+	0xc2, 0x9f, 0x17, 0xd3, 0x19, 0x61, 0xe0, 0xe0, 0xf7, 0x61, 0x4a, 0x26, 0x1f, 0x36, 0x4b, 0xde,
+	0x44, 0x2e, 0xb3, 0x98, 0xca, 0xdc, 0xb6, 0xe5, 0x51, 0xf0, 0xfa, 0xc8, 0xc7, 0x34, 0x75, 0x9b,
+	0x0c, 0xe8, 0x68, 0x8b, 0x5a, 0x83, 0x92, 0xb4, 0x21, 0x63, 0x33, 0x39, 0x20, 0x9b, 0xa2, 0xa0,
+	0x62, 0x4c, 0x10, 0x8c, 0xd1, 0xf1, 0x63, 0xe4, 0x97, 0xa7, 0x58, 0xc4, 0x7f, 0xd8, 0xf7, 0x50,
+	0xa8, 0xe7, 0xc4, 0xaa, 0x3e, 0xe6, 0xdc, 0xf8, 0x49, 0xa6, 0xe4, 0xbd, 0xf8, 0x01, 0x94, 0xa2,
+	0x0d, 0x19, 0x07, 0x6a, 0xab, 0xd1, 0x03, 0xb5, 0x81, 0x6d, 0x17, 0x1e, 0xbb, 0xfd, 0x45, 0x01,
+	0x2e, 0x71, 0x21, 0xec, 0xa8, 0x70, 0x35, 0xb7, 0xd9, 0xa2, 0x9b, 0x67, 0x5b, 0x86, 0xb0, 0x3e,
+	0x13, 0xff, 0x1b, 0x30, 0x2e, 0x6e, 0x38, 0xfc, 0xee, 0x4b, 0xa0, 0xe9, 0xd8, 0xec, 0x34, 0x99,
+	0xff, 0xd4, 0x03, 0x8a, 0x9e, 0xc1, 0xcb, 0x84, 0x59, 0x9f, 0x60, 0x6b, 0xbf, 0x13, 0x4d, 0x11,
+	0xf9, 0x76, 0xe7, 0xa7, 0x7a, 0x38, 0xd5, 0x16, 0xa3, 0x09, 0xfc, 0x28, 0x96, 0x2e, 0xb2, 0xa6,
+	0x48, 0xba, 0x78, 0x1b, 0xca, 0x1e, 0x22, 0x6d, 0xcf, 0x61, 0xd9, 0x4d, 0x6c, 0x9b, 0x20, 0xb2,
+	0x9c, 0x79, 0xde, 0xfe, 0x36, 0x3a, 0x8c, 0x2a, 0x49, 0x5d, 0x87, 0xca, 0xae, 0xeb, 0x59, 0xc8,
+	0xb0, 0x3c, 0x64, 0x12, 0x94, 0x41, 0x3e, 0xca, 0xc8, 0x17, 0x19, 0x56, 0x8d, 0x21, 0x25, 0x79,
+	0x64, 0x04, 0xe7, 0xb1, 0xac, 0xe0, 0xac, 0xfe, 0x0a, 0x4c, 0x32, 0x73, 0x1a, 0x1e, 0xf2, 0xdb,
+	0x0d, 0xe2, 0x97, 0xc7, 0x99, 0x9e, 0x9f, 0x0e, 0x70, 0x74, 0xde, 0xd7, 0xbc, 0x55, 0xee, 0x17,
+	0x9c, 0x31, 0xf7, 0xc1, 0xd2, 0xb3, 0x08, 0x28, 0xbe, 0x82, 0x4d, 0x24, 0x56, 0xb0, 0xc5, 0x7d,
+	0x98, 0x4d, 0x31, 0xc8, 0xf0, 0xd5, 0x6f, 0xc6, 0x7d, 0xf5, 0xfa, 0x40, 0xbe, 0xca, 0x58, 0x46,
+	0x3d, 0xf6, 0x77, 0x14, 0xb8, 0xdc, 0x7b, 0x48, 0x62, 0xad, 0xb2, 0xa2, 0x4b, 0x06, 0x35, 0x06,
+	0x4f, 0x00, 0x7e, 0xf6, 0x78, 0x33, 0x35, 0xb2, 0x98, 0x98, 0xfe, 0xbe, 0xf6, 0x27, 0x39, 0x58,
+	0xce, 0x90, 0xe6, 0x1e, 0xbb, 0x16, 0x1d, 0x70, 0xf2, 0xdc, 0x81, 0x02, 0xbb, 0x3f, 0x65, 0x7a,
+	0x99, 0x4a, 0x9e, 0xf0, 0xa5, 0x36, 0x7e, 0x21, 0xff, 0x1a, 0xa5, 0xd2, 0x39, 0x31, 0x5d, 0x29,
+	0xc4, 0xed, 0xa1, 0x58, 0x1b, 0x13, 0x33, 0x50, 0x34, 0x52, 0x4e, 0xf7, 0xf8, 0x4f, 0x5d, 0x12,
+	0xc4, 0x26, 0xe0, 0x48, 0xff, 0xec, 0xa1, 0x90, 0xe9, 0xa0, 0x31, 0x1f, 0x19, 0x4d, 0xf8, 0x88,
+	0x76, 0x09, 0x2e, 0xf6, 0xd0, 0x93, 0x38, 0x80, 0xf9, 0x6f, 0x91, 0x49, 0xad, 0x59, 0x04, 0x1f,
+	0x60, 0xd2, 0x79, 0xd9, 0x32, 0xa9, 0xf7, 0xe1, 0x74, 0xd8, 0x81, 0xd1, 0x44, 0xc4, 0x64, 0x97,
+	0x58, 0x3c, 0x1c, 0xbd, 0x3a, 0x48, 0x4f, 0x8f, 0x04, 0x8d, 0x3e, 0x4b, 0x92, 0x20, 0xed, 0xdb,
+	0x13, 0x3c, 0xfd, 0xca, 0x18, 0xfd, 0x60, 0xe9, 0xd7, 0x6b, 0x91, 0xf4, 0x2b, 0x54, 0x13, 0x3f,
+	0x86, 0x0a, 0x72, 0xaa, 0xf0, 0x4e, 0xeb, 0x04, 0x73, 0xaa, 0xec, 0xc4, 0x6f, 0xe4, 0x64, 0x12,
+	0x3f, 0x53, 0xe8, 0x83, 0x0b, 0x59, 0xe8, 0x2d, 0x64, 0xa0, 0x3c, 0x26, 0xa4, 0x19, 0xf9, 0x52,
+	0x97, 0xa0, 0x18, 0xb0, 0xc2, 0xb6, 0x70, 0x51, 0x90, 0xa0, 0x0d, 0x3b, 0x72, 0x6e, 0x30, 0x36,
+	0xcc, 0xb9, 0x41, 0x78, 0x8c, 0x36, 0x3e, 0xdc, 0x31, 0xda, 0x23, 0x98, 0xdd, 0x43, 0xa6, 0x47,
+	0x76, 0x90, 0x49, 0x0c, 0x1b, 0x11, 0x13, 0x37, 0x7c, 0x16, 0x5d, 0x07, 0xe1, 0x31, 0x13, 0x90,
+	0xde, 0xe1, 0x94, 0x19, 0x29, 0x12, 0x1c, 0x2d, 0x45, 0x42, 0x50, 0xb1, 0xda, 0x9e, 0x47, 0x13,
+	0x5c, 0x91, 0xb5, 0x1a, 0x09, 0xc6, 0xc5, 0x01, 0x19, 0x9f, 0x13, 0x7c, 0xd6, 0x38, 0x9b, 0xad,
+	0x9e, 0x99, 0x58, 0xe9, 0x28, 0x99, 0x58, 0x24, 0xd1, 0x9e, 0x8c, 0x27, 0xda, 0xef, 0xc1, 0x59,
+	0x29, 0xb5, 0x41, 0x5c, 0xc3, 0x6a, 0xb8, 0x3e, 0x0a, 0x8e, 0xfd, 0xa6, 0x06, 0x3b, 0xf6, 0x5b,
+	0x90, 0x1c, 0xb6, 0xdd, 0x1a, 0xa5, 0x97, 0x27, 0x7f, 0xdb, 0xb0, 0xc0, 0x84, 0x48, 0x33, 0x9e,
+	0x1e, 0xf0, 0x3c, 0x91, 0x91, 0x27, 0xb8, 0xbe, 0x15, 0xf5, 0x07, 0xc9, 0x70, 0x66, 0x30, 0x86,
+	0xa1, 0x3b, 0x48, 0x6e, 0xc9, 0xb3, 0xbf, 0xd9, 0xa3, 0x9d, 0xfd, 0x69, 0x7f, 0xa3, 0x80, 0xa6,
+	0x23, 0xcb, 0xf5, 0xec, 0x68, 0x60, 0x7a, 0x20, 0xbb, 0x1b, 0x70, 0x91, 0x5b, 0x85, 0x31, 0xe9,
+	0xe1, 0xb9, 0x01, 0x3d, 0x5c, 0x12, 0xf4, 0x0c, 0xc9, 0xb1, 0x15, 0x61, 0x24, 0xb9, 0xea, 0x6c,
+	0xd2, 0xec, 0xb6, 0x87, 0xe8, 0x22, 0xae, 0x5e, 0x83, 0x19, 0xcb, 0x74, 0x2c, 0xd4, 0x30, 0xc4,
+	0x09, 0x2d, 0xe2, 0x07, 0x7c, 0xe3, 0xfa, 0x34, 0x87, 0xeb, 0x12, 0xac, 0xfd, 0x97, 0x02, 0x57,
+	0x7b, 0xb0, 0x5c, 0xef, 0x6c, 0xd8, 0x27, 0x74, 0x59, 0x10, 0x9e, 0x35, 0xe6, 0x23, 0x67, 0x8d,
+	0xc9, 0x28, 0x36, 0x92, 0x8a, 0x62, 0x11, 0x4d, 0x17, 0x8e, 0xa3, 0xe9, 0xd1, 0xb8, 0xa6, 0xb5,
+	0x6d, 0x78, 0xa5, 0xef, 0xc0, 0x87, 0xd7, 0xe7, 0x5f, 0x2b, 0xc1, 0x06, 0x24, 0xca, 0x77, 0xd8,
+	0x0d, 0xc8, 0xd7, 0x60, 0x94, 0xe7, 0xc5, 0x03, 0x7b, 0x97, 0xc0, 0x3f, 0x86, 0x73, 0x5d, 0x0d,
+	0x12, 0xd1, 0x2e, 0x92, 0x8b, 0xac, 0xe6, 0x3f, 0x15, 0xaa, 0xb9, 0xee, 0x88, 0x2f, 0x81, 0xcf,
+	0x84, 0xea, 0x2b, 0x1c, 0x43, 0x7d, 0x49, 0x8f, 0xb9, 0x0e, 0x2b, 0xfd, 0xc7, 0x2d, 0x94, 0xf4,
+	0xad, 0x30, 0x91, 0x8e, 0x22, 0x0f, 0x95, 0x48, 0x47, 0x52, 0xe0, 0xdc, 0x71, 0x52, 0xe0, 0xa1,
+	0xdc, 0x40, 0x7d, 0x0a, 0x0b, 0x0d, 0xd3, 0x27, 0x46, 0x7a, 0x29, 0x1f, 0x54, 0x97, 0x73, 0x94,
+	0xfe, 0x41, 0x62, 0x39, 0xd7, 0xcc, 0x20, 0x63, 0xce, 0x52, 0x88, 0x98, 0x69, 0xdf, 0x80, 0x71,
+	0x31, 0x02, 0x59, 0x9e, 0xd2, 0x7f, 0xcc, 0x01, 0x85, 0xf6, 0x0f, 0xb9, 0x4c, 0x17, 0xe6, 0x7d,
+	0xbc, 0x1c, 0xa1, 0x4c, 0x1a, 0xb4, 0x70, 0x1c, 0x83, 0x26, 0x1c, 0xb3, 0x87, 0xc9, 0xc6, 0x8e,
+	0x65, 0x32, 0x04, 0x57, 0xfa, 0xa8, 0xf3, 0x44, 0xcc, 0xc6, 0x57, 0xe4, 0xf4, 0xc4, 0x62, 0xa1,
+	0x75, 0x98, 0xd9, 0xf2, 0x02, 0x56, 0xe4, 0x2b, 0xd9, 0xe1, 0x3e, 0x10, 0x5d, 0x84, 0x03, 0xbe,
+	0xcc, 0x76, 0xc5, 0xfb, 0x09, 0x5e, 0x66, 0xaf, 0x65, 0x2f, 0x16, 0xb1, 0x81, 0x87, 0x31, 0xf3,
+	0x8a, 0xd0, 0x02, 0x6f, 0x3f, 0x62, 0xdd, 0xc2, 0x0f, 0xef, 0xd8, 0xbe, 0x97, 0x9f, 0xc4, 0x6f,
+	0xc8, 0x47, 0x92, 0x37, 0xe4, 0xaf, 0xc3, 0xc2, 0x2e, 0xf6, 0x7c, 0x12, 0xad, 0x88, 0xe5, 0x76,
+	0xe2, 0xc7, 0x0f, 0xa7, 0x59, 0x6b, 0xd8, 0x3b, 0xbb, 0x88, 0x5d, 0xa1, 0x5e, 0xd3, 0x5b, 0x21,
+	0x42, 0x77, 0xff, 0x9b, 0x83, 0xca, 0x16, 0xae, 0x3b, 0xe6, 0xcb, 0xa7, 0xb4, 0x25, 0x28, 0xfa,
+	0x4c, 0x32, 0x5e, 0x43, 0x2b, 0xea, 0x85, 0x39, 0x88, 0x15, 0xcf, 0x06, 0xfb, 0xcd, 0x91, 0xe1,
+	0xf6, 0x9b, 0x51, 0x6b, 0x14, 0x7a, 0x5a, 0x63, 0x34, 0x69, 0x8d, 0x32, 0x8c, 0x59, 0xae, 0x43,
+	0x3c, 0xb7, 0x21, 0x8e, 0x27, 0xe5, 0x67, 0x64, 0xd3, 0x3c, 0x3e, 0xd4, 0x65, 0xfb, 0x45, 0x58,
+	0xea, 0xaa, 0x7f, 0x61, 0xa3, 0xdf, 0x9a, 0x80, 0x57, 0x04, 0x0e, 0x26, 0x7b, 0x5f, 0x56, 0xe6,
+	0x7c, 0x59, 0x99, 0xf3, 0x93, 0x53, 0x99, 0x93, 0x98, 0xe4, 0xa5, 0xd4, 0x24, 0xaf, 0x41, 0x49,
+	0x20, 0x70, 0x47, 0x98, 0x1c, 0xd0, 0x11, 0x04, 0xdb, 0x0d, 0xe6, 0x0e, 0x91, 0x69, 0x3b, 0x15,
+	0x9f, 0xb6, 0xc9, 0xd3, 0x81, 0xe9, 0x93, 0xaa, 0x0c, 0x9a, 0xe9, 0x51, 0x19, 0x34, 0x7b, 0xbc,
+	0xca, 0x20, 0xf5, 0x04, 0x2b, 0x83, 0x4e, 0x0f, 0x15, 0xac, 0xd6, 0x60, 0xa5, 0x7f, 0x20, 0xea,
+	0x5d, 0x23, 0xf4, 0xaf, 0x39, 0xb8, 0xa0, 0x23, 0x1f, 0x91, 0x97, 0x6e, 0xbd, 0x59, 0xa0, 0x9b,
+	0x3f, 0xd3, 0x77, 0x1d, 0xb1, 0xd4, 0x88, 0x2f, 0xf5, 0x9b, 0x91, 0xbb, 0x5d, 0x36, 0x33, 0x77,
+	0xb1, 0x83, 0xfd, 0xbd, 0xe4, 0x65, 0xf9, 0xd9, 0xe8, 0x04, 0xbc, 0xc7, 0x50, 0xe4, 0x2d, 0x78,
+	0x7c, 0xaa, 0x15, 0x92, 0x53, 0xed, 0x09, 0xa8, 0xec, 0x39, 0x97, 0xe1, 0x21, 0xb3, 0xd5, 0x6a,
+	0x74, 0xa2, 0x75, 0x42, 0xaf, 0x74, 0x99, 0x64, 0x4c, 0x85, 0x3a, 0xc7, 0x67, 0xc1, 0x77, 0xc6,
+	0x4b, 0x40, 0xb4, 0xdb, 0x50, 0xe9, 0xa6, 0xe8, 0xde, 0x26, 0xfa, 0xdb, 0x1c, 0x5c, 0xdc, 0x46,
+	0x5e, 0x13, 0x3b, 0x26, 0x41, 0x3f, 0x36, 0x66, 0x8a, 0x24, 0xa2, 0x23, 0xc7, 0x49, 0x44, 0x93,
+	0x19, 0x41, 0xf7, 0x04, 0x6c, 0xb4, 0x7b, 0x02, 0x76, 0x19, 0xb4, 0x5e, 0x1a, 0x14, 0x0b, 0xfb,
+	0x1f, 0xe7, 0xe1, 0xe2, 0x5b, 0xd8, 0x27, 0xef, 0xb4, 0x90, 0x93, 0xc2, 0xf2, 0x07, 0x53, 0x74,
+	0x66, 0x71, 0x51, 0x6e, 0xe0, 0xe2, 0xa2, 0xcc, 0x0a, 0xab, 0x2d, 0x98, 0x15, 0xc7, 0xba, 0xb8,
+	0x89, 0x44, 0xf1, 0x9a, 0x50, 0x6a, 0xc2, 0x1f, 0x79, 0x1b, 0xbf, 0x69, 0x36, 0x3d, 0x76, 0xe6,
+	0xca, 0xab, 0xd3, 0xf4, 0x69, 0x3f, 0x0e, 0x50, 0xdf, 0x87, 0x99, 0x50, 0x83, 0x82, 0x27, 0x5f,
+	0xd5, 0x6f, 0x74, 0xe3, 0x99, 0xd2, 0x09, 0x67, 0xf5, 0xe0, 0x94, 0x3e, 0x8d, 0xe2, 0x20, 0xf5,
+	0x11, 0x14, 0xe9, 0xac, 0x91, 0x8c, 0x47, 0xb3, 0xae, 0x56, 0xd3, 0x8c, 0xe9, 0x3c, 0x09, 0x78,
+	0x02, 0x09, 0xbe, 0xd6, 0x27, 0x60, 0x8c, 0x63, 0xfb, 0xda, 0xef, 0x29, 0xa0, 0xf5, 0x32, 0x52,
+	0x50, 0x0c, 0x0f, 0x81, 0x4c, 0x72, 0x33, 0x7b, 0x23, 0xfb, 0x8e, 0x35, 0x73, 0x68, 0xfc, 0x95,
+	0x42, 0xc8, 0x62, 0xe0, 0x77, 0x31, 0x3f, 0xc8, 0xc3, 0x25, 0x2a, 0x1f, 0x3b, 0x42, 0xb7, 0xbf,
+	0x74, 0xa3, 0x97, 0xc8, 0x8d, 0xd4, 0x87, 0x30, 0xe9, 0x13, 0x93, 0xb4, 0x7d, 0xc9, 0x70, 0x2c,
+	0x2b, 0x0d, 0x8e, 0x8d, 0x9e, 0xb4, 0xfd, 0x80, 0x55, 0xc9, 0x8f, 0x7c, 0x47, 0x7d, 0xf2, 0x0f,
+	0x14, 0xb8, 0xdc, 0xdb, 0xe6, 0x2f, 0xda, 0x2b, 0xbf, 0xa3, 0xc0, 0x05, 0x2a, 0xe1, 0x51, 0xfd,
+	0x31, 0xf6, 0xa2, 0x2d, 0xd7, 0xff, 0x45, 0x5b, 0xa6, 0x03, 0xce, 0xc9, 0x8a, 0x2e, 0xbe, 0xab,
+	0xe6, 0x1f, 0xda, 0x77, 0x15, 0xa8, 0x74, 0x13, 0xed, 0x45, 0xab, 0xed, 0x0f, 0x15, 0xb8, 0x42,
+	0x65, 0x5b, 0x13, 0x05, 0xad, 0x2f, 0xa1, 0xfa, 0xfe, 0x48, 0x81, 0xab, 0xfd, 0x44, 0x7c, 0x19,
+	0xbc, 0x6f, 0xcb, 0x32, 0x9d, 0x97, 0xd4, 0xfb, 0xba, 0x89, 0xf6, 0xa2, 0xd5, 0xb6, 0x0d, 0x15,
+	0x56, 0x72, 0x79, 0x54, 0xb5, 0x05, 0x23, 0xce, 0x45, 0x47, 0x7c, 0x1b, 0x96, 0xba, 0x72, 0x15,
+	0x23, 0x9e, 0x83, 0x02, 0x2b, 0x02, 0x65, 0x2c, 0xf3, 0x3a, 0xff, 0xd0, 0xce, 0xc3, 0xe2, 0x7d,
+	0x44, 0x52, 0xdb, 0x19, 0x2e, 0x8a, 0xf6, 0x8f, 0x0a, 0x9c, 0xcb, 0x6c, 0x0e, 0xde, 0xac, 0x8e,
+	0xec, 0xa3, 0x8e, 0xd4, 0xdf, 0xbd, 0xbe, 0xe5, 0x4e, 0x3d, 0x78, 0x55, 0x1f, 0xa2, 0x8e, 0xa8,
+	0x07, 0x63, 0x3c, 0x17, 0x3f, 0x80, 0x89, 0x00, 0x94, 0x51, 0xe1, 0xf5, 0x33, 0xd1, 0x0a, 0xaf,
+	0xee, 0x39, 0xfc, 0x86, 0x63, 0xa3, 0x0f, 0x91, 0xfd, 0x94, 0xa2, 0xb2, 0x1c, 0x3e, 0x52, 0xde,
+	0xf5, 0xfb, 0xe1, 0x3d, 0x10, 0x2b, 0x00, 0x3b, 0xca, 0x65, 0xe0, 0x23, 0x98, 0xb2, 0x24, 0x09,
+	0xdf, 0x53, 0x70, 0x79, 0xae, 0x76, 0x91, 0x27, 0x52, 0x69, 0xc6, 0xc4, 0x99, 0x0c, 0xa8, 0xc5,
+	0x81, 0x4e, 0x29, 0x5a, 0x79, 0x97, 0x5d, 0x5e, 0x95, 0xb5, 0x13, 0x8f, 0x94, 0xd0, 0xd1, 0x7d,
+	0x32, 0xf2, 0x3c, 0xd7, 0x33, 0xc4, 0x1f, 0x1d, 0x88, 0xc9, 0x51, 0x62, 0xc0, 0x47, 0x1c, 0xd6,
+	0xbb, 0x84, 0xea, 0xe7, 0x47, 0xc6, 0x0b, 0x33, 0xa3, 0x91, 0x42, 0xaa, 0x2c, 0xfd, 0x88, 0x04,
+	0xfb, 0x37, 0x14, 0x38, 0xc7, 0xf6, 0x40, 0xbc, 0x0e, 0x72, 0xc8, 0x3a, 0xaa, 0x93, 0x7a, 0x00,
+	0xa0, 0x55, 0xe0, 0x7c, 0xb6, 0x14, 0x42, 0xcc, 0xef, 0xe5, 0x60, 0x8e, 0x8d, 0x42, 0x72, 0xf9,
+	0x11, 0x3f, 0x50, 0x08, 0x2a, 0x9f, 0xf3, 0xc3, 0x57, 0x3e, 0x9b, 0xb0, 0x20, 0xbd, 0xe2, 0x97,
+	0x91, 0x45, 0x0c, 0xcb, 0x75, 0x6c, 0x1c, 0x94, 0x3d, 0x4d, 0xdd, 0xfa, 0x4a, 0x6f, 0x67, 0xa3,
+	0x34, 0x35, 0x49, 0xa2, 0xcf, 0x3d, 0xcb, 0x80, 0x6a, 0x7f, 0xa6, 0xc0, 0x7c, 0x42, 0x3d, 0x62,
+	0x8e, 0x27, 0x5d, 0x52, 0x39, 0x8a, 0x4b, 0x3e, 0x84, 0xa9, 0xe8, 0x08, 0x90, 0xdd, 0xa7, 0x88,
+	0x38, 0x22, 0x39, 0xb2, 0xf5, 0xc9, 0x67, 0xd1, 0x4f, 0xed, 0xb7, 0x15, 0x58, 0x96, 0x6f, 0xcb,
+	0x8f, 0xb8, 0x75, 0x3e, 0x31, 0xb7, 0xfb, 0xd6, 0x08, 0x5c, 0xec, 0x21, 0x8b, 0xd0, 0x61, 0x2c,
+	0xa1, 0x16, 0xcf, 0x65, 0xb9, 0x1e, 0x6f, 0x0e, 0xb1, 0xe6, 0x88, 0x87, 0xb2, 0x61, 0x42, 0x2d,
+	0x9e, 0xc9, 0xd6, 0xe1, 0x4c, 0xc6, 0x41, 0x6c, 0xe4, 0x21, 0xf7, 0xd0, 0x0b, 0xdb, 0xfc, 0x61,
+	0x16, 0x58, 0x7d, 0x1f, 0xd4, 0x16, 0x72, 0x6c, 0xec, 0xd4, 0x0d, 0x71, 0x3b, 0x85, 0x91, 0x5f,
+	0xce, 0xb3, 0xe0, 0xff, 0x5a, 0xf7, 0x3e, 0x36, 0x39, 0x8d, 0xbc, 0x63, 0x62, 0x3d, 0xcc, 0xb6,
+	0x62, 0x40, 0x8c, 0x7c, 0xf5, 0x97, 0x60, 0x46, 0x72, 0xb7, 0xf6, 0x70, 0xc3, 0xf6, 0xd8, 0xbb,
+	0x1c, 0xca, 0xfb, 0xf5, 0xbe, 0xbc, 0x6b, 0x94, 0x20, 0x3e, 0x86, 0xe9, 0x56, 0xa4, 0xc9, 0x43,
+	0x8e, 0x8a, 0x60, 0x5e, 0xf2, 0x4f, 0x17, 0x5e, 0xf7, 0xb4, 0x84, 0xe8, 0x24, 0x5a, 0x4d, 0xca,
+	0xba, 0x38, 0xdd, 0x4a, 0x37, 0x68, 0xbf, 0x99, 0x0b, 0xff, 0x44, 0xe1, 0x45, 0x14, 0x95, 0xbe,
+	0x05, 0xd3, 0x91, 0xc2, 0xd1, 0xe0, 0x82, 0xa1, 0xfb, 0xdf, 0x74, 0x04, 0x5c, 0xf8, 0x82, 0x44,
+	0xa2, 0x9f, 0xea, 0xd7, 0xe1, 0x2c, 0x76, 0xac, 0x46, 0xdb, 0x46, 0x91, 0x97, 0x16, 0x06, 0xdf,
+	0x33, 0x89, 0x97, 0x61, 0x0b, 0x02, 0x21, 0xe0, 0xc3, 0x77, 0x58, 0xda, 0x5f, 0x29, 0xe1, 0x5f,
+	0x40, 0xa4, 0xeb, 0x4b, 0x7f, 0x0e, 0xc6, 0x5a, 0x6e, 0xa3, 0x81, 0x3c, 0x99, 0x3d, 0x5c, 0xe9,
+	0x31, 0xd0, 0x4d, 0x86, 0xc9, 0x74, 0x2e, 0xa9, 0xd4, 0xa7, 0x30, 0x9b, 0x96, 0x28, 0xb3, 0xdc,
+	0x3b, 0x5b, 0x67, 0x5c, 0x4a, 0x7d, 0x9a, 0x24, 0xc4, 0x3e, 0x03, 0xf3, 0xf7, 0x11, 0x11, 0x7f,
+	0x20, 0xc3, 0xba, 0x14, 0xc9, 0xd0, 0xef, 0x8e, 0xc0, 0x42, 0xb2, 0x45, 0x0c, 0xe6, 0x23, 0x98,
+	0xf5, 0xdb, 0xad, 0x96, 0xcb, 0x0a, 0x0c, 0xad, 0x06, 0x46, 0x0e, 0x91, 0xc3, 0x7a, 0x34, 0x48,
+	0x52, 0x94, 0xc1, 0xb3, 0xba, 0x25, 0x19, 0xd6, 0x38, 0x3f, 0x9e, 0x1b, 0xcd, 0xf8, 0x09, 0x30,
+	0x7f, 0x8e, 0xee, 0x45, 0x9f, 0xc8, 0x07, 0xcf, 0xd1, 0xbd, 0xc8, 0x03, 0xf9, 0x0b, 0x00, 0xf2,
+	0xef, 0x72, 0x82, 0xfb, 0xe7, 0x09, 0x01, 0xd9, 0xb0, 0xd5, 0xfb, 0x50, 0x12, 0xe4, 0x3c, 0x70,
+	0x64, 0xde, 0x25, 0x09, 0x0c, 0x2a, 0xb4, 0x60, 0xcb, 0x24, 0x2e, 0x1e, 0x84, 0x1f, 0xea, 0x45,
+	0x28, 0xc5, 0xfe, 0x96, 0x87, 0x1f, 0xf5, 0x15, 0xad, 0xc8, 0x1f, 0xf2, 0x54, 0xe1, 0xb4, 0x7c,
+	0xba, 0xe9, 0xef, 0x99, 0x9e, 0xcd, 0x1f, 0x27, 0x89, 0xc7, 0x4b, 0xb3, 0xa2, 0x69, 0x8b, 0xb6,
+	0xb0, 0x9c, 0x96, 0xfd, 0x99, 0x02, 0xed, 0xc1, 0x27, 0xc8, 0xb1, 0xa8, 0xa9, 0x5d, 0x0f, 0x89,
+	0xab, 0xc1, 0x99, 0x48, 0xc3, 0x16, 0x85, 0xab, 0xd7, 0x60, 0x26, 0xf2, 0x6f, 0x32, 0x1c, 0x97,
+	0xff, 0x2d, 0xcf, 0x74, 0x08, 0x67, 0xa8, 0x8b, 0x35, 0x98, 0xcf, 0x54, 0xf2, 0x50, 0x7f, 0x26,
+	0xb3, 0x00, 0x73, 0x34, 0xab, 0xed, 0xf8, 0x04, 0x35, 0xa3, 0xde, 0xf2, 0x6b, 0x79, 0xe6, 0x47,
+	0xd1, 0x06, 0xe1, 0x2c, 0x69, 0x83, 0x29, 0x59, 0x06, 0xab, 0x43, 0xc9, 0x32, 0x5b, 0x26, 0x13,
+	0x98, 0x86, 0x59, 0xee, 0xda, 0xb5, 0x81, 0x72, 0xec, 0x54, 0xa7, 0xd5, 0x5a, 0x84, 0x95, 0x1e,
+	0x63, 0xbc, 0xf8, 0xa9, 0x02, 0xa5, 0x68, 0xb3, 0xfa, 0x06, 0x9c, 0x11, 0xd7, 0x41, 0xa6, 0x63,
+	0x1b, 0x7c, 0xdd, 0x16, 0x57, 0x19, 0xbc, 0xb2, 0x6e, 0x8e, 0x37, 0xaf, 0x89, 0xbc, 0x90, 0x5f,
+	0x60, 0xa8, 0x77, 0xa0, 0x82, 0x1d, 0x82, 0x3c, 0x4a, 0xc8, 0xf3, 0x4f, 0x1b, 0xef, 0xee, 0x22,
+	0x0f, 0x39, 0x04, 0x9b, 0xc1, 0x42, 0x3b, 0xae, 0x9f, 0x97, 0x58, 0x77, 0x29, 0xd2, 0x9d, 0x38,
+	0x8e, 0xfa, 0x10, 0xb4, 0xa0, 0x18, 0x42, 0x54, 0xa1, 0x18, 0x32, 0x02, 0x05, 0x35, 0x34, 0xcc,
+	0x7f, 0xc7, 0xf5, 0x25, 0x89, 0x29, 0xea, 0x56, 0x36, 0x38, 0x5e, 0x50, 0x2b, 0xa3, 0xfd, 0xba,
+	0x38, 0x86, 0x08, 0x26, 0xfd, 0xa6, 0xe9, 0x11, 0x3c, 0xc4, 0x6e, 0xeb, 0x24, 0x22, 0xb2, 0xf6,
+	0xdd, 0x1c, 0x2c, 0x75, 0x95, 0x22, 0x88, 0x20, 0x95, 0xb0, 0xf6, 0x3c, 0x0c, 0x6b, 0xad, 0x00,
+	0x53, 0x84, 0x93, 0x37, 0x06, 0xe9, 0x3c, 0xe0, 0x1f, 0x3c, 0x01, 0x38, 0x67, 0x26, 0x0b, 0xfd,
+	0x43, 0x19, 0x68, 0xdf, 0xf1, 0xcb, 0x97, 0x54, 0xdf, 0xb9, 0x63, 0xf5, 0x7d, 0x98, 0x7c, 0xe0,
+	0x12, 0xf6, 0xbd, 0xfe, 0xef, 0xca, 0x27, 0x9f, 0x55, 0x4e, 0x7d, 0xfa, 0x59, 0xe5, 0xd4, 0x17,
+	0x9f, 0x55, 0x94, 0x5f, 0x7d, 0x5e, 0x51, 0xfe, 0xf4, 0x79, 0x45, 0xf9, 0xfb, 0xe7, 0x15, 0xe5,
+	0x93, 0xe7, 0x15, 0xe5, 0x9f, 0x9f, 0x57, 0x94, 0xef, 0x3f, 0xaf, 0x9c, 0xfa, 0xe2, 0x79, 0x45,
+	0xf9, 0xf8, 0xf3, 0xca, 0xa9, 0x4f, 0x3e, 0xaf, 0x9c, 0xfa, 0xf4, 0xf3, 0xca, 0x29, 0xd0, 0xb0,
+	0xdb, 0x6f, 0x22, 0xac, 0xcf, 0x09, 0x13, 0x4b, 0x1d, 0x6f, 0x7a, 0x2e, 0x71, 0x37, 0x95, 0xf7,
+	0xde, 0xa8, 0x47, 0x68, 0xb1, 0xdb, 0xe5, 0xaf, 0x10, 0x7f, 0x3a, 0x01, 0xfa, 0xf3, 0xdc, 0xd2,
+	0xb6, 0x24, 0x5a, 0x6b, 0xe1, 0x20, 0x71, 0xda, 0x12, 0x1d, 0x3e, 0xbd, 0xf9, 0x6f, 0x39, 0x4d,
+	0x62, 0xac, 0xae, 0xae, 0xb5, 0xf0, 0xea, 0x6a, 0x02, 0x67, 0x75, 0xf5, 0xe9, 0xcd, 0x9d, 0x51,
+	0x76, 0xb9, 0xfc, 0xfa, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff, 0xba, 0x4a, 0x39, 0xa4, 0x8b, 0x51,
+	0x00, 0x00,
 }
 
 func (this *RegisterNamespaceRequest) Equal(that interface{}) bool {
@@ -5677,6 +6215,9 @@ func (this *UpdateNamespaceRequest) Equal(that interface{}) bool {
 		return false
 	}
 	if this.DeleteBadBinary != that1.DeleteBadBinary {
+		return false
+	}
+	if this.PromoteNamespace != that1.PromoteNamespace {
 		return false
 	}
 	return true
@@ -5952,6 +6493,66 @@ func (this *GetWorkflowExecutionHistoryResponse) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Archived != that1.Archived {
+		return false
+	}
+	return true
+}
+func (this *GetWorkflowExecutionHistoryReverseRequest) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GetWorkflowExecutionHistoryReverseRequest)
+	if !ok {
+		that2, ok := that.(GetWorkflowExecutionHistoryReverseRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Namespace != that1.Namespace {
+		return false
+	}
+	if !this.Execution.Equal(that1.Execution) {
+		return false
+	}
+	if this.MaximumPageSize != that1.MaximumPageSize {
+		return false
+	}
+	if !bytes.Equal(this.NextPageToken, that1.NextPageToken) {
+		return false
+	}
+	return true
+}
+func (this *GetWorkflowExecutionHistoryReverseResponse) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GetWorkflowExecutionHistoryReverseResponse)
+	if !ok {
+		that2, ok := that.(GetWorkflowExecutionHistoryReverseResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.History.Equal(that1.History) {
+		return false
+	}
+	if !bytes.Equal(this.NextPageToken, that1.NextPageToken) {
 		return false
 	}
 	return true
@@ -6607,6 +7208,9 @@ func (this *RespondActivityTaskFailedRequest) Equal(that interface{}) bool {
 	if this.Namespace != that1.Namespace {
 		return false
 	}
+	if !this.LastHeartbeatDetails.Equal(that1.LastHeartbeatDetails) {
+		return false
+	}
 	return true
 }
 func (this *RespondActivityTaskFailedResponse) Equal(that interface{}) bool {
@@ -6627,6 +7231,14 @@ func (this *RespondActivityTaskFailedResponse) Equal(that interface{}) bool {
 		return this == nil
 	} else if this == nil {
 		return false
+	}
+	if len(this.Failures) != len(that1.Failures) {
+		return false
+	}
+	for i := range this.Failures {
+		if !this.Failures[i].Equal(that1.Failures[i]) {
+			return false
+		}
 	}
 	return true
 }
@@ -6667,6 +7279,9 @@ func (this *RespondActivityTaskFailedByIdRequest) Equal(that interface{}) bool {
 	if this.Identity != that1.Identity {
 		return false
 	}
+	if !this.LastHeartbeatDetails.Equal(that1.LastHeartbeatDetails) {
+		return false
+	}
 	return true
 }
 func (this *RespondActivityTaskFailedByIdResponse) Equal(that interface{}) bool {
@@ -6687,6 +7302,14 @@ func (this *RespondActivityTaskFailedByIdResponse) Equal(that interface{}) bool 
 		return this == nil
 	} else if this == nil {
 		return false
+	}
+	if len(this.Failures) != len(that1.Failures) {
+		return false
+	}
+	for i := range this.Failures {
+		if !this.Failures[i].Equal(that1.Failures[i]) {
+			return false
+		}
 	}
 	return true
 }
@@ -6901,6 +7524,9 @@ func (this *SignalWorkflowExecutionRequest) Equal(that interface{}) bool {
 	if this.Control != that1.Control {
 		return false
 	}
+	if !this.Header.Equal(that1.Header) {
+		return false
+	}
 	return true
 }
 func (this *SignalWorkflowExecutionResponse) Equal(that interface{}) bool {
@@ -7076,6 +7702,9 @@ func (this *ResetWorkflowExecutionRequest) Equal(that interface{}) bool {
 		return false
 	}
 	if this.RequestId != that1.RequestId {
+		return false
+	}
+	if this.ResetReapplyType != that1.ResetReapplyType {
 		return false
 	}
 	return true
@@ -7961,6 +8590,9 @@ func (this *DescribeWorkflowExecutionResponse) Equal(that interface{}) bool {
 			return false
 		}
 	}
+	if !this.PendingWorkflowTask.Equal(that1.PendingWorkflowTask) {
+		return false
+	}
 	return true
 }
 func (this *DescribeTaskQueueRequest) Equal(that interface{}) bool {
@@ -8089,6 +8721,90 @@ func (this *GetClusterInfoResponse) Equal(that interface{}) bool {
 		return false
 	}
 	if this.HistoryShardCount != that1.HistoryShardCount {
+		return false
+	}
+	if this.PersistenceStore != that1.PersistenceStore {
+		return false
+	}
+	if this.VisibilityStore != that1.VisibilityStore {
+		return false
+	}
+	return true
+}
+func (this *GetSystemInfoRequest) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GetSystemInfoRequest)
+	if !ok {
+		that2, ok := that.(GetSystemInfoRequest)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	return true
+}
+func (this *GetSystemInfoResponse) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GetSystemInfoResponse)
+	if !ok {
+		that2, ok := that.(GetSystemInfoResponse)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.ServerVersion != that1.ServerVersion {
+		return false
+	}
+	if !this.Capabilities.Equal(that1.Capabilities) {
+		return false
+	}
+	return true
+}
+func (this *GetSystemInfoResponse_Capabilities) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*GetSystemInfoResponse_Capabilities)
+	if !ok {
+		that2, ok := that.(GetSystemInfoResponse_Capabilities)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.SignalAndQueryHeader != that1.SignalAndQueryHeader {
+		return false
+	}
+	if this.InternalErrorDifferentiation != that1.InternalErrorDifferentiation {
+		return false
+	}
+	if this.ActivityFailureIncludeHeartbeat != that1.ActivityFailureIncludeHeartbeat {
 		return false
 	}
 	return true
@@ -8261,7 +8977,7 @@ func (this *UpdateNamespaceRequest) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 10)
+	s := make([]string, 0, 11)
 	s = append(s, "&workflowservice.UpdateNamespaceRequest{")
 	s = append(s, "Namespace: "+fmt.Sprintf("%#v", this.Namespace)+",\n")
 	if this.UpdateInfo != nil {
@@ -8275,6 +8991,7 @@ func (this *UpdateNamespaceRequest) GoString() string {
 	}
 	s = append(s, "SecurityToken: "+fmt.Sprintf("%#v", this.SecurityToken)+",\n")
 	s = append(s, "DeleteBadBinary: "+fmt.Sprintf("%#v", this.DeleteBadBinary)+",\n")
+	s = append(s, "PromoteNamespace: "+fmt.Sprintf("%#v", this.PromoteNamespace)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -8399,6 +9116,34 @@ func (this *GetWorkflowExecutionHistoryResponse) GoString() string {
 	}
 	s = append(s, "NextPageToken: "+fmt.Sprintf("%#v", this.NextPageToken)+",\n")
 	s = append(s, "Archived: "+fmt.Sprintf("%#v", this.Archived)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *GetWorkflowExecutionHistoryReverseRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 8)
+	s = append(s, "&workflowservice.GetWorkflowExecutionHistoryReverseRequest{")
+	s = append(s, "Namespace: "+fmt.Sprintf("%#v", this.Namespace)+",\n")
+	if this.Execution != nil {
+		s = append(s, "Execution: "+fmt.Sprintf("%#v", this.Execution)+",\n")
+	}
+	s = append(s, "MaximumPageSize: "+fmt.Sprintf("%#v", this.MaximumPageSize)+",\n")
+	s = append(s, "NextPageToken: "+fmt.Sprintf("%#v", this.NextPageToken)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *GetWorkflowExecutionHistoryReverseResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&workflowservice.GetWorkflowExecutionHistoryReverseResponse{")
+	if this.History != nil {
+		s = append(s, "History: "+fmt.Sprintf("%#v", this.History)+",\n")
+	}
+	s = append(s, "NextPageToken: "+fmt.Sprintf("%#v", this.NextPageToken)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -8697,7 +9442,7 @@ func (this *RespondActivityTaskFailedRequest) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 9)
 	s = append(s, "&workflowservice.RespondActivityTaskFailedRequest{")
 	s = append(s, "TaskToken: "+fmt.Sprintf("%#v", this.TaskToken)+",\n")
 	if this.Failure != nil {
@@ -8705,6 +9450,9 @@ func (this *RespondActivityTaskFailedRequest) GoString() string {
 	}
 	s = append(s, "Identity: "+fmt.Sprintf("%#v", this.Identity)+",\n")
 	s = append(s, "Namespace: "+fmt.Sprintf("%#v", this.Namespace)+",\n")
+	if this.LastHeartbeatDetails != nil {
+		s = append(s, "LastHeartbeatDetails: "+fmt.Sprintf("%#v", this.LastHeartbeatDetails)+",\n")
+	}
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -8712,8 +9460,11 @@ func (this *RespondActivityTaskFailedResponse) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 4)
+	s := make([]string, 0, 5)
 	s = append(s, "&workflowservice.RespondActivityTaskFailedResponse{")
+	if this.Failures != nil {
+		s = append(s, "Failures: "+fmt.Sprintf("%#v", this.Failures)+",\n")
+	}
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -8721,7 +9472,7 @@ func (this *RespondActivityTaskFailedByIdRequest) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 10)
+	s := make([]string, 0, 11)
 	s = append(s, "&workflowservice.RespondActivityTaskFailedByIdRequest{")
 	s = append(s, "Namespace: "+fmt.Sprintf("%#v", this.Namespace)+",\n")
 	s = append(s, "WorkflowId: "+fmt.Sprintf("%#v", this.WorkflowId)+",\n")
@@ -8731,6 +9482,9 @@ func (this *RespondActivityTaskFailedByIdRequest) GoString() string {
 		s = append(s, "Failure: "+fmt.Sprintf("%#v", this.Failure)+",\n")
 	}
 	s = append(s, "Identity: "+fmt.Sprintf("%#v", this.Identity)+",\n")
+	if this.LastHeartbeatDetails != nil {
+		s = append(s, "LastHeartbeatDetails: "+fmt.Sprintf("%#v", this.LastHeartbeatDetails)+",\n")
+	}
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -8738,8 +9492,11 @@ func (this *RespondActivityTaskFailedByIdResponse) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 4)
+	s := make([]string, 0, 5)
 	s = append(s, "&workflowservice.RespondActivityTaskFailedByIdResponse{")
+	if this.Failures != nil {
+		s = append(s, "Failures: "+fmt.Sprintf("%#v", this.Failures)+",\n")
+	}
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -8822,7 +9579,7 @@ func (this *SignalWorkflowExecutionRequest) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 11)
+	s := make([]string, 0, 12)
 	s = append(s, "&workflowservice.SignalWorkflowExecutionRequest{")
 	s = append(s, "Namespace: "+fmt.Sprintf("%#v", this.Namespace)+",\n")
 	if this.WorkflowExecution != nil {
@@ -8835,6 +9592,9 @@ func (this *SignalWorkflowExecutionRequest) GoString() string {
 	s = append(s, "Identity: "+fmt.Sprintf("%#v", this.Identity)+",\n")
 	s = append(s, "RequestId: "+fmt.Sprintf("%#v", this.RequestId)+",\n")
 	s = append(s, "Control: "+fmt.Sprintf("%#v", this.Control)+",\n")
+	if this.Header != nil {
+		s = append(s, "Header: "+fmt.Sprintf("%#v", this.Header)+",\n")
+	}
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -8905,7 +9665,7 @@ func (this *ResetWorkflowExecutionRequest) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 9)
+	s := make([]string, 0, 10)
 	s = append(s, "&workflowservice.ResetWorkflowExecutionRequest{")
 	s = append(s, "Namespace: "+fmt.Sprintf("%#v", this.Namespace)+",\n")
 	if this.WorkflowExecution != nil {
@@ -8914,6 +9674,7 @@ func (this *ResetWorkflowExecutionRequest) GoString() string {
 	s = append(s, "Reason: "+fmt.Sprintf("%#v", this.Reason)+",\n")
 	s = append(s, "WorkflowTaskFinishEventId: "+fmt.Sprintf("%#v", this.WorkflowTaskFinishEventId)+",\n")
 	s = append(s, "RequestId: "+fmt.Sprintf("%#v", this.RequestId)+",\n")
+	s = append(s, "ResetReapplyType: "+fmt.Sprintf("%#v", this.ResetReapplyType)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -9283,7 +10044,7 @@ func (this *DescribeWorkflowExecutionResponse) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 9)
 	s = append(s, "&workflowservice.DescribeWorkflowExecutionResponse{")
 	if this.ExecutionConfig != nil {
 		s = append(s, "ExecutionConfig: "+fmt.Sprintf("%#v", this.ExecutionConfig)+",\n")
@@ -9296,6 +10057,9 @@ func (this *DescribeWorkflowExecutionResponse) GoString() string {
 	}
 	if this.PendingChildren != nil {
 		s = append(s, "PendingChildren: "+fmt.Sprintf("%#v", this.PendingChildren)+",\n")
+	}
+	if this.PendingWorkflowTask != nil {
+		s = append(s, "PendingWorkflowTask: "+fmt.Sprintf("%#v", this.PendingWorkflowTask)+",\n")
 	}
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -9343,7 +10107,7 @@ func (this *GetClusterInfoResponse) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 10)
+	s := make([]string, 0, 12)
 	s = append(s, "&workflowservice.GetClusterInfoResponse{")
 	keysForSupportedClients := make([]string, 0, len(this.SupportedClients))
 	for k, _ := range this.SupportedClients {
@@ -9365,6 +10129,42 @@ func (this *GetClusterInfoResponse) GoString() string {
 	}
 	s = append(s, "ClusterName: "+fmt.Sprintf("%#v", this.ClusterName)+",\n")
 	s = append(s, "HistoryShardCount: "+fmt.Sprintf("%#v", this.HistoryShardCount)+",\n")
+	s = append(s, "PersistenceStore: "+fmt.Sprintf("%#v", this.PersistenceStore)+",\n")
+	s = append(s, "VisibilityStore: "+fmt.Sprintf("%#v", this.VisibilityStore)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *GetSystemInfoRequest) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 4)
+	s = append(s, "&workflowservice.GetSystemInfoRequest{")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *GetSystemInfoResponse) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&workflowservice.GetSystemInfoResponse{")
+	s = append(s, "ServerVersion: "+fmt.Sprintf("%#v", this.ServerVersion)+",\n")
+	if this.Capabilities != nil {
+		s = append(s, "Capabilities: "+fmt.Sprintf("%#v", this.Capabilities)+",\n")
+	}
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *GetSystemInfoResponse_Capabilities) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 7)
+	s = append(s, "&workflowservice.GetSystemInfoResponse_Capabilities{")
+	s = append(s, "SignalAndQueryHeader: "+fmt.Sprintf("%#v", this.SignalAndQueryHeader)+",\n")
+	s = append(s, "InternalErrorDifferentiation: "+fmt.Sprintf("%#v", this.InternalErrorDifferentiation)+",\n")
+	s = append(s, "ActivityFailureIncludeHeartbeat: "+fmt.Sprintf("%#v", this.ActivityFailureIncludeHeartbeat)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -9772,6 +10572,16 @@ func (m *UpdateNamespaceRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
+	if m.PromoteNamespace {
+		i--
+		if m.PromoteNamespace {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x38
+	}
 	if len(m.DeleteBadBinary) > 0 {
 		i -= len(m.DeleteBadBinary)
 		copy(dAtA[i:], m.DeleteBadBinary)
@@ -10320,6 +11130,102 @@ func (m *GetWorkflowExecutionHistoryResponse) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
+func (m *GetWorkflowExecutionHistoryReverseRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetWorkflowExecutionHistoryReverseRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetWorkflowExecutionHistoryReverseRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.NextPageToken) > 0 {
+		i -= len(m.NextPageToken)
+		copy(dAtA[i:], m.NextPageToken)
+		i = encodeVarintRequestResponse(dAtA, i, uint64(len(m.NextPageToken)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.MaximumPageSize != 0 {
+		i = encodeVarintRequestResponse(dAtA, i, uint64(m.MaximumPageSize))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.Execution != nil {
+		{
+			size, err := m.Execution.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRequestResponse(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Namespace) > 0 {
+		i -= len(m.Namespace)
+		copy(dAtA[i:], m.Namespace)
+		i = encodeVarintRequestResponse(dAtA, i, uint64(len(m.Namespace)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GetWorkflowExecutionHistoryReverseResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetWorkflowExecutionHistoryReverseResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetWorkflowExecutionHistoryReverseResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.NextPageToken) > 0 {
+		i -= len(m.NextPageToken)
+		copy(dAtA[i:], m.NextPageToken)
+		i = encodeVarintRequestResponse(dAtA, i, uint64(len(m.NextPageToken)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.History != nil {
+		{
+			size, err := m.History.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRequestResponse(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *PollWorkflowTaskQueueRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -10423,22 +11329,22 @@ func (m *PollWorkflowTaskQueueResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 		}
 	}
 	if m.StartedTime != nil {
-		n25, err25 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.StartedTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartedTime):])
-		if err25 != nil {
-			return 0, err25
+		n27, err27 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.StartedTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartedTime):])
+		if err27 != nil {
+			return 0, err27
 		}
-		i -= n25
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n25))
+		i -= n27
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n27))
 		i--
 		dAtA[i] = 0x6a
 	}
 	if m.ScheduledTime != nil {
-		n26, err26 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.ScheduledTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.ScheduledTime):])
-		if err26 != nil {
-			return 0, err26
+		n28, err28 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.ScheduledTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.ScheduledTime):])
+		if err28 != nil {
+			return 0, err28
 		}
-		i -= n26
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n26))
+		i -= n28
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n28))
 		i--
 		dAtA[i] = 0x62
 	}
@@ -10884,34 +11790,34 @@ func (m *PollActivityTaskQueueResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 		dAtA[i] = 0x8a
 	}
 	if m.HeartbeatTimeout != nil {
-		n39, err39 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.HeartbeatTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.HeartbeatTimeout):])
-		if err39 != nil {
-			return 0, err39
+		n41, err41 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.HeartbeatTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.HeartbeatTimeout):])
+		if err41 != nil {
+			return 0, err41
 		}
-		i -= n39
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n39))
+		i -= n41
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n41))
 		i--
 		dAtA[i] = 0x1
 		i--
 		dAtA[i] = 0x82
 	}
 	if m.StartToCloseTimeout != nil {
-		n40, err40 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.StartToCloseTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.StartToCloseTimeout):])
-		if err40 != nil {
-			return 0, err40
+		n42, err42 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.StartToCloseTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.StartToCloseTimeout):])
+		if err42 != nil {
+			return 0, err42
 		}
-		i -= n40
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n40))
+		i -= n42
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n42))
 		i--
 		dAtA[i] = 0x7a
 	}
 	if m.ScheduleToCloseTimeout != nil {
-		n41, err41 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.ScheduleToCloseTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.ScheduleToCloseTimeout):])
-		if err41 != nil {
-			return 0, err41
+		n43, err43 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.ScheduleToCloseTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.ScheduleToCloseTimeout):])
+		if err43 != nil {
+			return 0, err43
 		}
-		i -= n41
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n41))
+		i -= n43
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n43))
 		i--
 		dAtA[i] = 0x72
 	}
@@ -10921,32 +11827,32 @@ func (m *PollActivityTaskQueueResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 		dAtA[i] = 0x68
 	}
 	if m.StartedTime != nil {
-		n42, err42 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.StartedTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartedTime):])
-		if err42 != nil {
-			return 0, err42
-		}
-		i -= n42
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n42))
-		i--
-		dAtA[i] = 0x62
-	}
-	if m.CurrentAttemptScheduledTime != nil {
-		n43, err43 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.CurrentAttemptScheduledTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.CurrentAttemptScheduledTime):])
-		if err43 != nil {
-			return 0, err43
-		}
-		i -= n43
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n43))
-		i--
-		dAtA[i] = 0x5a
-	}
-	if m.ScheduledTime != nil {
-		n44, err44 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.ScheduledTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.ScheduledTime):])
+		n44, err44 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.StartedTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartedTime):])
 		if err44 != nil {
 			return 0, err44
 		}
 		i -= n44
 		i = encodeVarintRequestResponse(dAtA, i, uint64(n44))
+		i--
+		dAtA[i] = 0x62
+	}
+	if m.CurrentAttemptScheduledTime != nil {
+		n45, err45 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.CurrentAttemptScheduledTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.CurrentAttemptScheduledTime):])
+		if err45 != nil {
+			return 0, err45
+		}
+		i -= n45
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n45))
+		i--
+		dAtA[i] = 0x5a
+	}
+	if m.ScheduledTime != nil {
+		n46, err46 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.ScheduledTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.ScheduledTime):])
+		if err46 != nil {
+			return 0, err46
+		}
+		i -= n46
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n46))
 		i--
 		dAtA[i] = 0x52
 	}
@@ -11430,6 +12336,18 @@ func (m *RespondActivityTaskFailedRequest) MarshalToSizedBuffer(dAtA []byte) (in
 	_ = i
 	var l int
 	_ = l
+	if m.LastHeartbeatDetails != nil {
+		{
+			size, err := m.LastHeartbeatDetails.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRequestResponse(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x2a
+	}
 	if len(m.Namespace) > 0 {
 		i -= len(m.Namespace)
 		copy(dAtA[i:], m.Namespace)
@@ -11486,6 +12404,20 @@ func (m *RespondActivityTaskFailedResponse) MarshalToSizedBuffer(dAtA []byte) (i
 	_ = i
 	var l int
 	_ = l
+	if len(m.Failures) > 0 {
+		for iNdEx := len(m.Failures) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Failures[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintRequestResponse(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -11509,6 +12441,18 @@ func (m *RespondActivityTaskFailedByIdRequest) MarshalToSizedBuffer(dAtA []byte)
 	_ = i
 	var l int
 	_ = l
+	if m.LastHeartbeatDetails != nil {
+		{
+			size, err := m.LastHeartbeatDetails.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRequestResponse(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x3a
+	}
 	if len(m.Identity) > 0 {
 		i -= len(m.Identity)
 		copy(dAtA[i:], m.Identity)
@@ -11579,6 +12523,20 @@ func (m *RespondActivityTaskFailedByIdResponse) MarshalToSizedBuffer(dAtA []byte
 	_ = i
 	var l int
 	_ = l
+	if len(m.Failures) > 0 {
+		for iNdEx := len(m.Failures) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Failures[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintRequestResponse(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -11860,6 +12818,18 @@ func (m *SignalWorkflowExecutionRequest) MarshalToSizedBuffer(dAtA []byte) (int,
 	_ = i
 	var l int
 	_ = l
+	if m.Header != nil {
+		{
+			size, err := m.Header.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRequestResponse(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x42
+	}
 	if len(m.Control) > 0 {
 		i -= len(m.Control)
 		copy(dAtA[i:], m.Control)
@@ -12074,32 +13044,32 @@ func (m *SignalWithStartWorkflowExecutionRequest) MarshalToSizedBuffer(dAtA []by
 		dAtA[i] = 0x4a
 	}
 	if m.WorkflowTaskTimeout != nil {
-		n67, err67 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.WorkflowTaskTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.WorkflowTaskTimeout):])
-		if err67 != nil {
-			return 0, err67
+		n72, err72 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.WorkflowTaskTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.WorkflowTaskTimeout):])
+		if err72 != nil {
+			return 0, err72
 		}
-		i -= n67
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n67))
+		i -= n72
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n72))
 		i--
 		dAtA[i] = 0x42
 	}
 	if m.WorkflowRunTimeout != nil {
-		n68, err68 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.WorkflowRunTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.WorkflowRunTimeout):])
-		if err68 != nil {
-			return 0, err68
+		n73, err73 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.WorkflowRunTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.WorkflowRunTimeout):])
+		if err73 != nil {
+			return 0, err73
 		}
-		i -= n68
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n68))
+		i -= n73
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n73))
 		i--
 		dAtA[i] = 0x3a
 	}
 	if m.WorkflowExecutionTimeout != nil {
-		n69, err69 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.WorkflowExecutionTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.WorkflowExecutionTimeout):])
-		if err69 != nil {
-			return 0, err69
+		n74, err74 := github_com_gogo_protobuf_types.StdDurationMarshalTo(*m.WorkflowExecutionTimeout, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(*m.WorkflowExecutionTimeout):])
+		if err74 != nil {
+			return 0, err74
 		}
-		i -= n69
-		i = encodeVarintRequestResponse(dAtA, i, uint64(n69))
+		i -= n74
+		i = encodeVarintRequestResponse(dAtA, i, uint64(n74))
 		i--
 		dAtA[i] = 0x32
 	}
@@ -12206,6 +13176,11 @@ func (m *ResetWorkflowExecutionRequest) MarshalToSizedBuffer(dAtA []byte) (int, 
 	_ = i
 	var l int
 	_ = l
+	if m.ResetReapplyType != 0 {
+		i = encodeVarintRequestResponse(dAtA, i, uint64(m.ResetReapplyType))
+		i--
+		dAtA[i] = 0x30
+	}
 	if len(m.RequestId) > 0 {
 		i -= len(m.RequestId)
 		copy(dAtA[i:], m.RequestId)
@@ -13418,6 +14393,18 @@ func (m *DescribeWorkflowExecutionResponse) MarshalToSizedBuffer(dAtA []byte) (i
 	_ = i
 	var l int
 	_ = l
+	if m.PendingWorkflowTask != nil {
+		{
+			size, err := m.PendingWorkflowTask.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRequestResponse(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x2a
+	}
 	if len(m.PendingChildren) > 0 {
 		for iNdEx := len(m.PendingChildren) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -13622,6 +14609,20 @@ func (m *GetClusterInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
+	if len(m.VisibilityStore) > 0 {
+		i -= len(m.VisibilityStore)
+		copy(dAtA[i:], m.VisibilityStore)
+		i = encodeVarintRequestResponse(dAtA, i, uint64(len(m.VisibilityStore)))
+		i--
+		dAtA[i] = 0x42
+	}
+	if len(m.PersistenceStore) > 0 {
+		i -= len(m.PersistenceStore)
+		copy(dAtA[i:], m.PersistenceStore)
+		i = encodeVarintRequestResponse(dAtA, i, uint64(len(m.PersistenceStore)))
+		i--
+		dAtA[i] = 0x3a
+	}
 	if m.HistoryShardCount != 0 {
 		i = encodeVarintRequestResponse(dAtA, i, uint64(m.HistoryShardCount))
 		i--
@@ -13678,6 +14679,124 @@ func (m *GetClusterInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 			i--
 			dAtA[i] = 0xa
 		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GetSystemInfoRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetSystemInfoRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetSystemInfoRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *GetSystemInfoResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetSystemInfoResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetSystemInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Capabilities != nil {
+		{
+			size, err := m.Capabilities.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRequestResponse(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ServerVersion) > 0 {
+		i -= len(m.ServerVersion)
+		copy(dAtA[i:], m.ServerVersion)
+		i = encodeVarintRequestResponse(dAtA, i, uint64(len(m.ServerVersion)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GetSystemInfoResponse_Capabilities) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetSystemInfoResponse_Capabilities) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetSystemInfoResponse_Capabilities) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ActivityFailureIncludeHeartbeat {
+		i--
+		if m.ActivityFailureIncludeHeartbeat {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.InternalErrorDifferentiation {
+		i--
+		if m.InternalErrorDifferentiation {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.SignalAndQueryHeader {
+		i--
+		if m.SignalAndQueryHeader {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -13968,6 +15087,9 @@ func (m *UpdateNamespaceRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRequestResponse(uint64(l))
 	}
+	if m.PromoteNamespace {
+		n += 2
+	}
 	return n
 }
 
@@ -14164,6 +15286,47 @@ func (m *GetWorkflowExecutionHistoryResponse) Size() (n int) {
 	}
 	if m.Archived {
 		n += 2
+	}
+	return n
+}
+
+func (m *GetWorkflowExecutionHistoryReverseRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Namespace)
+	if l > 0 {
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
+	if m.Execution != nil {
+		l = m.Execution.Size()
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
+	if m.MaximumPageSize != 0 {
+		n += 1 + sovRequestResponse(uint64(m.MaximumPageSize))
+	}
+	l = len(m.NextPageToken)
+	if l > 0 {
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
+	return n
+}
+
+func (m *GetWorkflowExecutionHistoryReverseResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.History != nil {
+		l = m.History.Size()
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
+	l = len(m.NextPageToken)
+	if l > 0 {
+		n += 1 + l + sovRequestResponse(uint64(l))
 	}
 	return n
 }
@@ -14652,6 +15815,10 @@ func (m *RespondActivityTaskFailedRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRequestResponse(uint64(l))
 	}
+	if m.LastHeartbeatDetails != nil {
+		l = m.LastHeartbeatDetails.Size()
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
 	return n
 }
 
@@ -14661,6 +15828,12 @@ func (m *RespondActivityTaskFailedResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if len(m.Failures) > 0 {
+		for _, e := range m.Failures {
+			l = e.Size()
+			n += 1 + l + sovRequestResponse(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -14694,6 +15867,10 @@ func (m *RespondActivityTaskFailedByIdRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRequestResponse(uint64(l))
 	}
+	if m.LastHeartbeatDetails != nil {
+		l = m.LastHeartbeatDetails.Size()
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
 	return n
 }
 
@@ -14703,6 +15880,12 @@ func (m *RespondActivityTaskFailedByIdResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if len(m.Failures) > 0 {
+		for _, e := range m.Failures {
+			l = e.Size()
+			n += 1 + l + sovRequestResponse(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -14854,6 +16037,10 @@ func (m *SignalWorkflowExecutionRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRequestResponse(uint64(l))
 	}
+	if m.Header != nil {
+		l = m.Header.Size()
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
 	return n
 }
 
@@ -14987,6 +16174,9 @@ func (m *ResetWorkflowExecutionRequest) Size() (n int) {
 	l = len(m.RequestId)
 	if l > 0 {
 		n += 1 + l + sovRequestResponse(uint64(l))
+	}
+	if m.ResetReapplyType != 0 {
+		n += 1 + sovRequestResponse(uint64(m.ResetReapplyType))
 	}
 	return n
 }
@@ -15529,6 +16719,10 @@ func (m *DescribeWorkflowExecutionResponse) Size() (n int) {
 			n += 1 + l + sovRequestResponse(uint64(l))
 		}
 	}
+	if m.PendingWorkflowTask != nil {
+		l = m.PendingWorkflowTask.Size()
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
 	return n
 }
 
@@ -15615,6 +16809,58 @@ func (m *GetClusterInfoResponse) Size() (n int) {
 	}
 	if m.HistoryShardCount != 0 {
 		n += 1 + sovRequestResponse(uint64(m.HistoryShardCount))
+	}
+	l = len(m.PersistenceStore)
+	if l > 0 {
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
+	l = len(m.VisibilityStore)
+	if l > 0 {
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
+	return n
+}
+
+func (m *GetSystemInfoRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *GetSystemInfoResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ServerVersion)
+	if l > 0 {
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
+	if m.Capabilities != nil {
+		l = m.Capabilities.Size()
+		n += 1 + l + sovRequestResponse(uint64(l))
+	}
+	return n
+}
+
+func (m *GetSystemInfoResponse_Capabilities) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SignalAndQueryHeader {
+		n += 2
+	}
+	if m.InternalErrorDifferentiation {
+		n += 2
+	}
+	if m.ActivityFailureIncludeHeartbeat {
+		n += 2
 	}
 	return n
 }
@@ -15772,6 +17018,7 @@ func (this *UpdateNamespaceRequest) String() string {
 		`ReplicationConfig:` + strings.Replace(fmt.Sprintf("%v", this.ReplicationConfig), "NamespaceReplicationConfig", "v1.NamespaceReplicationConfig", 1) + `,`,
 		`SecurityToken:` + fmt.Sprintf("%v", this.SecurityToken) + `,`,
 		`DeleteBadBinary:` + fmt.Sprintf("%v", this.DeleteBadBinary) + `,`,
+		`PromoteNamespace:` + fmt.Sprintf("%v", this.PromoteNamespace) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -15875,6 +17122,30 @@ func (this *GetWorkflowExecutionHistoryResponse) String() string {
 		`RawHistory:` + repeatedStringForRawHistory + `,`,
 		`NextPageToken:` + fmt.Sprintf("%v", this.NextPageToken) + `,`,
 		`Archived:` + fmt.Sprintf("%v", this.Archived) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *GetWorkflowExecutionHistoryReverseRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&GetWorkflowExecutionHistoryReverseRequest{`,
+		`Namespace:` + fmt.Sprintf("%v", this.Namespace) + `,`,
+		`Execution:` + strings.Replace(fmt.Sprintf("%v", this.Execution), "WorkflowExecution", "v13.WorkflowExecution", 1) + `,`,
+		`MaximumPageSize:` + fmt.Sprintf("%v", this.MaximumPageSize) + `,`,
+		`NextPageToken:` + fmt.Sprintf("%v", this.NextPageToken) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *GetWorkflowExecutionHistoryReverseResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&GetWorkflowExecutionHistoryReverseResponse{`,
+		`History:` + strings.Replace(fmt.Sprintf("%v", this.History), "History", "v15.History", 1) + `,`,
+		`NextPageToken:` + fmt.Sprintf("%v", this.NextPageToken) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -16134,6 +17405,7 @@ func (this *RespondActivityTaskFailedRequest) String() string {
 		`Failure:` + strings.Replace(fmt.Sprintf("%v", this.Failure), "Failure", "v18.Failure", 1) + `,`,
 		`Identity:` + fmt.Sprintf("%v", this.Identity) + `,`,
 		`Namespace:` + fmt.Sprintf("%v", this.Namespace) + `,`,
+		`LastHeartbeatDetails:` + strings.Replace(fmt.Sprintf("%v", this.LastHeartbeatDetails), "Payloads", "v13.Payloads", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -16142,7 +17414,13 @@ func (this *RespondActivityTaskFailedResponse) String() string {
 	if this == nil {
 		return "nil"
 	}
+	repeatedStringForFailures := "[]*Failure{"
+	for _, f := range this.Failures {
+		repeatedStringForFailures += strings.Replace(fmt.Sprintf("%v", f), "Failure", "v18.Failure", 1) + ","
+	}
+	repeatedStringForFailures += "}"
 	s := strings.Join([]string{`&RespondActivityTaskFailedResponse{`,
+		`Failures:` + repeatedStringForFailures + `,`,
 		`}`,
 	}, "")
 	return s
@@ -16158,6 +17436,7 @@ func (this *RespondActivityTaskFailedByIdRequest) String() string {
 		`ActivityId:` + fmt.Sprintf("%v", this.ActivityId) + `,`,
 		`Failure:` + strings.Replace(fmt.Sprintf("%v", this.Failure), "Failure", "v18.Failure", 1) + `,`,
 		`Identity:` + fmt.Sprintf("%v", this.Identity) + `,`,
+		`LastHeartbeatDetails:` + strings.Replace(fmt.Sprintf("%v", this.LastHeartbeatDetails), "Payloads", "v13.Payloads", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -16166,7 +17445,13 @@ func (this *RespondActivityTaskFailedByIdResponse) String() string {
 	if this == nil {
 		return "nil"
 	}
+	repeatedStringForFailures := "[]*Failure{"
+	for _, f := range this.Failures {
+		repeatedStringForFailures += strings.Replace(fmt.Sprintf("%v", f), "Failure", "v18.Failure", 1) + ","
+	}
+	repeatedStringForFailures += "}"
 	s := strings.Join([]string{`&RespondActivityTaskFailedByIdResponse{`,
+		`Failures:` + repeatedStringForFailures + `,`,
 		`}`,
 	}, "")
 	return s
@@ -16252,6 +17537,7 @@ func (this *SignalWorkflowExecutionRequest) String() string {
 		`Identity:` + fmt.Sprintf("%v", this.Identity) + `,`,
 		`RequestId:` + fmt.Sprintf("%v", this.RequestId) + `,`,
 		`Control:` + fmt.Sprintf("%v", this.Control) + `,`,
+		`Header:` + strings.Replace(fmt.Sprintf("%v", this.Header), "Header", "v13.Header", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -16313,6 +17599,7 @@ func (this *ResetWorkflowExecutionRequest) String() string {
 		`Reason:` + fmt.Sprintf("%v", this.Reason) + `,`,
 		`WorkflowTaskFinishEventId:` + fmt.Sprintf("%v", this.WorkflowTaskFinishEventId) + `,`,
 		`RequestId:` + fmt.Sprintf("%v", this.RequestId) + `,`,
+		`ResetReapplyType:` + fmt.Sprintf("%v", this.ResetReapplyType) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -16695,6 +17982,7 @@ func (this *DescribeWorkflowExecutionResponse) String() string {
 		`WorkflowExecutionInfo:` + strings.Replace(fmt.Sprintf("%v", this.WorkflowExecutionInfo), "WorkflowExecutionInfo", "v110.WorkflowExecutionInfo", 1) + `,`,
 		`PendingActivities:` + repeatedStringForPendingActivities + `,`,
 		`PendingChildren:` + repeatedStringForPendingChildren + `,`,
+		`PendingWorkflowTask:` + strings.Replace(fmt.Sprintf("%v", this.PendingWorkflowTask), "PendingWorkflowTaskInfo", "v110.PendingWorkflowTaskInfo", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -16758,6 +18046,40 @@ func (this *GetClusterInfoResponse) String() string {
 		`VersionInfo:` + strings.Replace(fmt.Sprintf("%v", this.VersionInfo), "VersionInfo", "v111.VersionInfo", 1) + `,`,
 		`ClusterName:` + fmt.Sprintf("%v", this.ClusterName) + `,`,
 		`HistoryShardCount:` + fmt.Sprintf("%v", this.HistoryShardCount) + `,`,
+		`PersistenceStore:` + fmt.Sprintf("%v", this.PersistenceStore) + `,`,
+		`VisibilityStore:` + fmt.Sprintf("%v", this.VisibilityStore) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *GetSystemInfoRequest) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&GetSystemInfoRequest{`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *GetSystemInfoResponse) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&GetSystemInfoResponse{`,
+		`ServerVersion:` + fmt.Sprintf("%v", this.ServerVersion) + `,`,
+		`Capabilities:` + strings.Replace(fmt.Sprintf("%v", this.Capabilities), "GetSystemInfoResponse_Capabilities", "GetSystemInfoResponse_Capabilities", 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *GetSystemInfoResponse_Capabilities) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&GetSystemInfoResponse_Capabilities{`,
+		`SignalAndQueryHeader:` + fmt.Sprintf("%v", this.SignalAndQueryHeader) + `,`,
+		`InternalErrorDifferentiation:` + fmt.Sprintf("%v", this.InternalErrorDifferentiation) + `,`,
+		`ActivityFailureIncludeHeartbeat:` + fmt.Sprintf("%v", this.ActivityFailureIncludeHeartbeat) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -18164,6 +19486,26 @@ func (m *UpdateNamespaceRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.DeleteBadBinary = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PromoteNamespace", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.PromoteNamespace = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
@@ -19621,6 +20963,303 @@ func (m *GetWorkflowExecutionHistoryResponse) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Archived = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRequestResponse(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetWorkflowExecutionHistoryReverseRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRequestResponse
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetWorkflowExecutionHistoryReverseRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetWorkflowExecutionHistoryReverseRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Namespace", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Namespace = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Execution", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Execution == nil {
+				m.Execution = &v13.WorkflowExecution{}
+			}
+			if err := m.Execution.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaximumPageSize", wireType)
+			}
+			m.MaximumPageSize = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaximumPageSize |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NextPageToken", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NextPageToken = append(m.NextPageToken[:0], dAtA[iNdEx:postIndex]...)
+			if m.NextPageToken == nil {
+				m.NextPageToken = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRequestResponse(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetWorkflowExecutionHistoryReverseResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRequestResponse
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetWorkflowExecutionHistoryReverseResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetWorkflowExecutionHistoryReverseResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field History", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.History == nil {
+				m.History = &v15.History{}
+			}
+			if err := m.History.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NextPageToken", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NextPageToken = append(m.NextPageToken[:0], dAtA[iNdEx:postIndex]...)
+			if m.NextPageToken == nil {
+				m.NextPageToken = []byte{}
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
@@ -23324,6 +24963,42 @@ func (m *RespondActivityTaskFailedRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Namespace = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LastHeartbeatDetails", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.LastHeartbeatDetails == nil {
+				m.LastHeartbeatDetails = &v13.Payloads{}
+			}
+			if err := m.LastHeartbeatDetails.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
@@ -23377,6 +25052,40 @@ func (m *RespondActivityTaskFailedResponse) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: RespondActivityTaskFailedResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Failures", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Failures = append(m.Failures, &v18.Failure{})
+			if err := m.Failures[len(m.Failures)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
@@ -23626,6 +25335,42 @@ func (m *RespondActivityTaskFailedByIdRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Identity = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LastHeartbeatDetails", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.LastHeartbeatDetails == nil {
+				m.LastHeartbeatDetails = &v13.Payloads{}
+			}
+			if err := m.LastHeartbeatDetails.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
@@ -23679,6 +25424,40 @@ func (m *RespondActivityTaskFailedByIdResponse) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: RespondActivityTaskFailedByIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Failures", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Failures = append(m.Failures, &v18.Failure{})
+			if err := m.Failures[len(m.Failures)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
@@ -24776,6 +26555,42 @@ func (m *SignalWorkflowExecutionRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Control = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Header", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Header == nil {
+				m.Header = &v13.Header{}
+			}
+			if err := m.Header.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
@@ -25810,6 +27625,25 @@ func (m *ResetWorkflowExecutionRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.RequestId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ResetReapplyType", wireType)
+			}
+			m.ResetReapplyType = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ResetReapplyType |= v11.ResetReapplyType(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
@@ -29295,6 +31129,42 @@ func (m *DescribeWorkflowExecutionResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PendingWorkflowTask", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.PendingWorkflowTask == nil {
+				m.PendingWorkflowTask = &v110.PendingWorkflowTaskInfo{}
+			}
+			if err := m.PendingWorkflowTask.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
@@ -29962,6 +31832,357 @@ func (m *GetClusterInfoResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PersistenceStore", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PersistenceStore = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VisibilityStore", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.VisibilityStore = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRequestResponse(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetSystemInfoRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRequestResponse
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetSystemInfoRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetSystemInfoRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRequestResponse(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetSystemInfoResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRequestResponse
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetSystemInfoResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetSystemInfoResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ServerVersion", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ServerVersion = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Capabilities", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Capabilities == nil {
+				m.Capabilities = &GetSystemInfoResponse_Capabilities{}
+			}
+			if err := m.Capabilities.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRequestResponse(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthRequestResponse
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetSystemInfoResponse_Capabilities) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRequestResponse
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Capabilities: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Capabilities: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SignalAndQueryHeader", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.SignalAndQueryHeader = bool(v != 0)
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InternalErrorDifferentiation", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.InternalErrorDifferentiation = bool(v != 0)
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ActivityFailureIncludeHeartbeat", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRequestResponse
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.ActivityFailureIncludeHeartbeat = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRequestResponse(dAtA[iNdEx:])
