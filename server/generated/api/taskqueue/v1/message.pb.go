@@ -31,6 +31,7 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// See https://docs.temporal.io/docs/concepts/task-queues/
 type TaskQueue struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Default: TASK_QUEUE_KIND_NORMAL.
@@ -83,7 +84,9 @@ func (m *TaskQueue) GetKind() v1.TaskQueueKind {
 	return v1.TASK_QUEUE_KIND_UNSPECIFIED
 }
 
+// Only applies to activity task queues
 type TaskQueueMetadata struct {
+	// Allows throttling dispatch of tasks from this queue
 	MaxTasksPerSecond *types.DoubleValue `protobuf:"bytes,1,opt,name=max_tasks_per_second,json=maxTasksPerSecond,proto3" json:"max_tasks_per_second,omitempty"`
 }
 

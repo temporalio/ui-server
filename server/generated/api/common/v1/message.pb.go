@@ -84,6 +84,7 @@ func (m *DataBlob) GetData() []byte {
 	return nil
 }
 
+// See `Payload`
 type Payloads struct {
 	Payloads []*Payload `protobuf:"bytes,1,rep,name=payloads,proto3" json:"payloads,omitempty"`
 }
@@ -127,6 +128,9 @@ func (m *Payloads) GetPayloads() []*Payload {
 	return nil
 }
 
+// Represents some binary (byte array) data (ex: activity input parameters or workflow result) with
+// metadata which describes this binary data (format, encoding, encryption, etc). Serialization
+// of the data may be user-defined.
 type Payload struct {
 	Metadata map[string][]byte `protobuf:"bytes,1,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	Data     []byte            `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
@@ -178,6 +182,8 @@ func (m *Payload) GetData() []byte {
 	return nil
 }
 
+// A user-defined set of *indexed* fields that are used/exposed when listing/searching workflows.
+// The payload is not serialized in a user-defined way.
 type SearchAttributes struct {
 	IndexedFields map[string]*Payload `protobuf:"bytes,1,rep,name=indexed_fields,json=indexedFields,proto3" json:"indexed_fields,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -221,6 +227,7 @@ func (m *SearchAttributes) GetIndexedFields() map[string]*Payload {
 	return nil
 }
 
+// A user-defined set of *unindexed* fields that are exposed when listing/searching workflows
 type Memo struct {
 	Fields map[string]*Payload `protobuf:"bytes,1,rep,name=fields,proto3" json:"fields,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -264,6 +271,8 @@ func (m *Memo) GetFields() map[string]*Payload {
 	return nil
 }
 
+// Contains metadata that can be attached to a variety of requests, like starting a workflow, and
+// can be propagated between, for example, workflows and activities.
 type Header struct {
 	Fields map[string]*Payload `protobuf:"bytes,1,rep,name=fields,proto3" json:"fields,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -307,6 +316,9 @@ func (m *Header) GetFields() map[string]*Payload {
 	return nil
 }
 
+// Identifies a specific workflow within a namespace. Practically speaking, because run_id is a
+// uuid, a workflow execution is globally unique. Note that many commands allow specifying an empty
+// run id as a way of saying "target the latest run of the workflow".
 type WorkflowExecution struct {
 	WorkflowId string `protobuf:"bytes,1,opt,name=workflow_id,json=workflowId,proto3" json:"workflow_id,omitempty"`
 	RunId      string `protobuf:"bytes,2,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
@@ -358,6 +370,8 @@ func (m *WorkflowExecution) GetRunId() string {
 	return ""
 }
 
+// Represents the identifier used by a workflow author to define the workflow. Typically, the
+// name of a function. This is sometimes referred to as the workflow's "name"
 type WorkflowType struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -401,6 +415,8 @@ func (m *WorkflowType) GetName() string {
 	return ""
 }
 
+// Represents the identifier used by a activity author to define the activity. Typically, the
+// name of a function. This is sometimes referred to as the activity's "name"
 type ActivityType struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -444,6 +460,7 @@ func (m *ActivityType) GetName() string {
 	return ""
 }
 
+// How retries ought to be handled, usable by both workflows and activities
 type RetryPolicy struct {
 	// Interval of the first retry. If retryBackoffCoefficient is 1.0 then it is used for all retries.
 	InitialInterval *time.Duration `protobuf:"bytes,1,opt,name=initial_interval,json=initialInterval,proto3,stdduration" json:"initial_interval,omitempty"`
@@ -457,7 +474,8 @@ type RetryPolicy struct {
 	// Maximum number of attempts. When exceeded the retries stop even if not expired yet.
 	// 1 disables retries. 0 means unlimited (up to the timeouts)
 	MaximumAttempts int32 `protobuf:"varint,4,opt,name=maximum_attempts,json=maximumAttempts,proto3" json:"maximum_attempts,omitempty"`
-	// Non-Retryable errors types. Will stop retrying if error type matches this list.
+	// Non-Retryable errors types. Will stop retrying if the error type matches this list. Note that
+	// this is not a substring match, the error *type* (not message) must match exactly.
 	NonRetryableErrorTypes []string `protobuf:"bytes,5,rep,name=non_retryable_error_types,json=nonRetryableErrorTypes,proto3" json:"non_retryable_error_types,omitempty"`
 }
 
