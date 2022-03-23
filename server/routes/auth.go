@@ -24,6 +24,7 @@ package routes
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -97,7 +98,7 @@ func authenticate(config *oauth2.Config, options map[string]interface{}) func(ec
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
-		nonce, err := randString()
+		nonce, err := randNonce(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
@@ -150,7 +151,16 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.P
 		sess.Values["name"] = &user.IDToken.Name
 		sess.Save(c.Request(), c.Response())
 
-		returnUrl := c.Request().Header.Get("Referer")
+		nonceS, err := c.Request().Cookie("nonce")
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Nonce is not provided")
+		}
+		nonce, err := nonceFromString(nonceS.Value)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Nonce is invalid")
+		}
+
+		returnUrl := nonce.RedirectURL
 		if returnUrl == "" {
 			returnUrl = "/"
 		}
@@ -245,4 +255,45 @@ func randString() (string, error) {
 	}
 
 	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+func randNonce(c echo.Context) (string, error) {
+	v, err := randString()
+	if err != nil {
+		return "", err
+	}
+
+	redirectURL := c.QueryParam("redirectUrl")
+
+	n := &Nonce{
+		Nonce:       v,
+		RedirectURL: redirectURL,
+	}
+
+	bytes, err := json.Marshal(n)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.RawURLEncoding.EncodeToString(bytes), nil
+}
+
+func nonceFromString(nonce string) (*Nonce, error) {
+	var n Nonce
+
+	bytes, err := base64.RawURLEncoding.DecodeString(nonce)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(bytes, &n); err != nil {
+		return nil, err
+	}
+
+	return &n, nil
+}
+
+type Nonce struct {
+	Nonce       string `json:"nonce"`
+	RedirectURL string `json:"redirect_url"`
 }
