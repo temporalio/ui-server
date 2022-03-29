@@ -160,7 +160,7 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.P
 			return echo.NewHTTPError(http.StatusBadRequest, "Nonce is invalid")
 		}
 
-		returnUrl := nonce.RedirectURL
+		returnUrl := nonce.ReturnURL
 		if returnUrl == "" {
 			returnUrl = "/"
 		}
@@ -263,11 +263,11 @@ func randNonce(c echo.Context) (string, error) {
 		return "", err
 	}
 
-	redirectURL := c.QueryParam("redirectUrl")
+	returnURL := c.QueryParam("returnUrl")
 
 	n := &Nonce{
-		Nonce:       v,
-		RedirectURL: redirectURL,
+		Nonce:     v,
+		ReturnURL: returnURL,
 	}
 
 	bytes, err := json.Marshal(n)
@@ -294,6 +294,6 @@ func nonceFromString(nonce string) (*Nonce, error) {
 }
 
 type Nonce struct {
-	Nonce       string `json:"nonce"`
-	RedirectURL string `json:"redirect_url"`
+	Nonce     string `json:"nonce"`
+	ReturnURL string `json:"return_url"`
 }
