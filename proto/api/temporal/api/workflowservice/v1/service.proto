@@ -116,7 +116,7 @@ service WorkflowService {
     // `NotFound` if the specified workflow execution is unknown to the service.
     rpc GetWorkflowExecutionHistory (GetWorkflowExecutionHistoryRequest) returns (GetWorkflowExecutionHistoryResponse) {
         option (google.api.http) = {
-            get: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}/events"
+            get: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/runs/{execution.run_id}/events"
         };
     }
     
@@ -125,7 +125,7 @@ service WorkflowService {
     // unknown to the service.
     rpc GetWorkflowExecutionHistoryReverse (GetWorkflowExecutionHistoryReverseRequest) returns (GetWorkflowExecutionHistoryReverseResponse) {
         option (google.api.http) = {
-            get: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}/events/reverse"
+            get: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/runs/{execution.run_id}/events/reverse"
         };
     }
 
@@ -248,7 +248,7 @@ service WorkflowService {
     // the workflow is already completed or doesn't exist.
     rpc RequestCancelWorkflowExecution (RequestCancelWorkflowExecutionRequest) returns (RequestCancelWorkflowExecutionResponse) {
         option (google.api.http) = {
-            post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/executions/{workflow_execution.run_id}/cancel"
+            post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/runs/{workflow_execution.run_id}/cancel"
             body: "*"
         };
     }
@@ -281,7 +281,7 @@ service WorkflowService {
     // TODO: Does exclusive here mean *just* the completed event, or also WFT started? Otherwise the task is doomed to time out?
     rpc ResetWorkflowExecution (ResetWorkflowExecutionRequest) returns (ResetWorkflowExecutionResponse) {
         option (google.api.http) = {
-            post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/executions/{workflow_execution.run_id}/reset"
+            post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/runs/{workflow_execution.run_id}/reset"
             body: "*"
         };
     }
@@ -291,7 +291,7 @@ service WorkflowService {
     // execution instance.
     rpc TerminateWorkflowExecution (TerminateWorkflowExecutionRequest) returns (TerminateWorkflowExecutionResponse) {
         option (google.api.http) = {
-            post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/executions/{workflow_execution.run_id}/terminate"
+            post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/runs/{workflow_execution.run_id}/terminate"
             body: "*"
         };
     }
@@ -363,7 +363,7 @@ service WorkflowService {
     // QueryWorkflow requests a query be executed for a specified workflow execution.
     rpc QueryWorkflow (QueryWorkflowRequest) returns (QueryWorkflowResponse) {
         option (google.api.http) = {
-            post: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}/query"
+            post: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/runs/{execution.run_id}/query"
             body: "*"
         };
     }
@@ -371,7 +371,7 @@ service WorkflowService {
     // DescribeWorkflowExecution returns information about the specified workflow execution.
     rpc DescribeWorkflowExecution (DescribeWorkflowExecutionRequest) returns (DescribeWorkflowExecutionResponse) {
         option (google.api.http) = {
-            get: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/executions/{execution.run_id}"
+            get: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/runs/{execution.run_id}"
         };
     }
 
