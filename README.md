@@ -10,8 +10,6 @@ Execute from the project folder to build a binary:
 make build-server
 ```
 
-This will install required tools, build the project and create an executable `ui-server`
-
 To start the server, execute
 ```
 ./ui-server start
