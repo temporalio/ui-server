@@ -5,9 +5,9 @@ Pre-requirements:
  - Go v1.18 or later installed on your development machine
  - Protobuf installed on your development machine (`brew install protobuf`) (Note: M1 macs will need `/opt/homebrew/bin` on the PATH or you may get `/bin/sh: protoc: command not found` errors (or you can [manually download protoc](http://google.github.io/proto-lens/installing-protoc.html)))
 
-For first run, execute from the project folder:
+Execute from the project folder to build a binary:
 ``` bash
-make
+make build-server
 ```
 
 This will install required tools, build the project and create an executable `ui-server`
