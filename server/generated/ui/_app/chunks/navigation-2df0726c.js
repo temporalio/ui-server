@@ -1,1 +1,0 @@
-import{r as a}from"./singletons-a6a7384f.js";const i=e,g=r,s=n;async function e(t,o){return a.goto(t,o,[])}function r(t){a&&a.before_navigate(t)}function n(t){a&&a.after_navigate(t)}export{s as a,g as b,i as g};

@@ -1,0 +1,1 @@
+import{S as a,i as e,s as n}from"../../../../../../../chunks/vendor-f2f66dce.js";const r=async function({url:t}){return{status:302,redirect:`${t.pathname}/compact`}};class c extends a{constructor(s){super();e(this,s,null,null,n,{})}}export{c as default,r as load};
