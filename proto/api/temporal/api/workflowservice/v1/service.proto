@@ -258,6 +258,10 @@ service WorkflowService {
     // This results in a `WORKFLOW_EXECUTION_SIGNALED` event recorded in the history and a workflow
     // task being created for the execution.
     rpc SignalWorkflowExecution (SignalWorkflowExecutionRequest) returns (SignalWorkflowExecutionResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/runs/{workflow_execution.run_id}/signal"
+            body: "*"
+        };
     }
 
     // SignalWithStartWorkflowExecution is used to ensure a signal is sent to a workflow, even if
