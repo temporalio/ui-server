@@ -131,7 +131,8 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 				Enabled bool
 				Options []string
 			}
-			DefaultNamespace string
+			DefaultNamespace            string
+			ShowTemporalSystemNamespace bool
 		}{
 			struct {
 				Enabled bool
@@ -141,6 +142,7 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 				options,
 			},
 			cfg.DefaultNamespace,
+			cfg.ShowTemporalSystemNamespace,
 		}
 
 		return c.JSON(http.StatusOK, settings)

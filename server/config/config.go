@@ -42,6 +42,8 @@ type (
 		EnableOpenAPI       bool   `yaml:"enableOpenApi"`
 		CORS                CORS   `yaml:"cors"`
 		DefaultNamespace    string `yaml:"defaultNamespace"`
+		// show temporal-system namespace in namespace selector
+		ShowTemporalSystemNamespace bool `yaml:"showTemporalSystemNamespace"`
 		// How often to reload the config
 		RefreshInterval time.Duration `yaml:"refreshInterval"`
 	}
