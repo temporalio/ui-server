@@ -1,1 +1,0 @@
-const n=e=>{if(e===null||e===void 0||typeof e!="object")return!1;const t=Object.keys(e),[r]=t;return!(t.length!==1||typeof e[r]!="string")},f=e=>{for(const t of Object.values(e))return t};function s(e){for(const[t,r]of Object.entries(e))n(r)&&(e[t]=f(r));return e}export{s};
