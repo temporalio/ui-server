@@ -1,0 +1,1 @@
+import{S as o,i as e,s as r}from"../../chunks/vendor-f1345faf.js";import{i as n}from"../../chunks/route-for-c9edcdb4.js";const l=async()=>{const t=n({importType:"events"});return{status:302,redirect:t}};class p extends o{constructor(s){super();e(this,s,null,null,r,{})}}export{p as default,l as load};
