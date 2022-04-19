@@ -1,1 +1,0 @@
-import{w as n}from"./index-fef70e44.js";function w(r,s=""){var o;let t=s;try{t=JSON.parse((o=window==null?void 0:window.localStorage)==null?void 0:o.getItem(r))}catch{t=null}const{subscribe:a,set:l}=n(t);return{subscribe:a,set:e=>{var i;(i=window==null?void 0:window.localStorage)==null||i.setItem(r,JSON.stringify(e)),l(e)}}}export{w as p};
