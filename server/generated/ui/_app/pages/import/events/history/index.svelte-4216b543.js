@@ -1,0 +1,1 @@
+import{S as o,i as e,s as r}from"../../../../chunks/index-e3f4fa3b.js";import{d as n}from"../../../../chunks/route-for-395a6648.js";const u=async function(){const t=n({importType:"events",view:"summary"});return{status:302,redirect:t}};class l extends o{constructor(s){super(),e(this,s,null,null,r,{})}}export{l as default,u as load};
