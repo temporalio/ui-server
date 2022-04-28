@@ -34,6 +34,6 @@ auth:
       - profile
       - email
     passIdToken: false
-code:
+codec:
   endpoint: {{ default .Env.TEMPORAL_CODEC_ENDPOINT "" }}
   passAccessToken: {{ default .Env.TEMPORAL_CODEC_PASS_ACCESS_TOKEN "false" }}
