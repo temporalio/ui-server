@@ -133,6 +133,10 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			}
 			DefaultNamespace            string
 			ShowTemporalSystemNamespace bool
+			Codec struct {
+				Endpoint         string
+				PassAccessToken  bool		
+			}
 		}{
 			struct {
 				Enabled bool
@@ -143,6 +147,13 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			},
 			cfg.DefaultNamespace,
 			cfg.ShowTemporalSystemNamespace,
+			struct {
+				Endpoint         string
+				PassAccessToken  bool		
+			}{
+				cfg.Codec.Endpoint,
+				cfg.Codec.PassAccessToken,
+			},
 		}
 
 		return c.JSON(http.StatusOK, settings)
