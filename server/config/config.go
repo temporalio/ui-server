@@ -46,6 +46,7 @@ type (
 		ShowTemporalSystemNamespace bool `yaml:"showTemporalSystemNamespace"`
 		// How often to reload the config
 		RefreshInterval time.Duration `yaml:"refreshInterval"`
+		Codec           Codec         `yaml:"codec"`
 	}
 
 	CORS struct {
@@ -81,8 +82,8 @@ type (
 	}
 
 	Codec struct {
-		Endpoint         string  `yaml:"endpoint"`
-		PassAccessToken  bool    `yaml:"passAccessToken"`
+		Endpoint        string `yaml:"endpoint"`
+		PassAccessToken bool   `yaml:"passAccessToken"`
 	}
 )
 
