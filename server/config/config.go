@@ -79,6 +79,11 @@ type (
 		PassIDToken  bool                   `yaml:"passIdToken"`
 		Options      map[string]interface{} `yaml:"options"`
 	}
+
+	Codec struct {
+		Endpoint         string  `yaml:"endpoint"`
+		PassAccessToken  bool    `yaml:"passAccessToken"`
+	}
 )
 
 // Validate validates this config
