@@ -55,6 +55,7 @@ type SettingsResponse struct {
 	DefaultNamespace            string
 	ShowTemporalSystemNamespace bool
 	FeedbackURL                 string
+	NotifyOnNewVersion          bool
 	Codec                       *CodecResponse
 }
 
@@ -169,6 +170,7 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			DefaultNamespace:            cfg.DefaultNamespace,
 			ShowTemporalSystemNamespace: cfg.ShowTemporalSystemNamespace,
 			FeedbackURL:                 cfg.FeedbackURL,
+			NotifyOnNewVersion:          cfg.NotifyOnNewVersion,
 			Codec:                       codec,
 		}
 
