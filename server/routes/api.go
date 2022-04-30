@@ -39,6 +39,24 @@ import (
 	"github.com/temporalio/ui-server/server/rpc"
 )
 
+type Auth struct {
+	Enabled bool
+	Options []string
+}
+
+type Codec struct {
+	Endpoint        string
+	PassAccessToken bool
+}
+
+type SettingsResponse struct {
+	Auth                        *Auth
+	DefaultNamespace            string
+	ShowTemporalSystemNamespace bool
+	FeedbackURL                 string
+	Codec                       *Codec
+}
+
 // SetAPIRoutes sets api routes
 func SetAPIRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) error {
 	api := e.Group("/api")
@@ -126,33 +144,17 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			}
 		}
 
-		settings := struct {
-			Auth struct {
-				Enabled bool
-				Options []string
-			}
-			DefaultNamespace            string
-			ShowTemporalSystemNamespace bool
-			Codec struct {
-				Endpoint         string
-				PassAccessToken  bool		
-			}
-		}{
-			struct {
-				Enabled bool
-				Options []string
-			}{
-				cfg.Auth.Enabled,
-				options,
+		settings := &SettingsResponse{
+			Auth: &Auth{
+				Enabled: cfg.Auth.Enabled,
+				Options: options,
 			},
-			cfg.DefaultNamespace,
-			cfg.ShowTemporalSystemNamespace,
-			struct {
-				Endpoint         string
-				PassAccessToken  bool		
-			}{
-				cfg.Codec.Endpoint,
-				cfg.Codec.PassAccessToken,
+			DefaultNamespace:            cfg.DefaultNamespace,
+			ShowTemporalSystemNamespace: cfg.ShowTemporalSystemNamespace,
+			FeedbackURL:                 cfg.FeedbackURL,
+			Codec: &Codec{
+				Endpoint:        cfg.Codec.Endpoint,
+				PassAccessToken: cfg.Codec.PassAccessToken,
 			},
 		}
 
