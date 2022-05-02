@@ -34,6 +34,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
+	"github.com/temporalio/ui-server/server/codec"
 	"github.com/temporalio/ui-server/server/config"
 	"github.com/temporalio/ui-server/server/generated/api/workflowservice/v1"
 	"github.com/temporalio/ui-server/server/rpc"
@@ -44,9 +45,9 @@ type Auth struct {
 	Options []string
 }
 
-type Codec struct {
-	Endpoint        string
-	PassAccessToken bool
+type CodecResponse struct {
+	Endpoint    string
+	AccessToken string
 }
 
 type SettingsResponse struct {
@@ -54,7 +55,7 @@ type SettingsResponse struct {
 	DefaultNamespace            string
 	ShowTemporalSystemNamespace bool
 	FeedbackURL                 string
-	Codec                       *Codec
+	Codec                       *CodecResponse
 }
 
 // SetAPIRoutes sets api routes
@@ -62,6 +63,7 @@ func SetAPIRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) e
 	api := e.Group("/api")
 	api.GET("/v1/me", getCurrentUser)
 	api.GET("/v1/settings", getSettings(cfgProvider))
+	api.POST("/v1/settings/codec/:endpoint", codec.SetCodecEndpoint)
 	api.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", temporalAPIHandler(cfgProvider))
 	return nil
 }
@@ -144,6 +146,21 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			}
 		}
 
+		codecCfg := codec.GetCodec(c, cfg)
+		codec := &CodecResponse{
+			Endpoint: codecCfg.Endpoint,
+		}
+		if codecCfg.PassAccessToken {
+			sess, _ := session.Get("auth", c)
+			if sess != nil {
+				token := sess.Values["access-token"]
+				if token != nil {
+					codec.AccessToken = token.(string)
+				}
+
+			}
+		}
+
 		settings := &SettingsResponse{
 			Auth: &Auth{
 				Enabled: cfg.Auth.Enabled,
@@ -152,10 +169,7 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			DefaultNamespace:            cfg.DefaultNamespace,
 			ShowTemporalSystemNamespace: cfg.ShowTemporalSystemNamespace,
 			FeedbackURL:                 cfg.FeedbackURL,
-			Codec: &Codec{
-				Endpoint:        cfg.Codec.Endpoint,
-				PassAccessToken: cfg.Codec.PassAccessToken,
-			},
+			Codec:                       codec,
 		}
 
 		return c.JSON(http.StatusOK, settings)
