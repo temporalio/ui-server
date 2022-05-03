@@ -34,7 +34,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/temporalio/ui-server/server/codec"
 	"github.com/temporalio/ui-server/server/config"
 	"github.com/temporalio/ui-server/server/generated/api/workflowservice/v1"
 	"github.com/temporalio/ui-server/server/rpc"
@@ -63,7 +62,6 @@ func SetAPIRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) e
 	api := e.Group("/api")
 	api.GET("/v1/me", getCurrentUser)
 	api.GET("/v1/settings", getSettings(cfgProvider))
-	api.POST("/v1/settings/codec/:endpoint", codec.SetCodecEndpoint)
 	api.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", temporalAPIHandler(cfgProvider))
 	return nil
 }
@@ -146,11 +144,10 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			}
 		}
 
-		codecCfg := codec.GetCodec(c, cfg)
 		codec := &CodecResponse{
-			Endpoint: codecCfg.Endpoint,
+			Endpoint: cfg.Codec.Endpoint,
 		}
-		if codecCfg.PassAccessToken {
+		if cfg.Codec.PassAccessToken {
 			sess, _ := session.Get("auth", c)
 			if sess != nil {
 				token := sess.Values["access-token"]
