@@ -243,6 +243,54 @@
         ]
       }
     },
+    "/api/v1/namespaces/{namespace}/schedules": {
+      "get": {
+        "summary": "List all schedules in a namespace.",
+        "operationId": "WorkflowService_ListSchedules",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListSchedulesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "The namespace to list schedules in.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maximumPageSize",
+            "description": "How many to return at once.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "nextPageToken",
+            "description": "Token to get the next page of results.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
     "/api/v1/namespaces/{namespace}/task-queues/{taskQueue.name}": {
       "get": {
         "summary": "DescribeTaskQueue returns information about the target task queue.",

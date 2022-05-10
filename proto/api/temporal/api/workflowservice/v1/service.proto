@@ -442,5 +442,8 @@ service WorkflowService {
 
     // List all schedules in a namespace.
     rpc ListSchedules (ListSchedulesRequest) returns (ListSchedulesResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/namespaces/{namespace}/schedules"
+        };
     }
 }
