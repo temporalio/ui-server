@@ -2,7 +2,7 @@ enableUi: true
 enableOpenApi: true
 cors:
   allowOrigins:
-    - http://localhost:3000
+    - http://localhost:3000 # used at development by https://github.com/temporalio/ui
 refreshInterval: 1m
 defaultNamespace: default
 showTemporalSystemNamespace: false
