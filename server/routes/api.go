@@ -37,6 +37,7 @@ import (
 	"github.com/temporalio/ui-server/server/config"
 	"github.com/temporalio/ui-server/server/generated/api/workflowservice/v1"
 	"github.com/temporalio/ui-server/server/rpc"
+	"github.com/temporalio/ui-server/server/version"
 )
 
 type Auth struct {
@@ -56,6 +57,7 @@ type SettingsResponse struct {
 	FeedbackURL                 string
 	NotifyOnNewVersion          bool
 	Codec                       *CodecResponse
+	Version                     string
 }
 
 // SetAPIRoutes sets api routes
@@ -100,6 +102,7 @@ func getTemporalClientMux(c echo.Context, temporalConn *grpc.ClientConn) (*runti
 	tMux := runtime.NewServeMux(
 		withMarshaler(),
 		withAuth(c),
+		version.WithVersionHeader(c),
 		// This is necessary to get error details properly
 		// marshalled in unary requests.
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
@@ -169,6 +172,7 @@ func getSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			FeedbackURL:                 cfg.FeedbackURL,
 			NotifyOnNewVersion:          cfg.NotifyOnNewVersion,
 			Codec:                       codec,
+			Version:                     version.UIVersion,
 		}
 
 		return c.JSON(http.StatusOK, settings)
