@@ -142,7 +142,7 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.P
 			Path:     "/",
 			MaxAge:   7 * 24 * int(time.Hour.Seconds()),
 			HttpOnly: true,
-			SameSite: http.SameSiteNoneMode,
+			SameSite: http.SameSiteStrictMode,
 			Secure:   true,
 		}
 		sess.Values["access-token"] = &user.OAuth2Token.AccessToken
@@ -175,7 +175,7 @@ func logout(c echo.Context) error {
 		Path:     "/",
 		MaxAge:   -1,
 		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
+		SameSite: http.SameSiteStrictMode,
 		Secure:   true,
 	}
 	sess.Save(c.Request(), c.Response())
