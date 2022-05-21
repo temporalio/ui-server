@@ -412,6 +412,9 @@ service WorkflowService {
 
     // Returns the schedule description and current state of an existing schedule.
     rpc DescribeSchedule (DescribeScheduleRequest) returns (DescribeScheduleResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
+        };
     }
 
     // Changes the configuration or state of an existing schedule.
