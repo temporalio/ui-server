@@ -429,6 +429,10 @@ service WorkflowService {
     // (-- api-linter: core::0134::synonyms=disabled
     //     aip.dev/not-precedent: we have both patch and update. --)
     rpc PatchSchedule (PatchScheduleRequest) returns (PatchScheduleResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
+            body: "*"    
+        };
     }
 
     // Lists matching times within a range.

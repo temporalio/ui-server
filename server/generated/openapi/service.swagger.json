@@ -328,6 +328,64 @@
         "tags": [
           "WorkflowService"
         ]
+      },
+      "post": {
+        "summary": "Makes a specific change to a schedule or triggers an immediate action.\n(-- api-linter: core::0134::synonyms=disabled\n    aip.dev/not-precedent: we have both patch and update. --)",
+        "operationId": "WorkflowService_PatchSchedule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PatchScheduleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "The namespace of the schedule to patch.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "scheduleId",
+            "description": "The id of the schedule to patch.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patch": {
+                  "$ref": "#/definitions/v1SchedulePatch"
+                },
+                "identity": {
+                  "type": "string",
+                  "description": "The identity of the client who initiated this request."
+                },
+                "requestId": {
+                  "type": "string",
+                  "description": "A unique identifier for this update request for idempotence. Typically UUIDv4."
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
       }
     },
     "/api/v1/namespaces/{namespace}/task-queues/{taskQueue.name}": {
