@@ -408,6 +408,10 @@ service WorkflowService {
     // (-- api-linter: core::0133::http-uri-parent=disabled
     //     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
     rpc CreateSchedule (CreateScheduleRequest) returns (CreateScheduleResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/namespaces/{namespace}/schedules"
+            body: "*"    
+        };
     }
 
     // Returns the schedule description and current state of an existing schedule.
@@ -423,6 +427,10 @@ service WorkflowService {
     // (-- api-linter: core::0134::method-signature=disabled
     //     aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)
     rpc UpdateSchedule (UpdateScheduleRequest) returns (UpdateScheduleResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
+            body: "*"    
+        };
     }
 
     // Makes a specific change to a schedule or triggers an immediate action.
@@ -445,6 +453,9 @@ service WorkflowService {
     // (-- api-linter: core::0135::response-message-name=disabled
     //     aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)
     rpc DeleteSchedule (DeleteScheduleRequest) returns (DeleteScheduleResponse) {
+        option (google.api.http) = {
+            delete:  "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
+        };
     }
 
     // List all schedules in a namespace.

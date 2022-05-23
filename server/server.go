@@ -25,7 +25,6 @@ package server
 import (
 	"embed"
 	"fmt"
-	"net/http"
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -86,10 +85,10 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	}))
 	e.Use(middleware.Secure())
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		CookiePath:     "/",
-		CookieHTTPOnly: true,
-		CookieSameSite: http.SameSiteStrictMode,
-		CookieSecure:   true,
+		CookiePath: "/",
+		// CookieHTTPOnly: true,
+		// CookieSameSite: http.SameSiteStrictMode,
+		// CookieSecure:   true,
 	}))
 	e.Use(session.Middleware(sessions.NewCookieStore(
 		securecookie.GenerateRandomKey(32),
