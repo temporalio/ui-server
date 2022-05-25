@@ -22,26 +22,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package server_options
+package api
 
 import (
-	"github.com/temporalio/ui-server/server/api"
-	"github.com/temporalio/ui-server/server/config"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/labstack/echo/v4"
 )
 
-type (
-	ServerOptions struct {
-		ConfigProvider config.ConfigProvider
-		APIMiddleware  []api.Middleware
-	}
-)
-
-func NewServerOptions(opts []ServerOption) *ServerOptions {
-	so := &ServerOptions{
-		// Set defaults here.
-	}
-	for _, opt := range opts {
-		opt.apply(so)
-	}
-	return so
-}
+type Middleware func(c echo.Context) runtime.ServeMuxOption

@@ -100,7 +100,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		panic(err)
 	}
 
-	routes.SetAPIRoutes(e, cfgProvider)
+	routes.SetAPIRoutes(e, cfgProvider, serverOpts.APIMiddleware)
 	routes.SetAuthRoutes(e, cfgProvider)
 
 	if cfg.EnableOpenAPI {
