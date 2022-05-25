@@ -30,6 +30,7 @@ import (
 	"github.com/temporalio/ui-server/plugins/fs_config_provider"
 	"github.com/temporalio/ui-server/server"
 	"github.com/temporalio/ui-server/server/server_options"
+	"github.com/temporalio/ui-server/server/version"
 	"github.com/urfave/cli/v2"
 )
 
@@ -42,9 +43,9 @@ func main() {
 // buildCLI is the main entry point for the web server
 func buildCLI() *cli.App {
 	app := cli.NewApp()
-	app.Name = "Web"
-	app.Usage = "Temporal Web"
-	app.Version = "0.1.0"
+	app.Name = "Temporal UI"
+	app.Usage = "https://github.com/temporalio/ui"
+	app.Version = version.UIVersion
 	app.ArgsUsage = " "
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
