@@ -87,7 +87,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	e.Use(middleware.Secure())
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookiePath:     "/",
-		CookieHTTPOnly: true,
+		CookieHTTPOnly: false,
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure:   true,
 	}))
