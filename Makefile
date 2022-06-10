@@ -84,7 +84,7 @@ update-submodules:
 	git submodule update --force --remote ui
 
 install-ui:
-	(cd ./ui && pnpm install)
+	(cd ./ui && npm install)
 
 ##### Test #####
 TEST_TIMEOUT := 10m
