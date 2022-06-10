@@ -27,6 +27,10 @@ jobs:
         with:
           node-version: 16
 
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+
       - name: Update Git Sumbodule
         run: |
           git pull --recurse-submodules
