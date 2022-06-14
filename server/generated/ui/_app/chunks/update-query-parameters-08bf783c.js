@@ -1,0 +1,1 @@
+const n={replaceState:!0,keepfocus:!0,noscroll:!0},c=async({parameter:s,value:t,url:e,goto:o,allowEmpty:r=!1})=>{const a=String(t);return t?e.searchParams.set(s,a):r?e.searchParams.set(s,""):e.searchParams.delete(s),e.href!==window.location.href&&o(String(e),n),t};export{c as u};
