@@ -26,13 +26,14 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/temporalio/ui-server/server/api"
+	"github.com/temporalio/ui-server/server/auth"
 	"github.com/temporalio/ui-server/server/config"
 )
 
 // SetAPIRoutes sets api routes
 func SetAPIRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh, apiMiddleware []api.Middleware) error {
 	route := e.Group("/api")
-	route.GET("/v1/me", api.GetCurrentUser)
+	route.GET("/v1/me", auth.GetCurrentUser)
 	route.GET("/v1/settings", api.GetSettings(cfgProvider))
 	route.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", api.TemporalAPIHandler(cfgProvider, apiMiddleware))
 	return nil
