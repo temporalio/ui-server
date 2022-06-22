@@ -102,13 +102,8 @@ func ValidateAuth(c echo.Context, cfgProvider *config.ConfigProviderWithRefresh)
 		return nil
 	}
 
-	sess, _ := session.Get(AuthCookie, c)
-	if sess == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
-	}
-
-	token := sess.Values[AccessTokenKey]
-	if token == nil {
+	token := getAccessToken(c)
+	if token == "" {
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
@@ -120,24 +115,50 @@ func WithAuth(c echo.Context) runtime.ServeMuxOption {
 		func(ctx context.Context, req *http.Request) metadata.MD {
 			md := metadata.MD{}
 
-			sess, _ := session.Get(AuthCookie, c)
-
-			if sess == nil {
-				return md
+			token := getAccessToken(c)
+			if token != "" {
+				md.Append(echo.HeaderAuthorization, "Bearer "+token)
 			}
 
-			token := sess.Values[AccessTokenKey]
-			if token != nil {
-				md.Append(echo.HeaderAuthorization, "Bearer "+token.(string))
-			}
-
-			extras := sess.Values[AuthorizationExtrasKey]
-			if extras != nil {
-				// ex. ID Token
-				md.Append(AuthorizationExtrasKey, extras.(string))
+			extras := getAuthorizationExtras(c)
+			if extras != "" {
+				md.Append(AuthorizationExtrasKey, extras)
 			}
 
 			return md
 		},
 	)
+}
+
+func getAccessToken(c echo.Context) string {
+	rToken := c.Request().Header.Get(echo.HeaderAuthorization)
+	if rToken != "" {
+		return rToken
+	}
+
+	sess, _ := session.Get(AuthCookie, c)
+	if sess == nil {
+		return ""
+	}
+
+	cToken := sess.Values[AccessTokenKey]
+	if cToken == nil {
+		return ""
+	}
+
+	return cToken.(string)
+}
+
+func getAuthorizationExtras(c echo.Context) string {
+	sess, _ := session.Get(AuthCookie, c)
+	if sess == nil {
+		return ""
+	}
+
+	extras := sess.Values[AuthorizationExtrasKey]
+	if extras == nil {
+		return ""
+	}
+
+	return extras.(string)
 }
