@@ -33,7 +33,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
-	"github.com/temporalio/ui-server/server/config"
+	"github.com/temporalio/ui-server/v2/server/config"
 	"google.golang.org/grpc/metadata"
 )
 

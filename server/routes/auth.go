@@ -36,8 +36,8 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
-	"github.com/temporalio/ui-server/server/auth"
-	"github.com/temporalio/ui-server/server/config"
+	"github.com/temporalio/ui-server/v2/server/auth"
+	"github.com/temporalio/ui-server/v2/server/config"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 )
