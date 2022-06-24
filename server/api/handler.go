@@ -33,11 +33,11 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"github.com/temporalio/ui-server/server/auth"
-	"github.com/temporalio/ui-server/server/config"
-	"github.com/temporalio/ui-server/server/generated/api/workflowservice/v1"
-	"github.com/temporalio/ui-server/server/rpc"
-	"github.com/temporalio/ui-server/server/version"
+	"github.com/temporalio/ui-server/v2/server/auth"
+	"github.com/temporalio/ui-server/v2/server/config"
+	"github.com/temporalio/ui-server/v2/server/generated/api/workflowservice/v1"
+	"github.com/temporalio/ui-server/v2/server/rpc"
+	"github.com/temporalio/ui-server/v2/server/version"
 )
 
 type Auth struct {
