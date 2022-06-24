@@ -80,7 +80,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		AllowOrigins: cfg.CORS.AllowOrigins,
 		AllowHeaders: []string{
 			echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
-			echo.HeaderXCSRFToken,
+			echo.HeaderXCSRFToken, echo.HeaderAuthorization,
 		},
 		AllowCredentials: true,
 	}))
