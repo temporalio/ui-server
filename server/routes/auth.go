@@ -123,12 +123,12 @@ func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.P
 	return func(c echo.Context) error {
 		user, err := auth.ExchangeCode(ctx, c.Request(), config, provider)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "unable to exchange code", err)
+			return err
 		}
 
 		err = auth.SetUser(c, user)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "unable to set user", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "unable to set user: "+err.Error())
 		}
 
 		nonceS, err := c.Request().Cookie("nonce")
