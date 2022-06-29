@@ -117,7 +117,7 @@ func WithAuth(c echo.Context) runtime.ServeMuxOption {
 
 			token := getAccessToken(c)
 			if token != "" {
-				md.Append(echo.HeaderAuthorization, "Bearer "+token)
+				md.Append(echo.HeaderAuthorization, token)
 			}
 
 			extras := getAuthorizationExtras(c)
@@ -146,7 +146,7 @@ func getAccessToken(c echo.Context) string {
 		return ""
 	}
 
-	return cToken.(string)
+	return "Bearer " + cToken.(string)
 }
 
 func getAuthorizationExtras(c echo.Context) string {
