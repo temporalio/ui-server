@@ -4130,9 +4130,47 @@
         },
         "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
+        },
+        "info": {
+          "$ref": "#/definitions/v1ScheduleListInfo"
         }
       },
       "description": "ScheduleListEntry is returned by ListSchedules."
+    },
+    "v1ScheduleListInfo": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "$ref": "#/definitions/v1ScheduleSpec",
+          "description": "From spec:\nSome fields are too large/unimportant for the purpose of listing, so we'll clear them\nfrom this copy of spec: exclude_calendar, jitter, timezone_data."
+        },
+        "workflowType": {
+          "$ref": "#/definitions/v1WorkflowType",
+          "title": "From action:\nAction is a oneof field, but we need to encode this in JSON and oneof fields don't work\nwell with JSON. If action is start_workflow, this is set:"
+        },
+        "notes": {
+          "type": "string",
+          "title": "From state:"
+        },
+        "paused": {
+          "type": "boolean"
+        },
+        "recentActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ScheduleActionResult"
+          },
+          "title": "From info (maybe fewer entries):"
+        },
+        "futureActionTimes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "ScheduleListInfo is an abbreviated set of values from Schedule and ScheduleInfo\nthat's returned in ListSchedules."
     },
     "v1ScheduleOverlapPolicy": {
       "type": "string",
