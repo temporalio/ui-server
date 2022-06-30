@@ -27,15 +27,14 @@ jobs:
       - name: Docker meta for Cloud Release image
         id: meta_release_cloud
         uses: docker/metadata-action@v3
-        if: github.event_name == 'release'
         with:
-          images: temporaliotest/ui
+          images: temporalio/cloud-ui
           tags: |
-            cloud-test
+            type=sha,format=short,event=branch
+            latest
 
       - name: Push Cloud Release image to DockerHub
         uses: docker/build-push-action@v2
-        if: github.event_name == 'release'
         with:
           push: true
           file: cloud.Dockerfile
