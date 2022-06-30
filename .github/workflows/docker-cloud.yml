@@ -1,4 +1,4 @@
-name: Publish Docker image
+name: Publish Docker image for Cloud
 
 on:
   workflow_dispatch:
@@ -41,5 +41,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta_release_cloud.outputs.tags }}
           labels: ${{ steps.meta_release_cloud.outputs.labels }}
-
-
