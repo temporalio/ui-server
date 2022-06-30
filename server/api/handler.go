@@ -32,12 +32,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 
-	"github.com/temporalio/ui-server/server/config"
-	"github.com/temporalio/ui-server/server/generated/api/workflowservice/v1"
-	"github.com/temporalio/ui-server/server/rpc"
-	"github.com/temporalio/ui-server/server/version"
+	"github.com/temporalio/ui-server/v2/server/auth"
+	"github.com/temporalio/ui-server/v2/server/config"
+	"github.com/temporalio/ui-server/v2/server/generated/api/workflowservice/v1"
+	"github.com/temporalio/ui-server/v2/server/rpc"
+	"github.com/temporalio/ui-server/v2/server/version"
 )
 
 type Auth struct {
@@ -62,7 +62,7 @@ type SettingsResponse struct {
 
 func TemporalAPIHandler(cfgProvider *config.ConfigProviderWithRefresh, apiMiddleware []Middleware) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		err := validateAuth(c, cfgProvider)
+		err := auth.ValidateAuth(c, cfgProvider)
 		if err != nil {
 			return err
 		}
@@ -89,25 +89,6 @@ func TemporalAPIHandler(cfgProvider *config.ConfigProviderWithRefresh, apiMiddle
 	}
 }
 
-func GetCurrentUser(c echo.Context) error {
-	sess, _ := session.Get("auth", c)
-	email := sess.Values["email"]
-	name := sess.Values["name"]
-	picture := sess.Values["picture"]
-
-	if email == nil {
-		return c.JSON(http.StatusOK, nil)
-	}
-
-	user := struct {
-		Email   string
-		Name    string
-		Picture string
-	}{email.(string), name.(string), picture.(string)}
-
-	return c.JSON(http.StatusOK, user)
-}
-
 func GetSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context) error {
 	return func(c echo.Context) error {
 		cfg, err := cfgProvier.GetConfig()
@@ -127,9 +108,9 @@ func GetSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			Endpoint: cfg.Codec.Endpoint,
 		}
 		if cfg.Codec.PassAccessToken {
-			sess, _ := session.Get("auth", c)
+			sess, _ := session.Get(auth.AuthCookie, c)
 			if sess != nil {
-				token := sess.Values["access-token"]
+				token := sess.Values[auth.AccessTokenKey]
 				if token != nil {
 					codec.AccessToken = token.(string)
 				}
@@ -163,7 +144,7 @@ func getTemporalClientMux(c echo.Context, temporalConn *grpc.ClientConn, apiMidd
 	tMux := runtime.NewServeMux(
 		append(muxOpts,
 			withMarshaler(),
-			withAuth(c),
+			auth.WithAuth(c),
 			version.WithVersionHeader(c),
 			// This is necessary to get error details properly
 			// marshalled in unary requests.
@@ -185,55 +166,4 @@ func withMarshaler() runtime.ServeMuxOption {
 	}
 
 	return runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb)
-}
-
-func withAuth(c echo.Context) runtime.ServeMuxOption {
-	return runtime.WithMetadata(
-		func(ctx context.Context, req *http.Request) metadata.MD {
-			md := metadata.MD{}
-
-			sess, _ := session.Get("auth", c)
-
-			if sess == nil {
-				return md
-			}
-
-			token := sess.Values["access-token"]
-			if token != nil {
-				md.Append("authorization", "Bearer "+token.(string))
-			}
-
-			extras := sess.Values["authorization-extras"]
-			if extras != nil {
-				// ex. ID Token
-				md.Append("authorization-extras", extras.(string))
-			}
-
-			return md
-		},
-	)
-}
-
-func validateAuth(c echo.Context, cfgProvider *config.ConfigProviderWithRefresh) error {
-	cfg, err := cfgProvider.GetConfig()
-	if err != nil {
-		return err
-	}
-
-	isEnabled := cfg.Auth.Enabled
-	if !isEnabled {
-		return nil
-	}
-
-	sess, _ := session.Get("auth", c)
-	if sess == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
-	}
-
-	token := sess.Values["access-token"]
-	if token == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
-	}
-
-	return nil
 }

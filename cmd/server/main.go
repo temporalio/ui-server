@@ -27,10 +27,10 @@ import (
 	"os"
 	"path"
 
-	"github.com/temporalio/ui-server/plugins/fs_config_provider"
-	"github.com/temporalio/ui-server/server"
-	"github.com/temporalio/ui-server/server/server_options"
-	"github.com/temporalio/ui-server/server/version"
+	"github.com/temporalio/ui-server/v2/plugins/fs_config_provider"
+	"github.com/temporalio/ui-server/v2/server"
+	"github.com/temporalio/ui-server/v2/server/server_options"
+	"github.com/temporalio/ui-server/v2/server/version"
 	"github.com/urfave/cli/v2"
 )
 

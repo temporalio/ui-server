@@ -1,0 +1,1 @@
+import{g as n}from"./navigation-6709cf39.js";const f={replaceState:!0,keepfocus:!0,noscroll:!0},i=async({parameter:t,value:s,url:e,goto:o=n,allowEmpty:r=!1})=>{const a=String(s);return s?e.searchParams.set(t,a):r?e.searchParams.set(t,""):e.searchParams.delete(t),e.href!==window.location.href&&(e.href.endsWith("#")||(e.href=e.href+"#"),o(String(e),f)),s};export{i as u};
