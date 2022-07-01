@@ -66,10 +66,7 @@ func GetCurrentUser(c echo.Context) error {
 }
 
 func SetUser(c echo.Context, user *User) error {
-	sess, err := session.Get(AuthCookie, c)
-	if err != nil {
-		return err
-	}
+	sess, _ := session.Get(AuthCookie, c)
 
 	sess.Options = &sessions.Options{
 		Path:     "/",
@@ -83,7 +80,7 @@ func SetUser(c echo.Context, user *User) error {
 	sess.Values[PictureKey] = &user.IDToken.Picture
 	sess.Values[NameKey] = &user.IDToken.Name
 
-	err = sess.Save(c.Request(), c.Response())
+	err := sess.Save(c.Request(), c.Response())
 	if err != nil {
 		return err
 	}
