@@ -438,7 +438,7 @@ service WorkflowService {
     //     aip.dev/not-precedent: we have both patch and update. --)
     rpc PatchSchedule (PatchScheduleRequest) returns (PatchScheduleResponse) {
         option (google.api.http) = {
-            post: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
+            patch: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
             body: "*"    
         };
     }
