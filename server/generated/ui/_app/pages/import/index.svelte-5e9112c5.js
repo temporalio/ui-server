@@ -1,0 +1,1 @@
+import{S as e,i as o,s as r}from"../../chunks/index-604742bf.js";import{e as n}from"../../chunks/route-for-15bcc76e.js";const p=async()=>{const t=n({importType:"events"});return{status:302,redirect:t}};class u extends e{constructor(s){super(),o(this,s,null,null,r,{})}}export{u as default,p as load};
