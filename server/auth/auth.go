@@ -114,12 +114,12 @@ func WithAuth(c echo.Context) runtime.ServeMuxOption {
 
 			token := getAccessToken(c)
 			if token != "" {
-				md.Append(echo.HeaderAuthorization, token)
+				md.Set(echo.HeaderAuthorization, token)
 			}
 
 			extras := getAuthorizationExtras(c)
 			if extras != "" {
-				md.Append(AuthorizationExtrasKey, extras)
+				md.Set(AuthorizationExtrasKey, extras)
 			}
 
 			return md
