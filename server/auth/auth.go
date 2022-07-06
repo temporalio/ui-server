@@ -38,16 +38,28 @@ import (
 )
 
 const (
-	AuthCookie             = "auth"
-	AccessTokenKey         = "access-token"
-	AuthorizationExtrasKey = "authorization-extras"
-	EmailKey               = "email"
-	NameKey                = "name"
-	PictureKey             = "picture"
+	AuthCookie                = "auth"
+	AccessTokenKey            = "access-token"
+	AuthExtrasCookie          = "auth-extras"
+	IDTokenKey                = "id-token"
+	EmailKey                  = "email"
+	NameKey                   = "name"
+	PictureKey                = "picture"
+	AuthorizationExtrasHeader = "authorization-extras"
+)
+
+var (
+	sessOpts = &sessions.Options{
+		Path:     "/",
+		MaxAge:   7 * 24 * int(time.Hour.Seconds()),
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Secure:   true,
+	}
 )
 
 func GetCurrentUser(c echo.Context) error {
-	sess, _ := session.Get(AuthCookie, c)
+	sess, _ := session.Get(AuthExtrasCookie, c)
 	email := sess.Values[EmailKey]
 	name := sess.Values[NameKey]
 	picture := sess.Values[PictureKey]
@@ -65,22 +77,13 @@ func GetCurrentUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
-func SetUser(c echo.Context, user *User) error {
-	sess, _ := session.Get(AuthCookie, c)
-
-	sess.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   7 * 24 * int(time.Hour.Seconds()),
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-		Secure:   true,
+func SetUser(c echo.Context, serverCfg *config.Config, user *User) error {
+	err := setAccessToken(c, user.OAuth2Token.AccessToken)
+	if err != nil {
+		return err
 	}
-	sess.Values[AccessTokenKey] = &user.OAuth2Token.AccessToken
-	sess.Values[EmailKey] = &user.IDToken.Email
-	sess.Values[PictureKey] = &user.IDToken.Picture
-	sess.Values[NameKey] = &user.IDToken.Name
 
-	err := sess.Save(c.Request(), c.Response())
+	err = setIDToken(c, serverCfg, user.IDToken)
 	if err != nil {
 		return err
 	}
@@ -119,7 +122,7 @@ func WithAuth(c echo.Context) runtime.ServeMuxOption {
 
 			extras := getAuthorizationExtras(c)
 			if extras != "" {
-				md.Set(AuthorizationExtrasKey, extras)
+				md.Set(AuthorizationExtrasHeader, extras)
 			}
 
 			return md
@@ -146,16 +149,48 @@ func getAccessToken(c echo.Context) string {
 	return "Bearer " + cToken.(string)
 }
 
-func getAuthorizationExtras(c echo.Context) string {
+func setAccessToken(c echo.Context, token string) error {
 	sess, _ := session.Get(AuthCookie, c)
+	sess.Options = sessOpts
+	sess.Values[AccessTokenKey] = &token
+
+	err := sess.Save(c.Request(), c.Response())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func getAuthorizationExtras(c echo.Context) string {
+	sess, _ := session.Get(AuthExtrasCookie, c)
 	if sess == nil {
 		return ""
 	}
 
-	extras := sess.Values[AuthorizationExtrasKey]
+	extras := sess.Values[IDTokenKey]
 	if extras == nil {
 		return ""
 	}
 
 	return extras.(string)
+}
+
+func setIDToken(c echo.Context, serverCfg *config.Config, idToken *IDToken) error {
+	sess, _ := session.Get(AuthExtrasCookie, c)
+	sess.Options = sessOpts
+
+	sess.Values[EmailKey] = &idToken.Claims.Email
+	sess.Values[PictureKey] = &idToken.Claims.Picture
+	sess.Values[NameKey] = &idToken.Claims.Name
+	if serverCfg.Auth.Providers[0].PassIDToken {
+		sess.Values[IDTokenKey] = &idToken.RawToken
+	}
+
+	err := sess.Save(c.Request(), c.Response())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

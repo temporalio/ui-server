@@ -35,7 +35,12 @@ import (
 
 type User struct {
 	OAuth2Token *oauth2.Token
-	IDToken     *Claims
+	IDToken     *IDToken
+}
+
+type IDToken struct {
+	RawToken string
+	Claims   Claims
 }
 
 type Claims struct {
@@ -88,7 +93,10 @@ func ExchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 
 	user := User{
 		OAuth2Token: oauth2Token,
-		IDToken:     &claims,
+		IDToken: &IDToken{
+			RawToken: rawIDToken,
+			Claims:   claims,
+		},
 	}
 
 	return &user, nil
