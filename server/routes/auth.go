@@ -45,27 +45,27 @@ import (
 // SetAuthRoutes sets routes used by auth
 func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) {
 	ctx := context.Background()
-	cfg, err := cfgProvider.GetConfig()
+	serverCfg, err := cfgProvider.GetConfig()
 	if err != nil {
 		fmt.Printf("unable to get auth config: %s\n", err)
 	}
 
-	if !cfg.Auth.Enabled {
+	if !serverCfg.Auth.Enabled {
 		return
 	}
 
-	if len(cfg.Auth.Providers) == 0 {
+	if len(serverCfg.Auth.Providers) == 0 {
 		log.Fatal(`auth providers configuration is empty. Configure an auth provider or disable auth`)
 	}
 
-	providerCfg := cfg.Auth.Providers[0] // only single provider is currently supported
+	providerCfg := serverCfg.Auth.Providers[0] // only single provider is currently supported
 
 	provider, err := oidc.NewProvider(ctx, providerCfg.ProviderUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	config := oauth2.Config{
+	oauthCfg := oauth2.Config{
 		ClientID:     providerCfg.ClientID,
 		ClientSecret: providerCfg.ClientSecret,
 		Endpoint:     provider.Endpoint(),
@@ -75,9 +75,9 @@ func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) 
 
 	api := e.Group("/auth")
 
-	api.GET("/sso", authenticate(&config, providerCfg.Options))
-	api.GET("/sso/callback", authenticateCb(ctx, &config, provider))
-	api.GET("/sso_callback", authenticateCb(ctx, &config, provider)) // compatibility with UI v1
+	api.GET("/sso", authenticate(&oauthCfg, providerCfg.Options))
+	api.GET("/sso/callback", authenticateCb(ctx, &oauthCfg, provider))
+	api.GET("/sso_callback", authenticateCb(ctx, &oauthCfg, provider)) // compatibility with UI v1
 	api.GET("/logout", logout)
 }
 
@@ -119,9 +119,9 @@ func authenticate(config *oauth2.Config, options map[string]interface{}) func(ec
 	}
 }
 
-func authenticateCb(ctx context.Context, config *oauth2.Config, provider *oidc.Provider) func(echo.Context) error {
+func authenticateCb(ctx context.Context, oauthCfg *oauth2.Config, provider *oidc.Provider) func(echo.Context) error {
 	return func(c echo.Context) error {
-		user, err := auth.ExchangeCode(ctx, c.Request(), config, provider)
+		user, err := auth.ExchangeCode(ctx, c.Request(), oauthCfg, provider)
 		if err != nil {
 			return err
 		}
