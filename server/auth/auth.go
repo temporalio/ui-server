@@ -77,13 +77,13 @@ func GetCurrentUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
-func SetUser(c echo.Context, serverCfg *config.Config, user *User) error {
+func SetUser(c echo.Context, user *User) error {
 	err := setAccessToken(c, user.OAuth2Token.AccessToken)
 	if err != nil {
 		return err
 	}
 
-	err = setIDToken(c, serverCfg, user.IDToken)
+	err = setIDToken(c, user.IDToken)
 	if err != nil {
 		return err
 	}
@@ -176,16 +176,14 @@ func getAuthorizationExtras(c echo.Context) string {
 	return extras.(string)
 }
 
-func setIDToken(c echo.Context, serverCfg *config.Config, idToken *IDToken) error {
+func setIDToken(c echo.Context, idToken *IDToken) error {
 	sess, _ := session.Get(AuthExtrasCookie, c)
 	sess.Options = sessOpts
 
 	sess.Values[EmailKey] = &idToken.Claims.Email
 	sess.Values[PictureKey] = &idToken.Claims.Picture
 	sess.Values[NameKey] = &idToken.Claims.Name
-	if serverCfg.Auth.Providers[0].PassIDToken {
-		sess.Values[IDTokenKey] = &idToken.RawToken
-	}
+	sess.Values[IDTokenKey] = &idToken.RawToken
 
 	err := sess.Save(c.Request(), c.Response())
 	if err != nil {

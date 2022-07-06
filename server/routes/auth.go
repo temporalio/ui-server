@@ -119,14 +119,14 @@ func authenticate(config *oauth2.Config, options map[string]interface{}) func(ec
 	}
 }
 
-func authenticateCb(ctx context.Context, serverCfg *config.Config, oauthCfg *oauth2.Config, provider *oidc.Provider) func(echo.Context) error {
+func authenticateCb(ctx context.Context, oauthCfg *oauth2.Config, provider *oidc.Provider) func(echo.Context) error {
 	return func(c echo.Context) error {
 		user, err := auth.ExchangeCode(ctx, c.Request(), oauthCfg, provider)
 		if err != nil {
 			return err
 		}
 
-		err = auth.SetUser(c, serverCfg, user)
+		err = auth.SetUser(c, user)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "unable to set user: "+err.Error())
 		}
