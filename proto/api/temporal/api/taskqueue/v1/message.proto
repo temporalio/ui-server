@@ -24,7 +24,7 @@ syntax = "proto3";
 
 package temporal.api.taskqueue.v1;
 
-option go_package = "go.temporal.io/api/taskqueue/v1;taskqueue";
+option go_package = "github.com/temporalio/ui-server/v2/server/generated/api/taskqueue/v1;taskqueue";
 option java_package = "io.temporal.api.taskqueue.v1";
 option java_multiple_files = true;
 option java_outer_classname = "MessageProto";

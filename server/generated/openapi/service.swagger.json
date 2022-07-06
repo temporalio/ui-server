@@ -289,6 +289,280 @@
         "tags": [
           "WorkflowService"
         ]
+      },
+      "post": {
+        "summary": "Creates a new schedule.\n(-- api-linter: core::0133::method-signature=disabled\n    aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)\n(-- api-linter: core::0133::response-message-name=disabled\n    aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)\n(-- api-linter: core::0133::http-uri-parent=disabled\n    aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)",
+        "operationId": "WorkflowService_CreateSchedule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateScheduleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "The namespace the schedule should be created in.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "scheduleId": {
+                  "type": "string",
+                  "description": "The id of the new schedule."
+                },
+                "schedule": {
+                  "$ref": "#/definitions/v1Schedule",
+                  "description": "The schedule spec, policies, action, and initial state."
+                },
+                "initialPatch": {
+                  "$ref": "#/definitions/v1SchedulePatch",
+                  "description": "Optional initial patch (e.g. to run the action once immediately)."
+                },
+                "identity": {
+                  "type": "string",
+                  "description": "The identity of the client who initiated this request."
+                },
+                "requestId": {
+                  "type": "string",
+                  "description": "A unique identifier for this create request for idempotence. Typically UUIDv4."
+                },
+                "memo": {
+                  "$ref": "#/definitions/v1Memo",
+                  "description": "Memo and search attributes to attach to the schedule itself."
+                },
+                "searchAttributes": {
+                  "$ref": "#/definitions/v1SearchAttributes"
+                }
+              },
+              "title": "(-- api-linter: core::0133::request-parent-required=disabled\n    aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)\n(-- api-linter: core::0133::request-unknown-fields=disabled\n    aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)\n(-- api-linter: core::0133::request-resource-behavior=disabled\n    aip.dev/not-precedent: field_behavior annotation not available in our gogo fork --)\n(-- api-linter: core::0203::optional=disabled\n    aip.dev/not-precedent: field_behavior annotation not available in our gogo fork --)"
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/schedules/{scheduleId}": {
+      "get": {
+        "summary": "Returns the schedule description and current state of an existing schedule.",
+        "operationId": "WorkflowService_DescribeSchedule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DescribeScheduleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "The namespace of the schedule to describe.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "scheduleId",
+            "description": "The id of the schedule to describe.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      },
+      "delete": {
+        "summary": "Deletes a schedule, removing it from the system.\n(-- api-linter: core::0135::method-signature=disabled\n    aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)\n(-- api-linter: core::0135::response-message-name=disabled\n    aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)",
+        "operationId": "WorkflowService_DeleteSchedule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteScheduleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "The namespace of the schedule to delete.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "scheduleId",
+            "description": "The id of the schedule to delete.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "identity",
+            "description": "The identity of the client who initiated this request.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      },
+      "post": {
+        "summary": "Changes the configuration or state of an existing schedule.\n(-- api-linter: core::0134::response-message-name=disabled\n    aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)\n(-- api-linter: core::0134::method-signature=disabled\n    aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)",
+        "operationId": "WorkflowService_UpdateSchedule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateScheduleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "The namespace of the schedule to update.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "scheduleId",
+            "description": "The id of the schedule to update.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "schedule": {
+                  "$ref": "#/definitions/v1Schedule",
+                  "description": "The new schedule. The four main fields of the schedule (spec, action,\npolicies, state) are replaced completely by the values in this message."
+                },
+                "conflictToken": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "This can be the value of conflict_token from a DescribeScheduleResponse,\nwhich will cause this request to fail if the schedule has been modified\nbetween the Describe and this Update.\nIf missing, the schedule will be updated unconditionally."
+                },
+                "identity": {
+                  "type": "string",
+                  "description": "The identity of the client who initiated this request."
+                },
+                "requestId": {
+                  "type": "string",
+                  "description": "A unique identifier for this update request for idempotence. Typically UUIDv4."
+                }
+              },
+              "title": "(-- api-linter: core::0134::request-mask-required=disabled\n    aip.dev/not-precedent: UpdateSchedule doesn't follow Google API format --)"
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      },
+      "patch": {
+        "summary": "Makes a specific change to a schedule or triggers an immediate action.\n(-- api-linter: core::0134::synonyms=disabled\n    aip.dev/not-precedent: we have both patch and update. --)",
+        "operationId": "WorkflowService_PatchSchedule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1PatchScheduleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "The namespace of the schedule to patch.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "scheduleId",
+            "description": "The id of the schedule to patch.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patch": {
+                  "$ref": "#/definitions/v1SchedulePatch"
+                },
+                "identity": {
+                  "type": "string",
+                  "description": "The identity of the client who initiated this request."
+                },
+                "requestId": {
+                  "type": "string",
+                  "description": "A unique identifier for this update request for idempotence. Typically UUIDv4."
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
       }
     },
     "/api/v1/namespaces/{namespace}/task-queues/{taskQueue.name}": {
@@ -2868,6 +3142,10 @@
         },
         "id": {
           "type": "string"
+        },
+        "supportsSchedules": {
+          "type": "boolean",
+          "description": "Whether scheduled workflows are supported on this namespace. This is only needed\ntemporarily while the feature is experimental, so we can give it a high tag."
         }
       }
     },
@@ -3854,9 +4132,47 @@
         },
         "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
+        },
+        "info": {
+          "$ref": "#/definitions/v1ScheduleListInfo"
         }
       },
       "description": "ScheduleListEntry is returned by ListSchedules."
+    },
+    "v1ScheduleListInfo": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "$ref": "#/definitions/v1ScheduleSpec",
+          "description": "From spec:\nSome fields are too large/unimportant for the purpose of listing, so we'll clear them\nfrom this copy of spec: exclude_calendar, jitter, timezone_data."
+        },
+        "workflowType": {
+          "$ref": "#/definitions/v1WorkflowType",
+          "title": "From action:\nAction is a oneof field, but we need to encode this in JSON and oneof fields don't work\nwell with JSON. If action is start_workflow, this is set:"
+        },
+        "notes": {
+          "type": "string",
+          "title": "From state:"
+        },
+        "paused": {
+          "type": "boolean"
+        },
+        "recentActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1ScheduleActionResult"
+          },
+          "title": "From info (maybe fewer entries):"
+        },
+        "futureActionTimes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "ScheduleListInfo is an abbreviated set of values from Schedule and ScheduleInfo\nthat's returned in ListSchedules."
     },
     "v1ScheduleOverlapPolicy": {
       "type": "string",

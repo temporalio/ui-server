@@ -24,7 +24,7 @@ syntax = "proto3";
 
 package temporal.api.command.v1;
 
-option go_package = "go.temporal.io/api/command/v1;command";
+option go_package = "github.com/temporalio/ui-server/v2/server/generated/api/command/v1;command";
 option java_package = "io.temporal.api.command.v1";
 option java_multiple_files = true;
 option java_outer_classname = "MessageProto";

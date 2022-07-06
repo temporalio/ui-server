@@ -24,7 +24,7 @@ syntax = "proto3";
 
 package temporal.api.workflowservice.v1;
 
-option go_package = "go.temporal.io/api/workflowservice/v1;workflowservice";
+option go_package = "github.com/temporalio/ui-server/v2/server/generated/api/workflowservice/v1;workflowservice";
 option java_package = "io.temporal.api.workflowservice.v1";
 option java_multiple_files = true;
 option java_outer_classname = "ServiceProto";
@@ -408,10 +408,17 @@ service WorkflowService {
     // (-- api-linter: core::0133::http-uri-parent=disabled
     //     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
     rpc CreateSchedule (CreateScheduleRequest) returns (CreateScheduleResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/namespaces/{namespace}/schedules"
+            body: "*"    
+        };
     }
 
     // Returns the schedule description and current state of an existing schedule.
     rpc DescribeSchedule (DescribeScheduleRequest) returns (DescribeScheduleResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
+        };
     }
 
     // Changes the configuration or state of an existing schedule.
@@ -420,12 +427,20 @@ service WorkflowService {
     // (-- api-linter: core::0134::method-signature=disabled
     //     aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)
     rpc UpdateSchedule (UpdateScheduleRequest) returns (UpdateScheduleResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
+            body: "*"    
+        };
     }
 
     // Makes a specific change to a schedule or triggers an immediate action.
     // (-- api-linter: core::0134::synonyms=disabled
     //     aip.dev/not-precedent: we have both patch and update. --)
     rpc PatchSchedule (PatchScheduleRequest) returns (PatchScheduleResponse) {
+        option (google.api.http) = {
+            patch: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
+            body: "*"    
+        };
     }
 
     // Lists matching times within a range.
@@ -438,6 +453,9 @@ service WorkflowService {
     // (-- api-linter: core::0135::response-message-name=disabled
     //     aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)
     rpc DeleteSchedule (DeleteScheduleRequest) returns (DeleteScheduleResponse) {
+        option (google.api.http) = {
+            delete:  "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
+        };
     }
 
     // List all schedules in a namespace.
