@@ -5,11 +5,13 @@
 ui-server serves an HTTP API analogue of [Temporal gRPC API](https://github.com/temporalio/api) as well as serves Temporal UI https://github.com/temporalio/ui. It can be compiled into a binary or consumed as a go library.
 
 ## Docker
+
 ui-server is published on Docker Hub: https://hub.docker.com/r/temporalio/ui
 
 You can run it with Temporal Server using the [Temporal docker-compose](https://github.com/temporalio/docker-compose/blob/main/docker-compose.yml).
 
 # Development
+
 Pre-requirements:
  - Go v1.18 or later installed on your development machine
  - Protobuf installed on your development machine (`brew install protobuf`) (Note: M1 macs will need `/opt/homebrew/bin` on the PATH or you may get `/bin/sh: protoc: command not found` errors (or you can [manually download protoc](http://google.github.io/proto-lens/installing-protoc.html)))
@@ -33,4 +35,5 @@ To start the server, execute
 - Alternatively you can pass a .yaml configuration file based on the Dockerize template . Ex [development.yml config](https://github.com/temporalio/ui-server/tree/main/config) 
 
 ## Debugging
+
 In VSCode launch "Debug Server" script (or press F5)
