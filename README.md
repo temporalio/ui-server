@@ -4,11 +4,16 @@
 
 ui-server serves an HTTP API analogue of [Temporal gRPC API](https://github.com/temporalio/api) as well as serves Temporal UI https://github.com/temporalio/ui. It can be compiled into a binary or consumed as a Go library.
 
-## Docker
+# Docker
 
 ui-server is published on Docker Hub: https://hub.docker.com/r/temporalio/ui
 
 You can run it with Temporal Server using the [Temporal docker-compose](https://github.com/temporalio/docker-compose/blob/main/docker-compose.yml).
+
+# Configuration
+
+- When running ui-server as a docker image, you can pass docker env variables to configure auth, TLS and other options. See [quickstart for production](https://github.com/temporalio/ui-server/tree/main/docker#quickstart-for-production). For all options refer to [Dockerize config template](https://github.com/temporalio/ui-server/blob/main/docker/config_template.yaml)
+- Alternatively you can pass a .yaml configuration file based on the Dockerize template . Ex [development.yml config](https://github.com/temporalio/ui-server/tree/main/config) 
 
 # Development
 
@@ -28,11 +33,6 @@ To start the server, execute
 
 - Open http://localhost:8080/ in the browser to explore the UI
 - Open http://localhost:8080/openapi/ in the browser to explore HTTP API
-
-## Configuration
-
-- When running ui-server as a docker image, you can pass docker env variables to configure auth, TLS and other options. See [quickstart for production](https://github.com/temporalio/ui-server/tree/main/docker#quickstart-for-production). For all options refer to [Dockerize config template](https://github.com/temporalio/ui-server/blob/main/docker/config_template.yaml)
-- Alternatively you can pass a .yaml configuration file based on the Dockerize template . Ex [development.yml config](https://github.com/temporalio/ui-server/tree/main/config) 
 
 ## Debugging
 
