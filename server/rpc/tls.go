@@ -224,8 +224,5 @@ func validateTLS(cfg *config.TLS) error {
 		return fmt.Errorf("cannot specify TLS CA file and CA data at the same time")
 	}
 
-	if strings.TrimSpace(cfg.CaFile) == "" && strings.TrimSpace(cfg.CaData) == "" {
-		return fmt.Errorf("CA cannot be empty string")
-	}
 	return nil
 }
