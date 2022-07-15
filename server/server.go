@@ -132,7 +132,11 @@ func (s *Server) Start() error {
 	}
 
 	address := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
-	s.httpServer.Logger.Fatal(s.httpServer.Start(address))
+	if cfg.TLS.CertFile != "" && cfg.TLS.KeyFile != "" {
+		s.httpServer.Logger.Fatal(s.httpServer.StartTLS(address, cfg.TLS.CertFile, cfg.TLS.KeyFile))
+	} else {
+		s.httpServer.Logger.Fatal(s.httpServer.Start(address))
+	}
 	return nil
 }
 
