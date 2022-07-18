@@ -91,6 +91,20 @@ func SetUser(c echo.Context, user *User) error {
 	return nil
 }
 
+func ClearUser(c echo.Context) error {
+	err := clearAccessToken(c)
+	if err != nil {
+		return err
+	}
+
+	err = clearIDToken(c)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func ValidateAuth(c echo.Context, cfgProvider *config.ConfigProviderWithRefresh) error {
 	cfg, err := cfgProvider.GetConfig()
 	if err != nil {
@@ -162,6 +176,23 @@ func setAccessToken(c echo.Context, token string) error {
 	return nil
 }
 
+func clearAccessToken(c echo.Context) error {
+	sess, _ := session.Get(AuthCookie, c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Secure:   true,
+	}
+	err := sess.Save(c.Request(), c.Response())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func getAuthorizationExtras(c echo.Context) string {
 	sess, _ := session.Get(AuthExtrasCookie, c)
 	if sess == nil {
@@ -185,6 +216,23 @@ func setIDToken(c echo.Context, idToken *IDToken) error {
 	sess.Values[NameKey] = &idToken.Claims.Name
 	sess.Values[IDTokenKey] = &idToken.RawToken
 
+	err := sess.Save(c.Request(), c.Response())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func clearIDToken(c echo.Context) error {
+	sess, _ := session.Get(AuthExtrasCookie, c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Secure:   true,
+	}
 	err := sess.Save(c.Request(), c.Response())
 	if err != nil {
 		return err

@@ -33,8 +33,6 @@ import (
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gorilla/securecookie"
-	"github.com/gorilla/sessions"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/temporalio/ui-server/v2/server/auth"
 	"github.com/temporalio/ui-server/v2/server/config"
@@ -150,15 +148,10 @@ func authenticateCb(ctx context.Context, oauthCfg *oauth2.Config, provider *oidc
 }
 
 func logout(c echo.Context) error {
-	sess, _ := session.Get(auth.AuthCookie, c)
-	sess.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-		Secure:   true,
+	err := auth.ClearUser(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "unable to clear user: "+err.Error())
 	}
-	sess.Save(c.Request(), c.Response())
 
 	returnUrl := c.Request().Header.Get("Referer")
 	if returnUrl == "" {
