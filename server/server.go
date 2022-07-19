@@ -91,10 +91,15 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure:   true,
 	}))
-	e.Use(session.Middleware(sessions.NewCookieStore(
-		securecookie.GenerateRandomKey(32),
-		securecookie.GenerateRandomKey(32),
-	)))
+
+	if serverOpts.SessionStore != nil {
+		e.Use(session.Middleware(serverOpts.SessionStore))
+	} else {
+		e.Use(session.Middleware(sessions.NewCookieStore(
+			securecookie.GenerateRandomKey(32),
+			securecookie.GenerateRandomKey(32),
+		)))
+	}
 
 	if err != nil {
 		panic(err)

@@ -9,6 +9,9 @@ ui-server
 
 .vscode/*.log
 
+# session filesystem store path
+.tmp
+
 # Output of code generation tools
 third_party/OpenAPI/temporal
 
