@@ -25,6 +25,7 @@
 package server_options
 
 import (
+	"github.com/gorilla/sessions"
 	"github.com/temporalio/ui-server/v2/server/api"
 	"github.com/temporalio/ui-server/v2/server/config"
 )
@@ -33,6 +34,7 @@ type (
 	ServerOptions struct {
 		ConfigProvider config.ConfigProvider
 		APIMiddleware  []api.Middleware
+		SessionStore   sessions.Store
 	}
 )
 
