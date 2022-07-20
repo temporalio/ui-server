@@ -1,0 +1,120 @@
+name: E2E Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ui-server 
+        uses: actions/checkout@v2
+
+      - name: Checkout canary-go
+        uses: actions/checkout@v2
+        with:
+          repository: temporalio/canary-go
+          token: ${{ secrets.COMMANDER_DATA_TOKEN }}
+          path: ./canary-go
+
+      - name: Checkout UI
+        uses: actions/checkout@v2
+        with:
+          repository: temporalio/ui
+          path: ./ui
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+          run_install: false
+
+      - name: Configure Canary test data generator
+        run: |
+          cd ./canary-go
+          {
+            echo 'canary:';
+            echo '  namespaces: ["${{ secrets.E2E_NAMESPACE }}"]';
+            echo '  skipNamespaceCreation: true';
+            echo '  ignoreArchivalNamespace: true'; echo
+
+            echo 'temporal:';
+            echo '  host: ${{ secrets.E2E_TEMPORAL_ADDRESS }}';
+            echo '  certData: ${{ secrets.E2E_TLS_CERT }}';
+            echo '  keyData: ${{ secrets.E2E_TLS_KEY }}';
+          } > ./config/e2e.yaml
+          make bins --quiet
+
+      - name: Configure UI-Server
+        run: |
+          {
+            echo 'port: ${{ secrets.E2E_PORT }}';
+            echo 'temporalGrpcAddress: ${{ secrets.E2E_TEMPORAL_ADDRESS }}';
+            echo 'defaultNamespace: ${{ secrets.E2E_NAMESPACE }}';
+            echo 'tls:';
+            echo '  certData: ${{ secrets.E2E_TLS_CERT }}';
+            echo '  keyData: ${{ secrets.E2E_TLS_KEY }}';
+            echo '  enableHostVerification: false';
+            echo 'auth:';
+            echo '  enabled: true';
+            echo '  providers:';
+            echo '    - label: oidc';
+            echo '      type: oidc';
+            echo '      providerUrl: ${{ secrets.E2E_AUTH_ISSUER }}';
+            echo '      clientId: ${{ secrets.E2E_AUTH_CLIENT_ID }}';
+            echo '      clientSecret: ${{ secrets.E2E_AUTH_CLIENT_SECRET }}';
+            echo '      scopes:';
+            echo '        - openid';
+            echo '        - profile';
+            echo '        - email';
+            echo '        - permissions';
+            echo '      callbackUrl: ${{ secrets.E2E_VITE_API }}/auth/sso/callback';
+            echo '      passIdToken: false';
+            echo '      options:';
+            echo '        audience: ${{ secrets.E2E_AUTH_AUDIENCE }}';
+            echo 'cors:';
+            echo '  allowOrigins:';
+            echo '    - ${{ secrets.E2E_CORS }}';
+          } > ./config/e2e.yaml
+          make build-server --quiet
+
+      - name: Configure UI
+        run: |
+          cd ./ui
+          {
+            echo 'VITE_API=${{ secrets.E2E_VITE_API }}';
+          } > ./.env
+          pnpm install --silent
+
+      - name: Run Playwright tests
+        run: |
+          # (cd ./canary-go && timeout 60m ./temporal-canary --env e2e start &)
+          timeout 60m ./ui-server --env e2e start &
+          (cd ./ui && timeout 60m pnpm dev:cloud &)
+          cd ./e2e
+          {
+            echo 'E2E_UI_ADDRESS=${{ secrets.E2E_UI_ADDRESS }}';
+            echo 'E2E_USERNAME=${{ secrets.E2E_USERNAME }}';
+            echo 'E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}';
+          } > ./.env
+          npm ci --quiet
+          npx playwright install chromium --with-deps
+          npx playwright test
+
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: playwright-report
+          path: |
+              e2e/playwright-report/
+              e2e/test-results/
+          retention-days: 30

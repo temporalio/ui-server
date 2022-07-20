@@ -8,6 +8,13 @@ __debug_bin
 ui-server
 
 .vscode/*.log
+node_modules
+e2e/storageState.json
+e2e/playwright-report
+e2e/test-results
+e2e/playwright/.cache
+e2e/.env
+
 
 # session filesystem store path
 .tmp
