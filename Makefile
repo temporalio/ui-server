@@ -21,6 +21,7 @@ PROTO_IMPORTS := \
 	-I $(PROTO_ROOT) \
 	-I ./proto/dependencies/github.com/grpc-ecosystem/grpc-gateway/ \
 	-I ./proto/dependencies/github.com/gogo/googleapis/ \
+	-I ./proto/dependencies/api/ \
 	-I ./proto/dependencies/
 PROTO_REFS := Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api
 OPENAPI_OUT := ./server/generated/openapi

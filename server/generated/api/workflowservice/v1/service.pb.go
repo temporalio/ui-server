@@ -8,6 +8,7 @@ import (
 	fmt "fmt"
 	_ "github.com/gogo/googleapis/google/api"
 	proto "github.com/gogo/protobuf/proto"
+	v1 "go.temporal.io/api/workflowservice/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -30,116 +31,113 @@ func init() {
 }
 
 var fileDescriptor_bded41be6e20a31f = []byte{
-	// 1742 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x5a, 0xcf, 0x6f, 0x1b, 0xc5,
-	0x1e, 0xcf, 0xf8, 0xf0, 0x0e, 0xa3, 0x97, 0xf4, 0x75, 0x5e, 0x5f, 0xa2, 0xa6, 0xed, 0xb6, 0xcf,
-	0x4f, 0x7a, 0x82, 0x48, 0xf1, 0x36, 0xad, 0x9a, 0xb6, 0x4e, 0x9b, 0xe2, 0x38, 0x6d, 0x12, 0x28,
-	0x90, 0x26, 0xa1, 0xa0, 0x1e, 0x08, 0x9b, 0xf5, 0xd4, 0x19, 0xc5, 0xd9, 0x75, 0x76, 0xc6, 0x2e,
-	0x51, 0xa8, 0xa8, 0x10, 0x37, 0x2e, 0x20, 0x04, 0x42, 0x45, 0x70, 0x42, 0x08, 0x2a, 0x41, 0xab,
-	0x22, 0x90, 0x38, 0x56, 0x42, 0x02, 0x89, 0x4b, 0x24, 0x38, 0xf4, 0xc0, 0x81, 0xba, 0x3d, 0x00,
-	0xe2, 0xd0, 0x3f, 0x01, 0xcd, 0x78, 0x66, 0x6b, 0xaf, 0x77, 0xbd, 0xb3, 0xeb, 0xb6, 0xdc, 0xd6,
-	0xc9, 0xf7, 0xf3, 0x99, 0xcf, 0xe7, 0xfb, 0x9d, 0x9f, 0x3b, 0x0b, 0x47, 0x19, 0x5e, 0xaf, 0xba,
-	0x9e, 0x55, 0x31, 0xad, 0x2a, 0x31, 0x2f, 0xb9, 0xde, 0xda, 0xc5, 0x8a, 0x7b, 0x89, 0x62, 0xaf,
-	0x4e, 0x6c, 0x6c, 0xd6, 0xc7, 0x4c, 0xf9, 0x98, 0xab, 0x7a, 0x2e, 0x73, 0xd1, 0x7e, 0x15, 0x9e,
-	0xb3, 0xaa, 0x24, 0x17, 0x08, 0xcf, 0xd5, 0xc7, 0x86, 0xc7, 0xe3, 0xf8, 0x3c, 0xbc, 0x51, 0xc3,
-	0x94, 0x2d, 0x7b, 0x98, 0x56, 0x5d, 0x87, 0x4a, 0xe2, 0xe1, 0xbd, 0x65, 0xd7, 0x2d, 0x57, 0xb0,
-	0x40, 0x59, 0x8e, 0xe3, 0x32, 0x8b, 0x11, 0xd7, 0xa1, 0xcd, 0xff, 0x1e, 0xba, 0x39, 0x07, 0x77,
-	0xbc, 0x28, 0xb9, 0x16, 0x9b, 0x5c, 0xe8, 0x73, 0x00, 0x77, 0x2e, 0xe0, 0x32, 0xa1, 0x0c, 0x7b,
-	0xcf, 0x59, 0xeb, 0x98, 0x56, 0x2d, 0x1b, 0xa3, 0xe3, 0xb9, 0x18, 0x85, 0xb9, 0x0e, 0xcc, 0x42,
-	0x53, 0xd1, 0x70, 0x3e, 0x0d, 0xb4, 0x69, 0x22, 0xbb, 0xef, 0x8d, 0x9f, 0xee, 0xbd, 0x9b, 0x19,
-	0xca, 0x22, 0x61, 0xa0, 0x3e, 0x66, 0x3a, 0x2a, 0x84, 0xe6, 0xc1, 0x08, 0xba, 0x09, 0xe0, 0xce,
-	0x69, 0x4c, 0x6d, 0x8f, 0xac, 0xe0, 0x24, 0x5a, 0x3b, 0x30, 0xfa, 0x5a, 0x43, 0xa0, 0x52, 0xeb,
-	0xff, 0x85, 0xd6, 0x03, 0xc8, 0xe8, 0xd4, 0x6a, 0x6e, 0xf9, 0xcf, 0x97, 0xd1, 0x47, 0x00, 0x0e,
-	0x9c, 0x25, 0x94, 0xf9, 0x0c, 0x14, 0x8d, 0xc7, 0x36, 0xdb, 0x0e, 0x50, 0x72, 0x8f, 0x26, 0xc6,
-	0x49, 0xad, 0xc3, 0x42, 0xeb, 0x2e, 0x14, 0x92, 0x57, 0x74, 0x1d, 0xc0, 0x1d, 0x2f, 0x54, 0x4b,
-	0x16, 0x6b, 0x49, 0x69, 0x7c, 0x43, 0x01, 0x84, 0x52, 0x78, 0x2c, 0x39, 0x50, 0x4a, 0x7c, 0x52,
-	0x48, 0xfc, 0xdf, 0x70, 0x4c, 0x3a, 0x79, 0x37, 0xf8, 0x1a, 0x40, 0x34, 0x8d, 0xab, 0x1e, 0xb6,
-	0xdb, 0x44, 0xeb, 0x14, 0x33, 0x08, 0x52, 0xba, 0x27, 0x52, 0x61, 0xdb, 0x7b, 0xc2, 0x48, 0x5c,
-	0x4f, 0x68, 0x00, 0x38, 0xb8, 0xc8, 0x2c, 0x8f, 0xa9, 0x31, 0x78, 0xfa, 0x55, 0x6c, 0xd7, 0xf8,
-	0x00, 0x45, 0x93, 0xb1, 0xed, 0x87, 0x03, 0x95, 0xfe, 0x53, 0xa9, 0xf1, 0xd2, 0xc3, 0x8c, 0xf0,
-	0x50, 0xc8, 0x9e, 0xe8, 0xee, 0xe1, 0xc1, 0x54, 0x64, 0x6e, 0xa9, 0xc7, 0x65, 0x52, 0xba, 0x6c,
-	0x52, 0x4e, 0xcf, 0x8b, 0xf3, 0x4e, 0x06, 0xee, 0x99, 0xc1, 0x9d, 0x2d, 0xcd, 0x12, 0xca, 0x5c,
-	0x6f, 0x13, 0x15, 0x63, 0x95, 0x76, 0x41, 0x2b, 0xbb, 0xd3, 0xbd, 0x91, 0x48, 0xcf, 0x65, 0xe1,
-	0xd9, 0x42, 0xcb, 0xfa, 0x9e, 0xb1, 0xe2, 0xca, 0xb5, 0xb9, 0xf7, 0x6a, 0x4e, 0xdb, 0x3f, 0xbd,
-	0x9a, 0x23, 0xfe, 0x8e, 0xeb, 0xd8, 0x61, 0x14, 0x7d, 0x99, 0x81, 0xd9, 0xae, 0x82, 0xea, 0xd8,
-	0xa3, 0x18, 0x3d, 0xdd, 0x9b, 0x2b, 0x41, 0xa2, 0x32, 0xf4, 0xcc, 0x43, 0xe1, 0x92, 0x89, 0x72,
-	0x45, 0xa2, 0x08, 0x2a, 0x3f, 0xe2, 0x44, 0x99, 0x9e, 0xcc, 0xc4, 0x07, 0x00, 0xfe, 0x67, 0xde,
-	0xad, 0x54, 0x94, 0xc0, 0x25, 0x8b, 0xae, 0x9d, 0xab, 0xe1, 0x1a, 0x46, 0x27, 0x63, 0x7d, 0x85,
-	0xe2, 0x54, 0x5a, 0x26, 0xd3, 0xc2, 0x65, 0x26, 0xfa, 0xd0, 0x17, 0x00, 0xee, 0x6d, 0xfe, 0x2c,
-	0xb5, 0x86, 0x15, 0xdd, 0xf5, 0x6a, 0x05, 0x33, 0x5c, 0x42, 0xd3, 0x1a, 0xeb, 0x5f, 0x34, 0x5c,
-	0x09, 0x3d, 0xdd, 0x23, 0x8b, 0xaf, 0xf7, 0x13, 0x00, 0x77, 0x87, 0x84, 0x9e, 0xb1, 0x48, 0x05,
-	0x97, 0x50, 0x21, 0x4d, 0x33, 0x4d, 0xac, 0x52, 0x3a, 0xd5, 0x0b, 0x85, 0x2f, 0x53, 0x55, 0xbc,
-	0x60, 0x33, 0x52, 0x27, 0x6c, 0x33, 0x69, 0xc5, 0x3b, 0x70, 0xc9, 0x2a, 0x1e, 0x02, 0xf7, 0xa5,
-	0x5d, 0x03, 0x70, 0xcf, 0x02, 0xb6, 0x5d, 0xaf, 0xd4, 0x1a, 0x35, 0x8b, 0x2d, 0x8f, 0xad, 0x60,
-	0x8b, 0x69, 0xcc, 0x68, 0x5d, 0xd0, 0xfa, 0x33, 0x5a, 0x57, 0x12, 0x5f, 0xec, 0x37, 0x00, 0xee,
-	0xef, 0x12, 0x39, 0xb5, 0x39, 0x57, 0x42, 0x33, 0xbd, 0xb4, 0xc5, 0x19, 0x94, 0xe8, 0xd9, 0xde,
-	0x89, 0xc2, 0xc6, 0x55, 0x6b, 0x78, 0x8a, 0x71, 0x15, 0x0a, 0x4f, 0x3c, 0xae, 0x22, 0x58, 0x7c,
-	0xbd, 0xdf, 0x02, 0x78, 0xa0, 0x5b, 0xa8, 0xc8, 0xf4, 0x6c, 0x4f, 0xad, 0xb5, 0xa6, 0x7a, 0xee,
-	0x21, 0x30, 0x85, 0xcd, 0x09, 0xad, 0xe1, 0x49, 0xe7, 0x84, 0x4e, 0x6c, 0xe2, 0x39, 0x21, 0x8c,
-	0xc2, 0x97, 0x79, 0x03, 0xc0, 0x7d, 0x91, 0x71, 0x22, 0xbf, 0xa7, 0xd3, 0xb7, 0xd3, 0x9a, 0xdc,
-	0x33, 0xbd, 0xd2, 0x04, 0xe6, 0x8a, 0xce, 0x42, 0x58, 0x8e, 0x8d, 0x79, 0x6e, 0x8b, 0xa9, 0xca,
-	0x28, 0xd1, 0x49, 0xe6, 0x8a, 0x2e, 0x24, 0x81, 0xb9, 0x22, 0x32, 0x52, 0x7b, 0xae, 0xe8, 0xca,
-	0x90, 0x64, 0xae, 0x88, 0x21, 0xf2, 0x85, 0x5f, 0xcf, 0x40, 0x43, 0xf2, 0x36, 0x23, 0x3a, 0x37,
-	0xd4, 0x3a, 0x25, 0xed, 0x46, 0xa0, 0x64, 0xcf, 0xf4, 0xcc, 0x23, 0x55, 0xbf, 0x26, 0xf6, 0x50,
-	0xf5, 0xec, 0x46, 0x8a, 0x0d, 0x76, 0xd7, 0xcd, 0x54, 0x48, 0x94, 0xda, 0x55, 0xd9, 0x42, 0x13,
-	0xdf, 0x95, 0x5f, 0xcd, 0xc0, 0xa1, 0x45, 0x52, 0x76, 0xac, 0x90, 0x54, 0x69, 0x9c, 0x1d, 0xc2,
-	0x91, 0x2a, 0x47, 0x4f, 0xa5, 0x27, 0xf8, 0x1b, 0x93, 0x43, 0x85, 0x26, 0x9e, 0x1c, 0x3e, 0x95,
-	0x4b, 0x85, 0x84, 0xad, 0x46, 0x9c, 0xd0, 0x66, 0x75, 0x4d, 0x46, 0x52, 0xe8, 0x4f, 0xe5, 0xf1,
-	0x4c, 0xfe, 0x50, 0x78, 0x3f, 0x03, 0x07, 0x17, 0x30, 0xc5, 0xa9, 0xce, 0x94, 0xe1, 0x40, 0xfd,
-	0x33, 0x65, 0x14, 0x5e, 0xaa, 0xdb, 0x12, 0x55, 0xad, 0x65, 0xab, 0x8f, 0xb1, 0xaa, 0x1e, 0x97,
-	0xc4, 0x8b, 0xfa, 0x69, 0x06, 0x0e, 0x2f, 0x61, 0x6f, 0x9d, 0x38, 0x16, 0xc3, 0x9d, 0xc9, 0x89,
-	0x5f, 0xa1, 0xa2, 0xc1, 0x2a, 0x41, 0xc5, 0x9e, 0x38, 0x64, 0x92, 0x5e, 0x17, 0x49, 0xda, 0xcc,
-	0xb2, 0xc7, 0x98, 0x24, 0xa6, 0x64, 0xf1, 0x44, 0xfd, 0x02, 0xe0, 0xf0, 0x59, 0x42, 0xd9, 0xf3,
-	0x55, 0xec, 0x74, 0xc8, 0xa4, 0x1a, 0x89, 0x8a, 0x06, 0xeb, 0x27, 0xaa, 0x1b, 0x87, 0x4c, 0xd4,
-	0x11, 0x91, 0x28, 0x13, 0x8d, 0x6a, 0x27, 0xca, 0xad, 0x62, 0x07, 0xdd, 0x03, 0x70, 0x2f, 0x67,
-	0x2f, 0x56, 0x5c, 0x8a, 0x4b, 0x21, 0x06, 0xa7, 0xb5, 0xc4, 0x45, 0xc1, 0xf5, 0xf7, 0x95, 0xdd,
-	0x59, 0xa4, 0xc9, 0xa3, 0xc2, 0xe4, 0x18, 0x32, 0xb5, 0x4d, 0xda, 0x82, 0x12, 0xfd, 0x08, 0xe0,
-	0x20, 0x6f, 0x21, 0xc4, 0xe0, 0xa4, 0x96, 0xb4, 0x68, 0x6b, 0xa7, 0x52, 0xe3, 0xa5, 0xa9, 0x83,
-	0xc2, 0xd4, 0x08, 0x7a, 0x42, 0xd7, 0x14, 0xfa, 0x13, 0x40, 0x83, 0x93, 0x16, 0x3c, 0x7b, 0x95,
-	0xd4, 0x43, 0xcb, 0x76, 0x46, 0x4b, 0x55, 0x34, 0x81, 0xfe, 0x02, 0x1f, 0xc7, 0x23, 0x5d, 0x1e,
-	0x17, 0x2e, 0x0f, 0xa3, 0x31, 0xed, 0xd2, 0x59, 0x92, 0x14, 0x7d, 0x08, 0xe0, 0xe0, 0xa2, 0x6d,
-	0x39, 0xa9, 0x8a, 0x17, 0x0e, 0x4c, 0xf0, 0x62, 0x30, 0x02, 0xef, 0x2f, 0x31, 0x3f, 0x03, 0x38,
-	0x54, 0x74, 0x6b, 0x4e, 0x58, 0xdf, 0x8a, 0xa7, 0x8f, 0x40, 0xea, 0xef, 0x1d, 0x22, 0x09, 0xa4,
-	0xc0, 0x71, 0x91, 0xf7, 0x83, 0x28, 0xa7, 0x3f, 0x64, 0x38, 0x23, 0xfa, 0x0a, 0xc0, 0x7f, 0xcf,
-	0x60, 0xb6, 0x88, 0x79, 0x19, 0x0a, 0x8c, 0x79, 0x64, 0xa5, 0xc6, 0x30, 0x45, 0x13, 0x3a, 0x6f,
-	0xce, 0x82, 0x28, 0x65, 0xe7, 0x44, 0x3a, 0xb0, 0xb4, 0xf2, 0x5f, 0x61, 0x65, 0x0f, 0xda, 0xad,
-	0xac, 0x50, 0x11, 0x39, 0x6a, 0x3d, 0x50, 0xd7, 0x72, 0x74, 0x3b, 0x57, 0xc3, 0x5e, 0xe0, 0x8c,
-	0xac, 0x7d, 0x74, 0xeb, 0xc4, 0x26, 0x3e, 0xba, 0x85, 0x51, 0xf8, 0x7d, 0xe6, 0x3d, 0x00, 0x77,
-	0x89, 0xdd, 0xc1, 0x22, 0x23, 0xf6, 0x5a, 0xcb, 0xdb, 0x9c, 0x13, 0x7a, 0x9b, 0x8a, 0x00, 0x4c,
-	0x89, 0x3b, 0x99, 0x12, 0xed, 0xeb, 0xfa, 0x1d, 0xc0, 0x7e, 0x21, 0x5c, 0x75, 0x28, 0x74, 0x24,
-	0x96, 0xb2, 0x2d, 0x5e, 0x29, 0x19, 0x4f, 0x0a, 0x93, 0x12, 0x88, 0x28, 0xb1, 0x9d, 0x7d, 0xf9,
-	0x91, 0xbd, 0x4a, 0xdd, 0xe0, 0xed, 0xf2, 0x85, 0xfd, 0xcd, 0x0c, 0xdc, 0xad, 0xae, 0xaf, 0x3a,
-	0x37, 0x40, 0x05, 0xed, 0xab, 0xaf, 0xc8, 0xfd, 0xcf, 0x54, 0x2f, 0x14, 0x32, 0x1f, 0xaf, 0x88,
-	0x7c, 0x5c, 0x40, 0x2f, 0x3d, 0xaa, 0x7c, 0xa0, 0xed, 0x96, 0x4b, 0xc3, 0x07, 0xfd, 0x50, 0xff,
-	0xd2, 0xb0, 0xa3, 0x13, 0xe6, 0xd3, 0x40, 0xa5, 0xdd, 0x69, 0x61, 0x77, 0x12, 0xc5, 0x5d, 0xb3,
-	0x30, 0x8b, 0xae, 0x8d, 0x6e, 0x70, 0x28, 0x35, 0xb7, 0xf8, 0x8f, 0x65, 0xf1, 0x23, 0xc7, 0x43,
-	0x2e, 0xa3, 0xab, 0x00, 0x0e, 0xcc, 0x60, 0x56, 0xac, 0xd4, 0x28, 0xc3, 0xde, 0x9c, 0x73, 0xd1,
-	0xd5, 0xb8, 0x52, 0x6c, 0x07, 0xe8, 0x5f, 0x29, 0x06, 0x71, 0xd2, 0xc9, 0x90, 0x70, 0xb2, 0x13,
-	0xed, 0x50, 0x4e, 0xec, 0x66, 0x10, 0xba, 0x02, 0x60, 0x3f, 0x9f, 0xe4, 0x36, 0x29, 0xc3, 0xeb,
-	0x42, 0xdb, 0x11, 0xad, 0x49, 0xd1, 0x8f, 0xd7, 0x1f, 0x62, 0x01, 0x98, 0x3f, 0xca, 0x3f, 0x06,
-	0x70, 0x88, 0xaf, 0xda, 0x7e, 0xfe, 0xe7, 0x2d, 0x8f, 0x11, 0xdd, 0x15, 0x2b, 0x02, 0xa9, 0xbf,
-	0x62, 0x45, 0x12, 0xb4, 0xbe, 0x79, 0x19, 0x28, 0x7a, 0xd8, 0x62, 0x78, 0xd1, 0x5e, 0xc5, 0xa5,
-	0x5a, 0x05, 0x6b, 0x14, 0xb0, 0x1d, 0xa0, 0x5f, 0xc0, 0x20, 0x4e, 0xaa, 0x38, 0x2c, 0x0a, 0x38,
-	0x9a, 0x8d, 0xdb, 0x95, 0x51, 0x09, 0x14, 0x37, 0xf0, 0xdf, 0x03, 0xf8, 0x2f, 0xd5, 0xbb, 0x7d,
-	0xe9, 0xc7, 0xb4, 0x07, 0x44, 0x50, 0xfc, 0xf1, 0x14, 0x48, 0x29, 0x7f, 0x52, 0xc8, 0x3f, 0x86,
-	0xc6, 0x75, 0xe5, 0x9b, 0x5b, 0xea, 0x51, 0x4c, 0x0b, 0xdf, 0x01, 0x38, 0xd0, 0xbc, 0x8b, 0x4e,
-	0x50, 0x82, 0x76, 0x80, 0x7e, 0x09, 0x82, 0x38, 0xe9, 0xa1, 0x20, 0x3c, 0x4c, 0x64, 0x53, 0x7a,
-	0xe0, 0x05, 0xb9, 0x05, 0x60, 0xff, 0xbc, 0xc5, 0xec, 0x55, 0xdf, 0x45, 0xfc, 0x68, 0x6b, 0x8b,
-	0xd7, 0x1f, 0x6d, 0x01, 0x58, 0xbb, 0x87, 0x43, 0x3d, 0x78, 0xe0, 0x7b, 0x1a, 0x3e, 0x66, 0x14,
-	0xf7, 0xb3, 0xbc, 0x21, 0xe2, 0x94, 0x97, 0xc8, 0x3a, 0xa6, 0x1a, 0x0b, 0x55, 0x24, 0x56, 0x7f,
-	0xa1, 0xea, 0x42, 0xe1, 0x0f, 0xda, 0x5b, 0x00, 0x0e, 0x4c, 0x63, 0xbe, 0xd3, 0x49, 0xd0, 0x63,
-	0xda, 0x01, 0xfa, 0x3d, 0x26, 0x88, 0x6b, 0xef, 0xf5, 0x23, 0x69, 0x7b, 0xfd, 0x0d, 0x00, 0xfb,
-	0x5b, 0xbd, 0x52, 0x8d, 0xee, 0xd2, 0x16, 0xaf, 0xdf, 0x5d, 0x02, 0xb0, 0x84, 0x67, 0x41, 0xdf,
-	0xc0, 0xd4, 0x5b, 0x99, 0xed, 0x3b, 0x46, 0xdf, 0xed, 0x3b, 0x46, 0xdf, 0xfd, 0x3b, 0x06, 0xb8,
-	0xd2, 0x30, 0xc0, 0x67, 0x0d, 0x03, 0xfc, 0xd0, 0x30, 0xc0, 0x76, 0xc3, 0x00, 0xbf, 0x36, 0x0c,
-	0xf0, 0x5b, 0xc3, 0xe8, 0xbb, 0xdf, 0x30, 0xc0, 0xdb, 0x77, 0x8d, 0xbe, 0xed, 0xbb, 0x46, 0xdf,
-	0xed, 0xbb, 0x46, 0x1f, 0xcc, 0x12, 0x37, 0x4e, 0xe2, 0xd4, 0x3f, 0xe5, 0x47, 0x50, 0xf3, 0x9e,
-	0xcb, 0xdc, 0x79, 0x70, 0xe1, 0x42, 0x99, 0xb0, 0xd5, 0xda, 0x4a, 0xce, 0x76, 0xd7, 0x4d, 0x85,
-	0x25, 0xae, 0x59, 0x23, 0xa3, 0x1c, 0x84, 0x3d, 0xb3, 0x7e, 0xc8, 0x94, 0x4f, 0x65, 0xec, 0x60,
-	0xcf, 0x62, 0xb8, 0x14, 0xf1, 0x81, 0xd6, 0x44, 0xe0, 0x4f, 0xd7, 0x32, 0xfb, 0x97, 0x94, 0x9a,
-	0x42, 0x95, 0xe4, 0x02, 0x9f, 0x61, 0xe5, 0xce, 0x8f, 0xfd, 0x91, 0xc9, 0xaa, 0x88, 0x7c, 0xbe,
-	0x50, 0x25, 0xf9, 0x7c, 0x20, 0x26, 0x9f, 0x3f, 0x3f, 0xb6, 0xf2, 0x0f, 0xf1, 0x25, 0xd7, 0xe1,
-	0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0xec, 0x7a, 0xca, 0x95, 0x71, 0x26, 0x00, 0x00,
+	// 1690 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x5a, 0xcd, 0x6f, 0x1b, 0xc5,
+	0x1b, 0xce, 0xf8, 0xf0, 0x3b, 0x8c, 0x94, 0xf4, 0xd7, 0xa1, 0x24, 0x6a, 0xda, 0x6e, 0x8b, 0x91,
+	0x10, 0x44, 0x8a, 0xb7, 0x69, 0xd5, 0xf4, 0x23, 0x6d, 0x4a, 0xe2, 0xb4, 0x49, 0xa0, 0x40, 0x1b,
+	0x17, 0x81, 0x7a, 0x20, 0x6c, 0xd6, 0x53, 0x67, 0x15, 0x7b, 0xd7, 0xd9, 0x99, 0x75, 0x89, 0x42,
+	0x45, 0x85, 0xf8, 0x03, 0x8a, 0x10, 0x08, 0x15, 0xc1, 0x09, 0x21, 0x40, 0x82, 0x56, 0x45, 0x20,
+	0x71, 0xac, 0x84, 0x04, 0x12, 0x97, 0x48, 0x70, 0xe8, 0x81, 0x03, 0x75, 0x7b, 0x00, 0x89, 0x43,
+	0xff, 0x04, 0x34, 0xe3, 0x99, 0xad, 0x77, 0xbd, 0x1f, 0xb3, 0xeb, 0xb6, 0xdc, 0xd6, 0xf6, 0xfb,
+	0x3c, 0xf3, 0x3c, 0xef, 0x3b, 0x9f, 0x3b, 0x86, 0xe3, 0x14, 0x37, 0x9a, 0x8e, 0x6b, 0xd4, 0x75,
+	0xa3, 0x69, 0xe9, 0x97, 0x1c, 0x77, 0xed, 0x62, 0xdd, 0xb9, 0x44, 0xb0, 0xdb, 0xb2, 0x4c, 0xac,
+	0xb7, 0x26, 0x74, 0xf1, 0x58, 0x6a, 0xba, 0x0e, 0x75, 0xd0, 0x5e, 0x19, 0x5e, 0x32, 0x9a, 0x56,
+	0x29, 0x14, 0x5e, 0x6a, 0x4d, 0x8c, 0x4e, 0xa6, 0xf1, 0xb9, 0x78, 0xdd, 0xc3, 0x84, 0x2e, 0xbb,
+	0x98, 0x34, 0x1d, 0x9b, 0x08, 0xe2, 0xd1, 0xdd, 0x35, 0xc7, 0xa9, 0xd5, 0x31, 0x47, 0x19, 0xb6,
+	0xed, 0x50, 0x83, 0x5a, 0x8e, 0x4d, 0x3a, 0xbf, 0x1e, 0xb8, 0xb9, 0x08, 0xb7, 0xbd, 0x26, 0xb8,
+	0x2a, 0x1d, 0x2e, 0xf4, 0x15, 0x80, 0xdb, 0x97, 0x70, 0xcd, 0x22, 0x14, 0xbb, 0x2f, 0x1b, 0x0d,
+	0x4c, 0x9a, 0x86, 0x89, 0xd1, 0xd1, 0x52, 0x8a, 0xc2, 0x52, 0x0f, 0x66, 0xa9, 0xa3, 0x68, 0xf4,
+	0x58, 0x1e, 0x68, 0xc7, 0x44, 0x71, 0xcf, 0xbb, 0xbf, 0xdd, 0xfb, 0xa0, 0x30, 0x52, 0x44, 0xdc,
+	0x40, 0x6b, 0x42, 0xb7, 0x65, 0x08, 0x39, 0x06, 0xc6, 0xd0, 0x4d, 0x00, 0xb7, 0xcf, 0x61, 0x62,
+	0xba, 0xd6, 0x0a, 0xce, 0xa2, 0xb5, 0x07, 0xa3, 0xae, 0x35, 0x02, 0x2a, 0xb4, 0x3e, 0xc3, 0xb5,
+	0xee, 0x43, 0x5a, 0xaf, 0x56, 0x7d, 0xd3, 0x7f, 0xbe, 0x8c, 0x3e, 0x05, 0x70, 0xe8, 0x8c, 0x45,
+	0xa8, 0xcf, 0x40, 0xd0, 0x64, 0x6a, 0xb3, 0x41, 0x80, 0x94, 0x7b, 0x38, 0x33, 0x4e, 0x68, 0x1d,
+	0xe5, 0x5a, 0x77, 0xa0, 0x88, 0xbc, 0xa2, 0xeb, 0x00, 0x6e, 0x7b, 0xb5, 0x59, 0x35, 0x68, 0x57,
+	0x4a, 0xd3, 0x1b, 0x0a, 0x21, 0xa4, 0xc2, 0x23, 0xd9, 0x81, 0x42, 0xe2, 0x73, 0x5c, 0xe2, 0xd3,
+	0xa3, 0x29, 0xe9, 0x64, 0xdd, 0xe0, 0x7b, 0x00, 0xd1, 0x1c, 0x6e, 0xba, 0xd8, 0x0c, 0x88, 0x56,
+	0x29, 0x66, 0x18, 0x24, 0x75, 0x4f, 0xe5, 0xc2, 0x06, 0x7b, 0xc2, 0x58, 0x5a, 0x4f, 0x68, 0x03,
+	0x38, 0x5c, 0xa1, 0x86, 0x4b, 0xe5, 0x18, 0x3c, 0xf5, 0x16, 0x36, 0x3d, 0x36, 0x40, 0xd1, 0x74,
+	0x6a, 0xfb, 0xd1, 0x40, 0xa9, 0xff, 0x64, 0x6e, 0xbc, 0xf0, 0x30, 0xcf, 0x3d, 0xcc, 0x14, 0x8f,
+	0x27, 0x7b, 0x78, 0x30, 0x15, 0xe9, 0x9b, 0xf2, 0x71, 0xd9, 0xaa, 0x5e, 0xd6, 0x09, 0xa3, 0x67,
+	0xc5, 0x79, 0xbf, 0x00, 0x77, 0xcd, 0xe3, 0xde, 0x96, 0x16, 0x2c, 0x42, 0x1d, 0x77, 0x03, 0x95,
+	0x53, 0x95, 0x26, 0xa0, 0xa5, 0xdd, 0xb9, 0xfe, 0x48, 0x84, 0xe7, 0x1a, 0xf7, 0x6c, 0xa0, 0x65,
+	0x75, 0xcf, 0x58, 0x72, 0x95, 0x02, 0xee, 0x5d, 0xcf, 0x0e, 0xfc, 0xe8, 0x7a, 0x36, 0xff, 0x1e,
+	0xb7, 0xb0, 0x4d, 0x09, 0xfa, 0xb6, 0x00, 0x8b, 0x89, 0x82, 0x5a, 0xd8, 0x25, 0x18, 0xbd, 0xd0,
+	0x9f, 0x2b, 0x4e, 0x22, 0x33, 0xf4, 0xe2, 0x43, 0xe1, 0x12, 0x89, 0x72, 0x78, 0xa2, 0x2c, 0x54,
+	0x7b, 0xc4, 0x89, 0xd2, 0x5d, 0x91, 0x89, 0x8f, 0x01, 0x7c, 0xf2, 0xac, 0x53, 0xaf, 0x4b, 0x81,
+	0xe7, 0x0d, 0xb2, 0x76, 0xce, 0xc3, 0x1e, 0x46, 0x27, 0x52, 0x7d, 0x45, 0xe2, 0x64, 0x5a, 0xa6,
+	0xf3, 0xc2, 0x45, 0x26, 0x06, 0xd0, 0x37, 0x00, 0xee, 0xee, 0x7c, 0xac, 0x76, 0x87, 0x95, 0x9d,
+	0x46, 0xb3, 0x8e, 0x29, 0xae, 0xa2, 0x39, 0x85, 0xf5, 0x2f, 0x1e, 0x2e, 0x85, 0x9e, 0xea, 0x93,
+	0xc5, 0xd7, 0xfb, 0x39, 0x80, 0x3b, 0x23, 0x42, 0x4f, 0x1b, 0x56, 0x1d, 0x57, 0xd1, 0x4c, 0x9e,
+	0x66, 0x3a, 0x58, 0xa9, 0x74, 0xb6, 0x1f, 0x0a, 0x5f, 0xa6, 0xac, 0xf8, 0x8c, 0x49, 0xad, 0x96,
+	0x45, 0x37, 0xb2, 0x56, 0xbc, 0x07, 0x97, 0xad, 0xe2, 0x11, 0x70, 0x5f, 0xda, 0xd7, 0x00, 0xee,
+	0x5a, 0xc2, 0xa6, 0xe3, 0x56, 0xbb, 0xa3, 0x16, 0xb0, 0xe1, 0xd2, 0x15, 0x6c, 0x50, 0x85, 0x19,
+	0x2d, 0x01, 0xad, 0x3e, 0xa3, 0x25, 0x92, 0xf8, 0x62, 0x7f, 0x00, 0x70, 0x6f, 0x42, 0xe4, 0xec,
+	0xc6, 0x62, 0x15, 0xcd, 0xf7, 0xd3, 0x16, 0x63, 0x90, 0xa2, 0x17, 0xfa, 0x27, 0x8a, 0x1a, 0x57,
+	0xdd, 0xe1, 0x39, 0xc6, 0x55, 0x24, 0x3c, 0xf3, 0xb8, 0x8a, 0x61, 0xf1, 0xf5, 0xfe, 0x08, 0xe0,
+	0xbe, 0xa4, 0x50, 0x9e, 0xe9, 0x85, 0xbe, 0x5a, 0xeb, 0x4e, 0xf5, 0xe2, 0x43, 0x60, 0x8a, 0x9a,
+	0x13, 0xba, 0xc3, 0xb3, 0xce, 0x09, 0xbd, 0xd8, 0xcc, 0x73, 0x42, 0x14, 0x85, 0x2f, 0xf3, 0x06,
+	0x80, 0x7b, 0x62, 0xe3, 0x78, 0x7e, 0x4f, 0xe5, 0x6f, 0xa7, 0x3b, 0xb9, 0xa7, 0xfb, 0xa5, 0x09,
+	0xcd, 0x15, 0xbd, 0x85, 0x30, 0x6c, 0x13, 0xb3, 0xdc, 0x96, 0x73, 0x95, 0x51, 0xa0, 0xb3, 0xcc,
+	0x15, 0x09, 0x24, 0xa1, 0xb9, 0x22, 0x36, 0x52, 0x79, 0xae, 0x48, 0x64, 0xc8, 0x32, 0x57, 0xa4,
+	0x10, 0xf9, 0xc2, 0xaf, 0x17, 0xa0, 0x26, 0x78, 0x3b, 0x11, 0xbd, 0x1b, 0x6a, 0x95, 0x92, 0x26,
+	0x11, 0x48, 0xd9, 0xf3, 0x7d, 0xf3, 0x08, 0xd5, 0x6f, 0xf3, 0x3d, 0x54, 0xab, 0xb8, 0x9e, 0x63,
+	0x83, 0x9d, 0xb8, 0x99, 0x8a, 0x88, 0x92, 0xbb, 0x2a, 0x93, 0x6b, 0x62, 0xbb, 0xf2, 0x6b, 0x05,
+	0x38, 0x52, 0xb1, 0x6a, 0xb6, 0x11, 0x91, 0x2a, 0x85, 0xb3, 0x43, 0x34, 0x52, 0xe6, 0xe8, 0xf9,
+	0xfc, 0x04, 0xff, 0x61, 0x72, 0x08, 0xd7, 0xc4, 0x92, 0xc3, 0xa6, 0x72, 0xa1, 0xd0, 0xa2, 0xab,
+	0x31, 0x27, 0xb4, 0x05, 0x55, 0x93, 0xb1, 0x14, 0xea, 0x53, 0x79, 0x3a, 0x93, 0x3f, 0x14, 0x3e,
+	0x2a, 0xc0, 0xe1, 0x25, 0x4c, 0x70, 0xae, 0x33, 0x65, 0x34, 0x50, 0xfd, 0x4c, 0x19, 0x87, 0x17,
+	0xea, 0x36, 0x79, 0x55, 0xbd, 0x62, 0xf3, 0x31, 0x56, 0xd5, 0x65, 0x92, 0x58, 0x51, 0xbf, 0x28,
+	0xc0, 0xd1, 0xf3, 0xd8, 0x6d, 0x58, 0xb6, 0x41, 0x71, 0x6f, 0x72, 0xd2, 0x57, 0xa8, 0x78, 0xb0,
+	0x4c, 0x50, 0xb9, 0x2f, 0x0e, 0x91, 0xa4, 0x77, 0x78, 0x92, 0x36, 0x8a, 0xf4, 0x31, 0x26, 0x89,
+	0x4a, 0x59, 0x2c, 0x51, 0x7f, 0x00, 0x38, 0x7a, 0xc6, 0x22, 0xf4, 0x95, 0x26, 0xb6, 0x7b, 0x64,
+	0x12, 0x85, 0x44, 0xc5, 0x83, 0xd5, 0x13, 0x95, 0xc4, 0x21, 0x12, 0x75, 0x88, 0x27, 0x4a, 0x47,
+	0xe3, 0xca, 0x89, 0x72, 0x9a, 0xd8, 0x46, 0xf7, 0x00, 0xdc, 0xcd, 0xd8, 0xcb, 0x75, 0x87, 0xe0,
+	0x6a, 0x84, 0xc1, 0x39, 0x25, 0x71, 0x71, 0x70, 0xf5, 0x7d, 0x65, 0x32, 0x8b, 0x30, 0x79, 0x98,
+	0x9b, 0x9c, 0x40, 0xba, 0xb2, 0x49, 0x93, 0x53, 0xa2, 0x5f, 0x01, 0x1c, 0x66, 0x2d, 0x44, 0x18,
+	0x9c, 0x56, 0x92, 0x16, 0x6f, 0xed, 0x64, 0x6e, 0xbc, 0x30, 0xb5, 0x9f, 0x9b, 0x1a, 0x43, 0xcf,
+	0xaa, 0x9a, 0x42, 0xff, 0x00, 0xa8, 0x31, 0xd2, 0x19, 0xd7, 0x5c, 0xb5, 0x5a, 0x91, 0x65, 0x3b,
+	0xad, 0xa4, 0x2a, 0x9e, 0x40, 0x7d, 0x81, 0x4f, 0xe3, 0x11, 0x2e, 0x8f, 0x72, 0x97, 0x07, 0xd1,
+	0x84, 0x72, 0xe9, 0x0c, 0x41, 0x8a, 0x3e, 0x01, 0x70, 0xb8, 0x62, 0x1a, 0x76, 0xae, 0xe2, 0x45,
+	0x03, 0x33, 0xbc, 0x18, 0x8c, 0xc1, 0xfb, 0x4b, 0xcc, 0xef, 0x00, 0x8e, 0x94, 0x1d, 0xcf, 0x8e,
+	0xea, 0x5b, 0xe9, 0xf4, 0x31, 0x48, 0xf5, 0xbd, 0x43, 0x2c, 0x81, 0x10, 0x38, 0xc9, 0xf3, 0xbe,
+	0x1f, 0x95, 0xd4, 0x87, 0x0c, 0x63, 0x44, 0xdf, 0x01, 0xf8, 0xc4, 0x3c, 0xa6, 0x15, 0xcc, 0xca,
+	0x30, 0x43, 0xa9, 0x6b, 0xad, 0x78, 0x14, 0x13, 0x34, 0xa5, 0xf2, 0xe6, 0x2c, 0x8c, 0x92, 0x76,
+	0x8e, 0xe7, 0x03, 0x0b, 0x2b, 0x4f, 0x71, 0x2b, 0xbb, 0xd0, 0x4e, 0x69, 0x85, 0xf0, 0xc8, 0x71,
+	0xe3, 0x81, 0xba, 0xae, 0xa3, 0xdb, 0x39, 0x0f, 0xbb, 0xa1, 0x33, 0xb2, 0xf2, 0xd1, 0xad, 0x17,
+	0x9b, 0xf9, 0xe8, 0x16, 0x45, 0xe1, 0xf7, 0x99, 0x0f, 0x01, 0xdc, 0xc1, 0x77, 0x07, 0x15, 0x6a,
+	0x99, 0x6b, 0x5d, 0x6f, 0x73, 0x8e, 0xab, 0x6d, 0x2a, 0x42, 0x30, 0x29, 0xee, 0x44, 0x4e, 0xb4,
+	0xaf, 0xeb, 0x6f, 0x00, 0x07, 0xb9, 0x70, 0xd9, 0xa1, 0xd0, 0xa1, 0x54, 0xca, 0x40, 0xbc, 0x54,
+	0x32, 0x99, 0x15, 0x26, 0x24, 0x58, 0xbc, 0xc4, 0x66, 0xf1, 0x8d, 0x47, 0xf6, 0x2a, 0x75, 0x9d,
+	0xb5, 0xcb, 0x16, 0xf6, 0xf7, 0x0a, 0x70, 0xa7, 0xbc, 0xbe, 0xea, 0xdd, 0x00, 0xcd, 0x28, 0x5f,
+	0x7d, 0xc5, 0xee, 0x7f, 0x66, 0xfb, 0xa1, 0x10, 0xf9, 0x78, 0x93, 0xe7, 0xe3, 0x02, 0x7a, 0xfd,
+	0x51, 0xe5, 0x03, 0x6d, 0x75, 0x5d, 0x1a, 0x3e, 0xe8, 0x87, 0xea, 0x97, 0x86, 0x3d, 0x9d, 0xf0,
+	0x58, 0x1e, 0xa8, 0xb0, 0x3b, 0xc7, 0xed, 0x4e, 0xa3, 0xb4, 0x6b, 0x16, 0x6a, 0x90, 0xb5, 0xf1,
+	0x75, 0x06, 0x25, 0xfa, 0x26, 0xfb, 0xb0, 0xcc, 0x3f, 0x94, 0x58, 0xc8, 0x65, 0x74, 0x0d, 0xc0,
+	0xa1, 0x79, 0x4c, 0xcb, 0x75, 0x8f, 0x50, 0xec, 0x2e, 0xda, 0x17, 0x1d, 0x85, 0x2b, 0xc5, 0x20,
+	0x40, 0xfd, 0x4a, 0x31, 0x8c, 0x13, 0x4e, 0x46, 0xb8, 0x93, 0xed, 0x68, 0x9b, 0x74, 0x62, 0x76,
+	0x82, 0xd0, 0x15, 0x00, 0x07, 0xd9, 0x24, 0xb7, 0x41, 0x28, 0x6e, 0x70, 0x6d, 0x87, 0x94, 0x26,
+	0x45, 0x3f, 0x5e, 0x7d, 0x88, 0x85, 0x60, 0xfe, 0x28, 0xff, 0x0c, 0xc0, 0x11, 0xb6, 0x6a, 0xfb,
+	0xf9, 0x3f, 0x6b, 0xb8, 0xd4, 0x52, 0x5d, 0xb1, 0x62, 0x90, 0xea, 0x2b, 0x56, 0x2c, 0x41, 0xf7,
+	0x9b, 0x97, 0xa1, 0xb2, 0x8b, 0x0d, 0x8a, 0x2b, 0xe6, 0x2a, 0xae, 0x7a, 0x75, 0xac, 0x50, 0xc0,
+	0x20, 0x40, 0xbd, 0x80, 0x61, 0x9c, 0x50, 0x71, 0x90, 0x17, 0x70, 0xbc, 0x98, 0xb6, 0x2b, 0x23,
+	0x02, 0xc8, 0x6f, 0xe0, 0x7f, 0x06, 0xf0, 0xff, 0xb2, 0x77, 0xfb, 0xd2, 0x8f, 0x28, 0x0f, 0x88,
+	0xb0, 0xf8, 0xa3, 0x39, 0x90, 0x42, 0xfe, 0x34, 0x97, 0x7f, 0x04, 0x4d, 0xaa, 0xca, 0xd7, 0x37,
+	0xe5, 0x23, 0x9f, 0x16, 0x7e, 0x02, 0x70, 0xa8, 0x73, 0x17, 0x9d, 0xa1, 0x04, 0x41, 0x80, 0x7a,
+	0x09, 0xc2, 0x38, 0xe1, 0x61, 0x86, 0x7b, 0x98, 0x2a, 0xe6, 0xf4, 0xc0, 0x0a, 0x72, 0x0b, 0xc0,
+	0xc1, 0xb3, 0x06, 0x35, 0x57, 0x7d, 0x17, 0xe9, 0xa3, 0x2d, 0x10, 0xaf, 0x3e, 0xda, 0x42, 0xb0,
+	0xa0, 0x87, 0x03, 0x7d, 0x78, 0x60, 0x7b, 0x1a, 0x36, 0x66, 0x24, 0xf7, 0x4b, 0xac, 0x21, 0xcb,
+	0xae, 0x9d, 0xb7, 0x1a, 0x98, 0x28, 0x2c, 0x54, 0xb1, 0x58, 0xf5, 0x85, 0x2a, 0x81, 0xc2, 0x1f,
+	0xb4, 0xb7, 0x00, 0x1c, 0x9a, 0xc3, 0x6c, 0xa7, 0x93, 0xa1, 0xc7, 0x04, 0x01, 0xea, 0x3d, 0x26,
+	0x8c, 0x0b, 0xf6, 0xfa, 0xb1, 0xbc, 0xbd, 0xfe, 0x06, 0x80, 0x83, 0xdd, 0x5e, 0x89, 0x42, 0x77,
+	0x09, 0xc4, 0xab, 0x77, 0x97, 0x10, 0x2c, 0xe3, 0x59, 0xd0, 0x37, 0x30, 0x7b, 0x15, 0x6c, 0xdd,
+	0xd1, 0x06, 0x6e, 0xdf, 0xd1, 0x06, 0xee, 0xdf, 0xd1, 0xc0, 0x95, 0xb6, 0x06, 0xbe, 0x6c, 0x6b,
+	0xe0, 0x97, 0xb6, 0x06, 0xb6, 0xda, 0x1a, 0xf8, 0xb3, 0xad, 0x81, 0xbf, 0xda, 0xda, 0xc0, 0xfd,
+	0xb6, 0x06, 0xae, 0xde, 0xd5, 0x06, 0xb6, 0xee, 0x6a, 0x03, 0xb7, 0xef, 0x6a, 0x03, 0x17, 0x2e,
+	0xd4, 0x2c, 0xba, 0xea, 0xad, 0x94, 0x4c, 0xa7, 0xa1, 0x4b, 0xa9, 0x96, 0xa3, 0x7b, 0xd6, 0x38,
+	0xd3, 0x88, 0x5d, 0xbd, 0x75, 0x40, 0x17, 0x4f, 0x35, 0x6c, 0x63, 0xd7, 0xa0, 0xb8, 0x1a, 0xf3,
+	0x67, 0xab, 0xa9, 0xd0, 0x57, 0x2b, 0xff, 0xe3, 0x7f, 0xa7, 0x3a, 0xf8, 0x6f, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0xd3, 0x74, 0x81, 0x4f, 0xf6, 0x25, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -160,11 +158,11 @@ type WorkflowServiceClient interface {
 	// like workflow executions, task queues, etc. A Namespace acts as a sandbox and provides
 	// isolation for all resources within the namespace. All resources belongs to exactly one
 	// namespace.
-	RegisterNamespace(ctx context.Context, in *RegisterNamespaceRequest, opts ...grpc.CallOption) (*RegisterNamespaceResponse, error)
+	RegisterNamespace(ctx context.Context, in *v1.RegisterNamespaceRequest, opts ...grpc.CallOption) (*v1.RegisterNamespaceResponse, error)
 	// DescribeNamespace returns the information and configuration for a registered namespace.
-	DescribeNamespace(ctx context.Context, in *DescribeNamespaceRequest, opts ...grpc.CallOption) (*DescribeNamespaceResponse, error)
+	DescribeNamespace(ctx context.Context, in *v1.DescribeNamespaceRequest, opts ...grpc.CallOption) (*v1.DescribeNamespaceResponse, error)
 	// ListNamespaces returns the information and configuration for all namespaces.
-	ListNamespaces(ctx context.Context, in *ListNamespacesRequest, opts ...grpc.CallOption) (*ListNamespacesResponse, error)
+	ListNamespaces(ctx context.Context, in *v1.ListNamespacesRequest, opts ...grpc.CallOption) (*v1.ListNamespacesResponse, error)
 	// UpdateNamespace is used to update the information and configuration of a registered
 	// namespace.
 	//
@@ -172,40 +170,40 @@ type WorkflowServiceClient interface {
 	//     aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)
 	// (-- api-linter: core::0134::response-message-name=disabled
 	//     aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)
-	UpdateNamespace(ctx context.Context, in *UpdateNamespaceRequest, opts ...grpc.CallOption) (*UpdateNamespaceResponse, error)
+	UpdateNamespace(ctx context.Context, in *v1.UpdateNamespaceRequest, opts ...grpc.CallOption) (*v1.UpdateNamespaceResponse, error)
 	// DeprecateNamespace is used to update the state of a registered namespace to DEPRECATED.
 	//
 	// Once the namespace is deprecated it cannot be used to start new workflow executions. Existing
 	// workflow executions will continue to run on deprecated namespaces.
 	// Deprecated.
-	DeprecateNamespace(ctx context.Context, in *DeprecateNamespaceRequest, opts ...grpc.CallOption) (*DeprecateNamespaceResponse, error)
+	DeprecateNamespace(ctx context.Context, in *v1.DeprecateNamespaceRequest, opts ...grpc.CallOption) (*v1.DeprecateNamespaceResponse, error)
 	// StartWorkflowExecution starts a new workflow execution.
 	//
 	// It will create the execution with a `WORKFLOW_EXECUTION_STARTED` event in its history and
 	// also schedule the first workflow task. Returns `WorkflowExecutionAlreadyStarted`, if an
 	// instance already exists with same workflow id.
-	StartWorkflowExecution(ctx context.Context, in *StartWorkflowExecutionRequest, opts ...grpc.CallOption) (*StartWorkflowExecutionResponse, error)
+	StartWorkflowExecution(ctx context.Context, in *v1.StartWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.StartWorkflowExecutionResponse, error)
 	// GetWorkflowExecutionHistory returns the history of specified workflow execution. Fails with
 	// `NotFound` if the specified workflow execution is unknown to the service.
-	GetWorkflowExecutionHistory(ctx context.Context, in *GetWorkflowExecutionHistoryRequest, opts ...grpc.CallOption) (*GetWorkflowExecutionHistoryResponse, error)
+	GetWorkflowExecutionHistory(ctx context.Context, in *v1.GetWorkflowExecutionHistoryRequest, opts ...grpc.CallOption) (*v1.GetWorkflowExecutionHistoryResponse, error)
 	// GetWorkflowExecutionHistoryReverse returns the history of specified workflow execution in reverse
 	// order (starting from last event). Fails with`NotFound` if the specified workflow execution is
 	// unknown to the service.
-	GetWorkflowExecutionHistoryReverse(ctx context.Context, in *GetWorkflowExecutionHistoryReverseRequest, opts ...grpc.CallOption) (*GetWorkflowExecutionHistoryReverseResponse, error)
+	GetWorkflowExecutionHistoryReverse(ctx context.Context, in *v1.GetWorkflowExecutionHistoryReverseRequest, opts ...grpc.CallOption) (*v1.GetWorkflowExecutionHistoryReverseResponse, error)
 	// PollWorkflowTaskQueue is called by workers to make progress on workflows.
 	//
 	// A WorkflowTask is dispatched to callers for active workflow executions with pending workflow
 	// tasks. The worker is expected to call `RespondWorkflowTaskCompleted` when it is done
 	// processing the task. The service will create a `WorkflowTaskStarted` event in the history for
 	// this task before handing it to the worker.
-	PollWorkflowTaskQueue(ctx context.Context, in *PollWorkflowTaskQueueRequest, opts ...grpc.CallOption) (*PollWorkflowTaskQueueResponse, error)
+	PollWorkflowTaskQueue(ctx context.Context, in *v1.PollWorkflowTaskQueueRequest, opts ...grpc.CallOption) (*v1.PollWorkflowTaskQueueResponse, error)
 	// RespondWorkflowTaskCompleted is called by workers to successfully complete workflow tasks
 	// they received from `PollWorkflowTaskQueue`.
 	//
 	// Completing a WorkflowTask will write a `WORKFLOW_TASK_COMPLETED` event to the workflow's
 	// history, along with events corresponding to whatever commands the SDK generated while
 	// executing the task (ex timer started, activity task scheduled, etc).
-	RespondWorkflowTaskCompleted(ctx context.Context, in *RespondWorkflowTaskCompletedRequest, opts ...grpc.CallOption) (*RespondWorkflowTaskCompletedResponse, error)
+	RespondWorkflowTaskCompleted(ctx context.Context, in *v1.RespondWorkflowTaskCompletedRequest, opts ...grpc.CallOption) (*v1.RespondWorkflowTaskCompletedResponse, error)
 	// RespondWorkflowTaskFailed is called by workers to indicate the processing of a workflow task
 	// failed.
 	//
@@ -215,7 +213,7 @@ type WorkflowServiceClient interface {
 	//
 	// Temporal will only append first WorkflowTaskFailed event to the history of workflow execution
 	// for consecutive failures.
-	RespondWorkflowTaskFailed(ctx context.Context, in *RespondWorkflowTaskFailedRequest, opts ...grpc.CallOption) (*RespondWorkflowTaskFailedResponse, error)
+	RespondWorkflowTaskFailed(ctx context.Context, in *v1.RespondWorkflowTaskFailedRequest, opts ...grpc.CallOption) (*v1.RespondWorkflowTaskFailedResponse, error)
 	// PollActivityTaskQueue is called by workers to process activity tasks from a specific task
 	// queue.
 	//
@@ -228,69 +226,69 @@ type WorkflowServiceClient interface {
 	// (`ACTIVITY_TASK_COMPLETED` / `ACTIVITY_TASK_FAILED` / `ACTIVITY_TASK_TIMED_OUT`) will both be
 	// written permanently to Workflow execution history when Activity is finished. This is done to
 	// avoid writing many events in the case of a failure/retry loop.
-	PollActivityTaskQueue(ctx context.Context, in *PollActivityTaskQueueRequest, opts ...grpc.CallOption) (*PollActivityTaskQueueResponse, error)
+	PollActivityTaskQueue(ctx context.Context, in *v1.PollActivityTaskQueueRequest, opts ...grpc.CallOption) (*v1.PollActivityTaskQueueResponse, error)
 	// RecordActivityTaskHeartbeat is optionally called by workers while they execute activities.
 	//
 	// If worker fails to heartbeat within the `heartbeat_timeout` interval for the activity task,
 	// then it will be marked as timed out and an `ACTIVITY_TASK_TIMED_OUT` event will be written to
 	// the workflow history. Calling `RecordActivityTaskHeartbeat` will fail with `NotFound` in
 	// such situations, in that event, the SDK should request cancellation of the activity.
-	RecordActivityTaskHeartbeat(ctx context.Context, in *RecordActivityTaskHeartbeatRequest, opts ...grpc.CallOption) (*RecordActivityTaskHeartbeatResponse, error)
+	RecordActivityTaskHeartbeat(ctx context.Context, in *v1.RecordActivityTaskHeartbeatRequest, opts ...grpc.CallOption) (*v1.RecordActivityTaskHeartbeatResponse, error)
 	// See `RecordActivityTaskHeartbeat`. This version allows clients to record heartbeats by
 	// namespace/workflow id/activity id instead of task token.
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "By" is used to indicate request type. --)
-	RecordActivityTaskHeartbeatById(ctx context.Context, in *RecordActivityTaskHeartbeatByIdRequest, opts ...grpc.CallOption) (*RecordActivityTaskHeartbeatByIdResponse, error)
+	RecordActivityTaskHeartbeatById(ctx context.Context, in *v1.RecordActivityTaskHeartbeatByIdRequest, opts ...grpc.CallOption) (*v1.RecordActivityTaskHeartbeatByIdResponse, error)
 	// RespondActivityTaskCompleted is called by workers when they successfully complete an activity
 	// task.
 	//
 	// This results in a new `ACTIVITY_TASK_COMPLETED` event being written to the workflow history
 	// and a new workflow task created for the workflow. Fails with `NotFound` if the task token is
 	// no longer valid due to activity timeout, already being completed, or never having existed.
-	RespondActivityTaskCompleted(ctx context.Context, in *RespondActivityTaskCompletedRequest, opts ...grpc.CallOption) (*RespondActivityTaskCompletedResponse, error)
+	RespondActivityTaskCompleted(ctx context.Context, in *v1.RespondActivityTaskCompletedRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskCompletedResponse, error)
 	// See `RecordActivityTaskCompleted`. This version allows clients to record completions by
 	// namespace/workflow id/activity id instead of task token.
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "By" is used to indicate request type. --)
-	RespondActivityTaskCompletedById(ctx context.Context, in *RespondActivityTaskCompletedByIdRequest, opts ...grpc.CallOption) (*RespondActivityTaskCompletedByIdResponse, error)
+	RespondActivityTaskCompletedById(ctx context.Context, in *v1.RespondActivityTaskCompletedByIdRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskCompletedByIdResponse, error)
 	// RespondActivityTaskFailed is called by workers when processing an activity task fails.
 	//
 	// This results in a new `ACTIVITY_TASK_FAILED` event being written to the workflow history and
 	// a new workflow task created for the workflow. Fails with `NotFound` if the task token is no
 	// longer valid due to activity timeout, already being completed, or never having existed.
-	RespondActivityTaskFailed(ctx context.Context, in *RespondActivityTaskFailedRequest, opts ...grpc.CallOption) (*RespondActivityTaskFailedResponse, error)
+	RespondActivityTaskFailed(ctx context.Context, in *v1.RespondActivityTaskFailedRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskFailedResponse, error)
 	// See `RecordActivityTaskFailed`. This version allows clients to record failures by
 	// namespace/workflow id/activity id instead of task token.
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "By" is used to indicate request type. --)
-	RespondActivityTaskFailedById(ctx context.Context, in *RespondActivityTaskFailedByIdRequest, opts ...grpc.CallOption) (*RespondActivityTaskFailedByIdResponse, error)
+	RespondActivityTaskFailedById(ctx context.Context, in *v1.RespondActivityTaskFailedByIdRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskFailedByIdResponse, error)
 	// RespondActivityTaskFailed is called by workers when processing an activity task fails.
 	//
 	// This results in a new `ACTIVITY_TASK_CANCELED` event being written to the workflow history
 	// and a new workflow task created for the workflow. Fails with `NotFound` if the task token is
 	// no longer valid due to activity timeout, already being completed, or never having existed.
-	RespondActivityTaskCanceled(ctx context.Context, in *RespondActivityTaskCanceledRequest, opts ...grpc.CallOption) (*RespondActivityTaskCanceledResponse, error)
+	RespondActivityTaskCanceled(ctx context.Context, in *v1.RespondActivityTaskCanceledRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskCanceledResponse, error)
 	// See `RecordActivityTaskCanceled`. This version allows clients to record failures by
 	// namespace/workflow id/activity id instead of task token.
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "By" is used to indicate request type. --)
-	RespondActivityTaskCanceledById(ctx context.Context, in *RespondActivityTaskCanceledByIdRequest, opts ...grpc.CallOption) (*RespondActivityTaskCanceledByIdResponse, error)
+	RespondActivityTaskCanceledById(ctx context.Context, in *v1.RespondActivityTaskCanceledByIdRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskCanceledByIdResponse, error)
 	// RequestCancelWorkflowExecution is called by workers when they want to request cancellation of
 	// a workflow execution.
 	//
 	// This result in a new `WORKFLOW_EXECUTION_CANCEL_REQUESTED` event being written to the
 	// workflow history and a new workflow task created for the workflow. Fails with `NotFound` if
 	// the workflow is already completed or doesn't exist.
-	RequestCancelWorkflowExecution(ctx context.Context, in *RequestCancelWorkflowExecutionRequest, opts ...grpc.CallOption) (*RequestCancelWorkflowExecutionResponse, error)
+	RequestCancelWorkflowExecution(ctx context.Context, in *v1.RequestCancelWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.RequestCancelWorkflowExecutionResponse, error)
 	// SignalWorkflowExecution is used to send a signal to a running workflow execution.
 	//
 	// This results in a `WORKFLOW_EXECUTION_SIGNALED` event recorded in the history and a workflow
 	// task being created for the execution.
-	SignalWorkflowExecution(ctx context.Context, in *SignalWorkflowExecutionRequest, opts ...grpc.CallOption) (*SignalWorkflowExecutionResponse, error)
+	SignalWorkflowExecution(ctx context.Context, in *v1.SignalWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.SignalWorkflowExecutionResponse, error)
 	// SignalWithStartWorkflowExecution is used to ensure a signal is sent to a workflow, even if
 	// it isn't yet started.
 	//
@@ -303,36 +301,36 @@ type WorkflowServiceClient interface {
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "With" is used to indicate combined operation. --)
-	SignalWithStartWorkflowExecution(ctx context.Context, in *SignalWithStartWorkflowExecutionRequest, opts ...grpc.CallOption) (*SignalWithStartWorkflowExecutionResponse, error)
+	SignalWithStartWorkflowExecution(ctx context.Context, in *v1.SignalWithStartWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.SignalWithStartWorkflowExecutionResponse, error)
 	// ResetWorkflowExecution will reset an existing workflow execution to a specified
 	// `WORKFLOW_TASK_COMPLETED` event (exclusive). It will immediately terminate the current
 	// execution instance.
 	// TODO: Does exclusive here mean *just* the completed event, or also WFT started? Otherwise the task is doomed to time out?
-	ResetWorkflowExecution(ctx context.Context, in *ResetWorkflowExecutionRequest, opts ...grpc.CallOption) (*ResetWorkflowExecutionResponse, error)
+	ResetWorkflowExecution(ctx context.Context, in *v1.ResetWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.ResetWorkflowExecutionResponse, error)
 	// TerminateWorkflowExecution terminates an existing workflow execution by recording a
 	// `WORKFLOW_EXECUTION_TERMINATED` event in the history and immediately terminating the
 	// execution instance.
-	TerminateWorkflowExecution(ctx context.Context, in *TerminateWorkflowExecutionRequest, opts ...grpc.CallOption) (*TerminateWorkflowExecutionResponse, error)
+	TerminateWorkflowExecution(ctx context.Context, in *v1.TerminateWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.TerminateWorkflowExecutionResponse, error)
 	// ListOpenWorkflowExecutions is a visibility API to list the open executions in a specific namespace.
-	ListOpenWorkflowExecutions(ctx context.Context, in *ListOpenWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ListOpenWorkflowExecutionsResponse, error)
+	ListOpenWorkflowExecutions(ctx context.Context, in *v1.ListOpenWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ListOpenWorkflowExecutionsResponse, error)
 	// ListClosedWorkflowExecutions is a visibility API to list the closed executions in a specific namespace.
-	ListClosedWorkflowExecutions(ctx context.Context, in *ListClosedWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ListClosedWorkflowExecutionsResponse, error)
+	ListClosedWorkflowExecutions(ctx context.Context, in *v1.ListClosedWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ListClosedWorkflowExecutionsResponse, error)
 	// ListWorkflowExecutions is a visibility API to list workflow executions in a specific namespace.
-	ListWorkflowExecutions(ctx context.Context, in *ListWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ListWorkflowExecutionsResponse, error)
+	ListWorkflowExecutions(ctx context.Context, in *v1.ListWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ListWorkflowExecutionsResponse, error)
 	// ListArchivedWorkflowExecutions is a visibility API to list archived workflow executions in a specific namespace.
-	ListArchivedWorkflowExecutions(ctx context.Context, in *ListArchivedWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ListArchivedWorkflowExecutionsResponse, error)
+	ListArchivedWorkflowExecutions(ctx context.Context, in *v1.ListArchivedWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ListArchivedWorkflowExecutionsResponse, error)
 	// ScanWorkflowExecutions is a visibility API to list large amount of workflow executions in a specific namespace without order.
-	ScanWorkflowExecutions(ctx context.Context, in *ScanWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ScanWorkflowExecutionsResponse, error)
+	ScanWorkflowExecutions(ctx context.Context, in *v1.ScanWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ScanWorkflowExecutionsResponse, error)
 	// CountWorkflowExecutions is a visibility API to count of workflow executions in a specific namespace.
-	CountWorkflowExecutions(ctx context.Context, in *CountWorkflowExecutionsRequest, opts ...grpc.CallOption) (*CountWorkflowExecutionsResponse, error)
+	CountWorkflowExecutions(ctx context.Context, in *v1.CountWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.CountWorkflowExecutionsResponse, error)
 	// GetSearchAttributes is a visibility API to get all legal keys that could be used in list APIs
-	GetSearchAttributes(ctx context.Context, in *GetSearchAttributesRequest, opts ...grpc.CallOption) (*GetSearchAttributesResponse, error)
+	GetSearchAttributes(ctx context.Context, in *v1.GetSearchAttributesRequest, opts ...grpc.CallOption) (*v1.GetSearchAttributesResponse, error)
 	// RespondQueryTaskCompleted is called by workers to complete queries which were delivered on
 	// the `query` (not `queries`) field of a `PollWorkflowTaskQueueResponse`.
 	//
 	// Completing the query will unblock the corresponding client call to `QueryWorkflow` and return
 	// the query result a response.
-	RespondQueryTaskCompleted(ctx context.Context, in *RespondQueryTaskCompletedRequest, opts ...grpc.CallOption) (*RespondQueryTaskCompletedResponse, error)
+	RespondQueryTaskCompleted(ctx context.Context, in *v1.RespondQueryTaskCompletedRequest, opts ...grpc.CallOption) (*v1.RespondQueryTaskCompletedResponse, error)
 	// ResetStickyTaskQueue resets the sticky task queue related information in the mutable state of
 	// a given workflow. This is prudent for workers to perform if a workflow has been paged out of
 	// their cache.
@@ -340,18 +338,18 @@ type WorkflowServiceClient interface {
 	// Things cleared are:
 	// 1. StickyTaskQueue
 	// 2. StickyScheduleToStartTimeout
-	ResetStickyTaskQueue(ctx context.Context, in *ResetStickyTaskQueueRequest, opts ...grpc.CallOption) (*ResetStickyTaskQueueResponse, error)
+	ResetStickyTaskQueue(ctx context.Context, in *v1.ResetStickyTaskQueueRequest, opts ...grpc.CallOption) (*v1.ResetStickyTaskQueueResponse, error)
 	// QueryWorkflow requests a query be executed for a specified workflow execution.
-	QueryWorkflow(ctx context.Context, in *QueryWorkflowRequest, opts ...grpc.CallOption) (*QueryWorkflowResponse, error)
+	QueryWorkflow(ctx context.Context, in *v1.QueryWorkflowRequest, opts ...grpc.CallOption) (*v1.QueryWorkflowResponse, error)
 	// DescribeWorkflowExecution returns information about the specified workflow execution.
-	DescribeWorkflowExecution(ctx context.Context, in *DescribeWorkflowExecutionRequest, opts ...grpc.CallOption) (*DescribeWorkflowExecutionResponse, error)
+	DescribeWorkflowExecution(ctx context.Context, in *v1.DescribeWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.DescribeWorkflowExecutionResponse, error)
 	// DescribeTaskQueue returns information about the target task queue.
-	DescribeTaskQueue(ctx context.Context, in *DescribeTaskQueueRequest, opts ...grpc.CallOption) (*DescribeTaskQueueResponse, error)
+	DescribeTaskQueue(ctx context.Context, in *v1.DescribeTaskQueueRequest, opts ...grpc.CallOption) (*v1.DescribeTaskQueueResponse, error)
 	// GetClusterInfo returns information about temporal cluster
-	GetClusterInfo(ctx context.Context, in *GetClusterInfoRequest, opts ...grpc.CallOption) (*GetClusterInfoResponse, error)
+	GetClusterInfo(ctx context.Context, in *v1.GetClusterInfoRequest, opts ...grpc.CallOption) (*v1.GetClusterInfoResponse, error)
 	// GetSystemInfo returns information about the system.
-	GetSystemInfo(ctx context.Context, in *GetSystemInfoRequest, opts ...grpc.CallOption) (*GetSystemInfoResponse, error)
-	ListTaskQueuePartitions(ctx context.Context, in *ListTaskQueuePartitionsRequest, opts ...grpc.CallOption) (*ListTaskQueuePartitionsResponse, error)
+	GetSystemInfo(ctx context.Context, in *v1.GetSystemInfoRequest, opts ...grpc.CallOption) (*v1.GetSystemInfoResponse, error)
+	ListTaskQueuePartitions(ctx context.Context, in *v1.ListTaskQueuePartitionsRequest, opts ...grpc.CallOption) (*v1.ListTaskQueuePartitionsResponse, error)
 	// Creates a new schedule.
 	// (-- api-linter: core::0133::method-signature=disabled
 	//     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
@@ -359,29 +357,29 @@ type WorkflowServiceClient interface {
 	//     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
 	// (-- api-linter: core::0133::http-uri-parent=disabled
 	//     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
-	CreateSchedule(ctx context.Context, in *CreateScheduleRequest, opts ...grpc.CallOption) (*CreateScheduleResponse, error)
+	CreateSchedule(ctx context.Context, in *v1.CreateScheduleRequest, opts ...grpc.CallOption) (*v1.CreateScheduleResponse, error)
 	// Returns the schedule description and current state of an existing schedule.
-	DescribeSchedule(ctx context.Context, in *DescribeScheduleRequest, opts ...grpc.CallOption) (*DescribeScheduleResponse, error)
+	DescribeSchedule(ctx context.Context, in *v1.DescribeScheduleRequest, opts ...grpc.CallOption) (*v1.DescribeScheduleResponse, error)
 	// Changes the configuration or state of an existing schedule.
 	// (-- api-linter: core::0134::response-message-name=disabled
 	//     aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)
 	// (-- api-linter: core::0134::method-signature=disabled
 	//     aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)
-	UpdateSchedule(ctx context.Context, in *UpdateScheduleRequest, opts ...grpc.CallOption) (*UpdateScheduleResponse, error)
+	UpdateSchedule(ctx context.Context, in *v1.UpdateScheduleRequest, opts ...grpc.CallOption) (*v1.UpdateScheduleResponse, error)
 	// Makes a specific change to a schedule or triggers an immediate action.
 	// (-- api-linter: core::0134::synonyms=disabled
 	//     aip.dev/not-precedent: we have both patch and update. --)
-	PatchSchedule(ctx context.Context, in *PatchScheduleRequest, opts ...grpc.CallOption) (*PatchScheduleResponse, error)
+	PatchSchedule(ctx context.Context, in *v1.PatchScheduleRequest, opts ...grpc.CallOption) (*v1.PatchScheduleResponse, error)
 	// Lists matching times within a range.
-	ListScheduleMatchingTimes(ctx context.Context, in *ListScheduleMatchingTimesRequest, opts ...grpc.CallOption) (*ListScheduleMatchingTimesResponse, error)
+	ListScheduleMatchingTimes(ctx context.Context, in *v1.ListScheduleMatchingTimesRequest, opts ...grpc.CallOption) (*v1.ListScheduleMatchingTimesResponse, error)
 	// Deletes a schedule, removing it from the system.
 	// (-- api-linter: core::0135::method-signature=disabled
 	//     aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)
 	// (-- api-linter: core::0135::response-message-name=disabled
 	//     aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)
-	DeleteSchedule(ctx context.Context, in *DeleteScheduleRequest, opts ...grpc.CallOption) (*DeleteScheduleResponse, error)
+	DeleteSchedule(ctx context.Context, in *v1.DeleteScheduleRequest, opts ...grpc.CallOption) (*v1.DeleteScheduleResponse, error)
 	// List all schedules in a namespace.
-	ListSchedules(ctx context.Context, in *ListSchedulesRequest, opts ...grpc.CallOption) (*ListSchedulesResponse, error)
+	ListSchedules(ctx context.Context, in *v1.ListSchedulesRequest, opts ...grpc.CallOption) (*v1.ListSchedulesResponse, error)
 }
 
 type workflowServiceClient struct {
@@ -392,8 +390,8 @@ func NewWorkflowServiceClient(cc *grpc.ClientConn) WorkflowServiceClient {
 	return &workflowServiceClient{cc}
 }
 
-func (c *workflowServiceClient) RegisterNamespace(ctx context.Context, in *RegisterNamespaceRequest, opts ...grpc.CallOption) (*RegisterNamespaceResponse, error) {
-	out := new(RegisterNamespaceResponse)
+func (c *workflowServiceClient) RegisterNamespace(ctx context.Context, in *v1.RegisterNamespaceRequest, opts ...grpc.CallOption) (*v1.RegisterNamespaceResponse, error) {
+	out := new(v1.RegisterNamespaceResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RegisterNamespace", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -401,8 +399,8 @@ func (c *workflowServiceClient) RegisterNamespace(ctx context.Context, in *Regis
 	return out, nil
 }
 
-func (c *workflowServiceClient) DescribeNamespace(ctx context.Context, in *DescribeNamespaceRequest, opts ...grpc.CallOption) (*DescribeNamespaceResponse, error) {
-	out := new(DescribeNamespaceResponse)
+func (c *workflowServiceClient) DescribeNamespace(ctx context.Context, in *v1.DescribeNamespaceRequest, opts ...grpc.CallOption) (*v1.DescribeNamespaceResponse, error) {
+	out := new(v1.DescribeNamespaceResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/DescribeNamespace", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -410,8 +408,8 @@ func (c *workflowServiceClient) DescribeNamespace(ctx context.Context, in *Descr
 	return out, nil
 }
 
-func (c *workflowServiceClient) ListNamespaces(ctx context.Context, in *ListNamespacesRequest, opts ...grpc.CallOption) (*ListNamespacesResponse, error) {
-	out := new(ListNamespacesResponse)
+func (c *workflowServiceClient) ListNamespaces(ctx context.Context, in *v1.ListNamespacesRequest, opts ...grpc.CallOption) (*v1.ListNamespacesResponse, error) {
+	out := new(v1.ListNamespacesResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ListNamespaces", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -419,8 +417,8 @@ func (c *workflowServiceClient) ListNamespaces(ctx context.Context, in *ListName
 	return out, nil
 }
 
-func (c *workflowServiceClient) UpdateNamespace(ctx context.Context, in *UpdateNamespaceRequest, opts ...grpc.CallOption) (*UpdateNamespaceResponse, error) {
-	out := new(UpdateNamespaceResponse)
+func (c *workflowServiceClient) UpdateNamespace(ctx context.Context, in *v1.UpdateNamespaceRequest, opts ...grpc.CallOption) (*v1.UpdateNamespaceResponse, error) {
+	out := new(v1.UpdateNamespaceResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/UpdateNamespace", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -428,8 +426,8 @@ func (c *workflowServiceClient) UpdateNamespace(ctx context.Context, in *UpdateN
 	return out, nil
 }
 
-func (c *workflowServiceClient) DeprecateNamespace(ctx context.Context, in *DeprecateNamespaceRequest, opts ...grpc.CallOption) (*DeprecateNamespaceResponse, error) {
-	out := new(DeprecateNamespaceResponse)
+func (c *workflowServiceClient) DeprecateNamespace(ctx context.Context, in *v1.DeprecateNamespaceRequest, opts ...grpc.CallOption) (*v1.DeprecateNamespaceResponse, error) {
+	out := new(v1.DeprecateNamespaceResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/DeprecateNamespace", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -437,8 +435,8 @@ func (c *workflowServiceClient) DeprecateNamespace(ctx context.Context, in *Depr
 	return out, nil
 }
 
-func (c *workflowServiceClient) StartWorkflowExecution(ctx context.Context, in *StartWorkflowExecutionRequest, opts ...grpc.CallOption) (*StartWorkflowExecutionResponse, error) {
-	out := new(StartWorkflowExecutionResponse)
+func (c *workflowServiceClient) StartWorkflowExecution(ctx context.Context, in *v1.StartWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.StartWorkflowExecutionResponse, error) {
+	out := new(v1.StartWorkflowExecutionResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/StartWorkflowExecution", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -446,8 +444,8 @@ func (c *workflowServiceClient) StartWorkflowExecution(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *workflowServiceClient) GetWorkflowExecutionHistory(ctx context.Context, in *GetWorkflowExecutionHistoryRequest, opts ...grpc.CallOption) (*GetWorkflowExecutionHistoryResponse, error) {
-	out := new(GetWorkflowExecutionHistoryResponse)
+func (c *workflowServiceClient) GetWorkflowExecutionHistory(ctx context.Context, in *v1.GetWorkflowExecutionHistoryRequest, opts ...grpc.CallOption) (*v1.GetWorkflowExecutionHistoryResponse, error) {
+	out := new(v1.GetWorkflowExecutionHistoryResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/GetWorkflowExecutionHistory", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -455,8 +453,8 @@ func (c *workflowServiceClient) GetWorkflowExecutionHistory(ctx context.Context,
 	return out, nil
 }
 
-func (c *workflowServiceClient) GetWorkflowExecutionHistoryReverse(ctx context.Context, in *GetWorkflowExecutionHistoryReverseRequest, opts ...grpc.CallOption) (*GetWorkflowExecutionHistoryReverseResponse, error) {
-	out := new(GetWorkflowExecutionHistoryReverseResponse)
+func (c *workflowServiceClient) GetWorkflowExecutionHistoryReverse(ctx context.Context, in *v1.GetWorkflowExecutionHistoryReverseRequest, opts ...grpc.CallOption) (*v1.GetWorkflowExecutionHistoryReverseResponse, error) {
+	out := new(v1.GetWorkflowExecutionHistoryReverseResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/GetWorkflowExecutionHistoryReverse", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -464,8 +462,8 @@ func (c *workflowServiceClient) GetWorkflowExecutionHistoryReverse(ctx context.C
 	return out, nil
 }
 
-func (c *workflowServiceClient) PollWorkflowTaskQueue(ctx context.Context, in *PollWorkflowTaskQueueRequest, opts ...grpc.CallOption) (*PollWorkflowTaskQueueResponse, error) {
-	out := new(PollWorkflowTaskQueueResponse)
+func (c *workflowServiceClient) PollWorkflowTaskQueue(ctx context.Context, in *v1.PollWorkflowTaskQueueRequest, opts ...grpc.CallOption) (*v1.PollWorkflowTaskQueueResponse, error) {
+	out := new(v1.PollWorkflowTaskQueueResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/PollWorkflowTaskQueue", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -473,8 +471,8 @@ func (c *workflowServiceClient) PollWorkflowTaskQueue(ctx context.Context, in *P
 	return out, nil
 }
 
-func (c *workflowServiceClient) RespondWorkflowTaskCompleted(ctx context.Context, in *RespondWorkflowTaskCompletedRequest, opts ...grpc.CallOption) (*RespondWorkflowTaskCompletedResponse, error) {
-	out := new(RespondWorkflowTaskCompletedResponse)
+func (c *workflowServiceClient) RespondWorkflowTaskCompleted(ctx context.Context, in *v1.RespondWorkflowTaskCompletedRequest, opts ...grpc.CallOption) (*v1.RespondWorkflowTaskCompletedResponse, error) {
+	out := new(v1.RespondWorkflowTaskCompletedResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RespondWorkflowTaskCompleted", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -482,8 +480,8 @@ func (c *workflowServiceClient) RespondWorkflowTaskCompleted(ctx context.Context
 	return out, nil
 }
 
-func (c *workflowServiceClient) RespondWorkflowTaskFailed(ctx context.Context, in *RespondWorkflowTaskFailedRequest, opts ...grpc.CallOption) (*RespondWorkflowTaskFailedResponse, error) {
-	out := new(RespondWorkflowTaskFailedResponse)
+func (c *workflowServiceClient) RespondWorkflowTaskFailed(ctx context.Context, in *v1.RespondWorkflowTaskFailedRequest, opts ...grpc.CallOption) (*v1.RespondWorkflowTaskFailedResponse, error) {
+	out := new(v1.RespondWorkflowTaskFailedResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RespondWorkflowTaskFailed", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -491,8 +489,8 @@ func (c *workflowServiceClient) RespondWorkflowTaskFailed(ctx context.Context, i
 	return out, nil
 }
 
-func (c *workflowServiceClient) PollActivityTaskQueue(ctx context.Context, in *PollActivityTaskQueueRequest, opts ...grpc.CallOption) (*PollActivityTaskQueueResponse, error) {
-	out := new(PollActivityTaskQueueResponse)
+func (c *workflowServiceClient) PollActivityTaskQueue(ctx context.Context, in *v1.PollActivityTaskQueueRequest, opts ...grpc.CallOption) (*v1.PollActivityTaskQueueResponse, error) {
+	out := new(v1.PollActivityTaskQueueResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/PollActivityTaskQueue", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -500,8 +498,8 @@ func (c *workflowServiceClient) PollActivityTaskQueue(ctx context.Context, in *P
 	return out, nil
 }
 
-func (c *workflowServiceClient) RecordActivityTaskHeartbeat(ctx context.Context, in *RecordActivityTaskHeartbeatRequest, opts ...grpc.CallOption) (*RecordActivityTaskHeartbeatResponse, error) {
-	out := new(RecordActivityTaskHeartbeatResponse)
+func (c *workflowServiceClient) RecordActivityTaskHeartbeat(ctx context.Context, in *v1.RecordActivityTaskHeartbeatRequest, opts ...grpc.CallOption) (*v1.RecordActivityTaskHeartbeatResponse, error) {
+	out := new(v1.RecordActivityTaskHeartbeatResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RecordActivityTaskHeartbeat", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -509,8 +507,8 @@ func (c *workflowServiceClient) RecordActivityTaskHeartbeat(ctx context.Context,
 	return out, nil
 }
 
-func (c *workflowServiceClient) RecordActivityTaskHeartbeatById(ctx context.Context, in *RecordActivityTaskHeartbeatByIdRequest, opts ...grpc.CallOption) (*RecordActivityTaskHeartbeatByIdResponse, error) {
-	out := new(RecordActivityTaskHeartbeatByIdResponse)
+func (c *workflowServiceClient) RecordActivityTaskHeartbeatById(ctx context.Context, in *v1.RecordActivityTaskHeartbeatByIdRequest, opts ...grpc.CallOption) (*v1.RecordActivityTaskHeartbeatByIdResponse, error) {
+	out := new(v1.RecordActivityTaskHeartbeatByIdResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RecordActivityTaskHeartbeatById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -518,8 +516,8 @@ func (c *workflowServiceClient) RecordActivityTaskHeartbeatById(ctx context.Cont
 	return out, nil
 }
 
-func (c *workflowServiceClient) RespondActivityTaskCompleted(ctx context.Context, in *RespondActivityTaskCompletedRequest, opts ...grpc.CallOption) (*RespondActivityTaskCompletedResponse, error) {
-	out := new(RespondActivityTaskCompletedResponse)
+func (c *workflowServiceClient) RespondActivityTaskCompleted(ctx context.Context, in *v1.RespondActivityTaskCompletedRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskCompletedResponse, error) {
+	out := new(v1.RespondActivityTaskCompletedResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskCompleted", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -527,8 +525,8 @@ func (c *workflowServiceClient) RespondActivityTaskCompleted(ctx context.Context
 	return out, nil
 }
 
-func (c *workflowServiceClient) RespondActivityTaskCompletedById(ctx context.Context, in *RespondActivityTaskCompletedByIdRequest, opts ...grpc.CallOption) (*RespondActivityTaskCompletedByIdResponse, error) {
-	out := new(RespondActivityTaskCompletedByIdResponse)
+func (c *workflowServiceClient) RespondActivityTaskCompletedById(ctx context.Context, in *v1.RespondActivityTaskCompletedByIdRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskCompletedByIdResponse, error) {
+	out := new(v1.RespondActivityTaskCompletedByIdResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskCompletedById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -536,8 +534,8 @@ func (c *workflowServiceClient) RespondActivityTaskCompletedById(ctx context.Con
 	return out, nil
 }
 
-func (c *workflowServiceClient) RespondActivityTaskFailed(ctx context.Context, in *RespondActivityTaskFailedRequest, opts ...grpc.CallOption) (*RespondActivityTaskFailedResponse, error) {
-	out := new(RespondActivityTaskFailedResponse)
+func (c *workflowServiceClient) RespondActivityTaskFailed(ctx context.Context, in *v1.RespondActivityTaskFailedRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskFailedResponse, error) {
+	out := new(v1.RespondActivityTaskFailedResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskFailed", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -545,8 +543,8 @@ func (c *workflowServiceClient) RespondActivityTaskFailed(ctx context.Context, i
 	return out, nil
 }
 
-func (c *workflowServiceClient) RespondActivityTaskFailedById(ctx context.Context, in *RespondActivityTaskFailedByIdRequest, opts ...grpc.CallOption) (*RespondActivityTaskFailedByIdResponse, error) {
-	out := new(RespondActivityTaskFailedByIdResponse)
+func (c *workflowServiceClient) RespondActivityTaskFailedById(ctx context.Context, in *v1.RespondActivityTaskFailedByIdRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskFailedByIdResponse, error) {
+	out := new(v1.RespondActivityTaskFailedByIdResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskFailedById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -554,8 +552,8 @@ func (c *workflowServiceClient) RespondActivityTaskFailedById(ctx context.Contex
 	return out, nil
 }
 
-func (c *workflowServiceClient) RespondActivityTaskCanceled(ctx context.Context, in *RespondActivityTaskCanceledRequest, opts ...grpc.CallOption) (*RespondActivityTaskCanceledResponse, error) {
-	out := new(RespondActivityTaskCanceledResponse)
+func (c *workflowServiceClient) RespondActivityTaskCanceled(ctx context.Context, in *v1.RespondActivityTaskCanceledRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskCanceledResponse, error) {
+	out := new(v1.RespondActivityTaskCanceledResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskCanceled", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -563,8 +561,8 @@ func (c *workflowServiceClient) RespondActivityTaskCanceled(ctx context.Context,
 	return out, nil
 }
 
-func (c *workflowServiceClient) RespondActivityTaskCanceledById(ctx context.Context, in *RespondActivityTaskCanceledByIdRequest, opts ...grpc.CallOption) (*RespondActivityTaskCanceledByIdResponse, error) {
-	out := new(RespondActivityTaskCanceledByIdResponse)
+func (c *workflowServiceClient) RespondActivityTaskCanceledById(ctx context.Context, in *v1.RespondActivityTaskCanceledByIdRequest, opts ...grpc.CallOption) (*v1.RespondActivityTaskCanceledByIdResponse, error) {
+	out := new(v1.RespondActivityTaskCanceledByIdResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskCanceledById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -572,8 +570,8 @@ func (c *workflowServiceClient) RespondActivityTaskCanceledById(ctx context.Cont
 	return out, nil
 }
 
-func (c *workflowServiceClient) RequestCancelWorkflowExecution(ctx context.Context, in *RequestCancelWorkflowExecutionRequest, opts ...grpc.CallOption) (*RequestCancelWorkflowExecutionResponse, error) {
-	out := new(RequestCancelWorkflowExecutionResponse)
+func (c *workflowServiceClient) RequestCancelWorkflowExecution(ctx context.Context, in *v1.RequestCancelWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.RequestCancelWorkflowExecutionResponse, error) {
+	out := new(v1.RequestCancelWorkflowExecutionResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RequestCancelWorkflowExecution", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -581,8 +579,8 @@ func (c *workflowServiceClient) RequestCancelWorkflowExecution(ctx context.Conte
 	return out, nil
 }
 
-func (c *workflowServiceClient) SignalWorkflowExecution(ctx context.Context, in *SignalWorkflowExecutionRequest, opts ...grpc.CallOption) (*SignalWorkflowExecutionResponse, error) {
-	out := new(SignalWorkflowExecutionResponse)
+func (c *workflowServiceClient) SignalWorkflowExecution(ctx context.Context, in *v1.SignalWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.SignalWorkflowExecutionResponse, error) {
+	out := new(v1.SignalWorkflowExecutionResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/SignalWorkflowExecution", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -590,8 +588,8 @@ func (c *workflowServiceClient) SignalWorkflowExecution(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *workflowServiceClient) SignalWithStartWorkflowExecution(ctx context.Context, in *SignalWithStartWorkflowExecutionRequest, opts ...grpc.CallOption) (*SignalWithStartWorkflowExecutionResponse, error) {
-	out := new(SignalWithStartWorkflowExecutionResponse)
+func (c *workflowServiceClient) SignalWithStartWorkflowExecution(ctx context.Context, in *v1.SignalWithStartWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.SignalWithStartWorkflowExecutionResponse, error) {
+	out := new(v1.SignalWithStartWorkflowExecutionResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/SignalWithStartWorkflowExecution", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -599,8 +597,8 @@ func (c *workflowServiceClient) SignalWithStartWorkflowExecution(ctx context.Con
 	return out, nil
 }
 
-func (c *workflowServiceClient) ResetWorkflowExecution(ctx context.Context, in *ResetWorkflowExecutionRequest, opts ...grpc.CallOption) (*ResetWorkflowExecutionResponse, error) {
-	out := new(ResetWorkflowExecutionResponse)
+func (c *workflowServiceClient) ResetWorkflowExecution(ctx context.Context, in *v1.ResetWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.ResetWorkflowExecutionResponse, error) {
+	out := new(v1.ResetWorkflowExecutionResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ResetWorkflowExecution", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -608,8 +606,8 @@ func (c *workflowServiceClient) ResetWorkflowExecution(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *workflowServiceClient) TerminateWorkflowExecution(ctx context.Context, in *TerminateWorkflowExecutionRequest, opts ...grpc.CallOption) (*TerminateWorkflowExecutionResponse, error) {
-	out := new(TerminateWorkflowExecutionResponse)
+func (c *workflowServiceClient) TerminateWorkflowExecution(ctx context.Context, in *v1.TerminateWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.TerminateWorkflowExecutionResponse, error) {
+	out := new(v1.TerminateWorkflowExecutionResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/TerminateWorkflowExecution", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -617,8 +615,8 @@ func (c *workflowServiceClient) TerminateWorkflowExecution(ctx context.Context, 
 	return out, nil
 }
 
-func (c *workflowServiceClient) ListOpenWorkflowExecutions(ctx context.Context, in *ListOpenWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ListOpenWorkflowExecutionsResponse, error) {
-	out := new(ListOpenWorkflowExecutionsResponse)
+func (c *workflowServiceClient) ListOpenWorkflowExecutions(ctx context.Context, in *v1.ListOpenWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ListOpenWorkflowExecutionsResponse, error) {
+	out := new(v1.ListOpenWorkflowExecutionsResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ListOpenWorkflowExecutions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -626,8 +624,8 @@ func (c *workflowServiceClient) ListOpenWorkflowExecutions(ctx context.Context, 
 	return out, nil
 }
 
-func (c *workflowServiceClient) ListClosedWorkflowExecutions(ctx context.Context, in *ListClosedWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ListClosedWorkflowExecutionsResponse, error) {
-	out := new(ListClosedWorkflowExecutionsResponse)
+func (c *workflowServiceClient) ListClosedWorkflowExecutions(ctx context.Context, in *v1.ListClosedWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ListClosedWorkflowExecutionsResponse, error) {
+	out := new(v1.ListClosedWorkflowExecutionsResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ListClosedWorkflowExecutions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -635,8 +633,8 @@ func (c *workflowServiceClient) ListClosedWorkflowExecutions(ctx context.Context
 	return out, nil
 }
 
-func (c *workflowServiceClient) ListWorkflowExecutions(ctx context.Context, in *ListWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ListWorkflowExecutionsResponse, error) {
-	out := new(ListWorkflowExecutionsResponse)
+func (c *workflowServiceClient) ListWorkflowExecutions(ctx context.Context, in *v1.ListWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ListWorkflowExecutionsResponse, error) {
+	out := new(v1.ListWorkflowExecutionsResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ListWorkflowExecutions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -644,8 +642,8 @@ func (c *workflowServiceClient) ListWorkflowExecutions(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *workflowServiceClient) ListArchivedWorkflowExecutions(ctx context.Context, in *ListArchivedWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ListArchivedWorkflowExecutionsResponse, error) {
-	out := new(ListArchivedWorkflowExecutionsResponse)
+func (c *workflowServiceClient) ListArchivedWorkflowExecutions(ctx context.Context, in *v1.ListArchivedWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ListArchivedWorkflowExecutionsResponse, error) {
+	out := new(v1.ListArchivedWorkflowExecutionsResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ListArchivedWorkflowExecutions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -653,8 +651,8 @@ func (c *workflowServiceClient) ListArchivedWorkflowExecutions(ctx context.Conte
 	return out, nil
 }
 
-func (c *workflowServiceClient) ScanWorkflowExecutions(ctx context.Context, in *ScanWorkflowExecutionsRequest, opts ...grpc.CallOption) (*ScanWorkflowExecutionsResponse, error) {
-	out := new(ScanWorkflowExecutionsResponse)
+func (c *workflowServiceClient) ScanWorkflowExecutions(ctx context.Context, in *v1.ScanWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.ScanWorkflowExecutionsResponse, error) {
+	out := new(v1.ScanWorkflowExecutionsResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ScanWorkflowExecutions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -662,8 +660,8 @@ func (c *workflowServiceClient) ScanWorkflowExecutions(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *workflowServiceClient) CountWorkflowExecutions(ctx context.Context, in *CountWorkflowExecutionsRequest, opts ...grpc.CallOption) (*CountWorkflowExecutionsResponse, error) {
-	out := new(CountWorkflowExecutionsResponse)
+func (c *workflowServiceClient) CountWorkflowExecutions(ctx context.Context, in *v1.CountWorkflowExecutionsRequest, opts ...grpc.CallOption) (*v1.CountWorkflowExecutionsResponse, error) {
+	out := new(v1.CountWorkflowExecutionsResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/CountWorkflowExecutions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -671,8 +669,8 @@ func (c *workflowServiceClient) CountWorkflowExecutions(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *workflowServiceClient) GetSearchAttributes(ctx context.Context, in *GetSearchAttributesRequest, opts ...grpc.CallOption) (*GetSearchAttributesResponse, error) {
-	out := new(GetSearchAttributesResponse)
+func (c *workflowServiceClient) GetSearchAttributes(ctx context.Context, in *v1.GetSearchAttributesRequest, opts ...grpc.CallOption) (*v1.GetSearchAttributesResponse, error) {
+	out := new(v1.GetSearchAttributesResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/GetSearchAttributes", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -680,8 +678,8 @@ func (c *workflowServiceClient) GetSearchAttributes(ctx context.Context, in *Get
 	return out, nil
 }
 
-func (c *workflowServiceClient) RespondQueryTaskCompleted(ctx context.Context, in *RespondQueryTaskCompletedRequest, opts ...grpc.CallOption) (*RespondQueryTaskCompletedResponse, error) {
-	out := new(RespondQueryTaskCompletedResponse)
+func (c *workflowServiceClient) RespondQueryTaskCompleted(ctx context.Context, in *v1.RespondQueryTaskCompletedRequest, opts ...grpc.CallOption) (*v1.RespondQueryTaskCompletedResponse, error) {
+	out := new(v1.RespondQueryTaskCompletedResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/RespondQueryTaskCompleted", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -689,8 +687,8 @@ func (c *workflowServiceClient) RespondQueryTaskCompleted(ctx context.Context, i
 	return out, nil
 }
 
-func (c *workflowServiceClient) ResetStickyTaskQueue(ctx context.Context, in *ResetStickyTaskQueueRequest, opts ...grpc.CallOption) (*ResetStickyTaskQueueResponse, error) {
-	out := new(ResetStickyTaskQueueResponse)
+func (c *workflowServiceClient) ResetStickyTaskQueue(ctx context.Context, in *v1.ResetStickyTaskQueueRequest, opts ...grpc.CallOption) (*v1.ResetStickyTaskQueueResponse, error) {
+	out := new(v1.ResetStickyTaskQueueResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ResetStickyTaskQueue", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -698,8 +696,8 @@ func (c *workflowServiceClient) ResetStickyTaskQueue(ctx context.Context, in *Re
 	return out, nil
 }
 
-func (c *workflowServiceClient) QueryWorkflow(ctx context.Context, in *QueryWorkflowRequest, opts ...grpc.CallOption) (*QueryWorkflowResponse, error) {
-	out := new(QueryWorkflowResponse)
+func (c *workflowServiceClient) QueryWorkflow(ctx context.Context, in *v1.QueryWorkflowRequest, opts ...grpc.CallOption) (*v1.QueryWorkflowResponse, error) {
+	out := new(v1.QueryWorkflowResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/QueryWorkflow", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -707,8 +705,8 @@ func (c *workflowServiceClient) QueryWorkflow(ctx context.Context, in *QueryWork
 	return out, nil
 }
 
-func (c *workflowServiceClient) DescribeWorkflowExecution(ctx context.Context, in *DescribeWorkflowExecutionRequest, opts ...grpc.CallOption) (*DescribeWorkflowExecutionResponse, error) {
-	out := new(DescribeWorkflowExecutionResponse)
+func (c *workflowServiceClient) DescribeWorkflowExecution(ctx context.Context, in *v1.DescribeWorkflowExecutionRequest, opts ...grpc.CallOption) (*v1.DescribeWorkflowExecutionResponse, error) {
+	out := new(v1.DescribeWorkflowExecutionResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/DescribeWorkflowExecution", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -716,8 +714,8 @@ func (c *workflowServiceClient) DescribeWorkflowExecution(ctx context.Context, i
 	return out, nil
 }
 
-func (c *workflowServiceClient) DescribeTaskQueue(ctx context.Context, in *DescribeTaskQueueRequest, opts ...grpc.CallOption) (*DescribeTaskQueueResponse, error) {
-	out := new(DescribeTaskQueueResponse)
+func (c *workflowServiceClient) DescribeTaskQueue(ctx context.Context, in *v1.DescribeTaskQueueRequest, opts ...grpc.CallOption) (*v1.DescribeTaskQueueResponse, error) {
+	out := new(v1.DescribeTaskQueueResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/DescribeTaskQueue", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -725,8 +723,8 @@ func (c *workflowServiceClient) DescribeTaskQueue(ctx context.Context, in *Descr
 	return out, nil
 }
 
-func (c *workflowServiceClient) GetClusterInfo(ctx context.Context, in *GetClusterInfoRequest, opts ...grpc.CallOption) (*GetClusterInfoResponse, error) {
-	out := new(GetClusterInfoResponse)
+func (c *workflowServiceClient) GetClusterInfo(ctx context.Context, in *v1.GetClusterInfoRequest, opts ...grpc.CallOption) (*v1.GetClusterInfoResponse, error) {
+	out := new(v1.GetClusterInfoResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/GetClusterInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -734,8 +732,8 @@ func (c *workflowServiceClient) GetClusterInfo(ctx context.Context, in *GetClust
 	return out, nil
 }
 
-func (c *workflowServiceClient) GetSystemInfo(ctx context.Context, in *GetSystemInfoRequest, opts ...grpc.CallOption) (*GetSystemInfoResponse, error) {
-	out := new(GetSystemInfoResponse)
+func (c *workflowServiceClient) GetSystemInfo(ctx context.Context, in *v1.GetSystemInfoRequest, opts ...grpc.CallOption) (*v1.GetSystemInfoResponse, error) {
+	out := new(v1.GetSystemInfoResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/GetSystemInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -743,8 +741,8 @@ func (c *workflowServiceClient) GetSystemInfo(ctx context.Context, in *GetSystem
 	return out, nil
 }
 
-func (c *workflowServiceClient) ListTaskQueuePartitions(ctx context.Context, in *ListTaskQueuePartitionsRequest, opts ...grpc.CallOption) (*ListTaskQueuePartitionsResponse, error) {
-	out := new(ListTaskQueuePartitionsResponse)
+func (c *workflowServiceClient) ListTaskQueuePartitions(ctx context.Context, in *v1.ListTaskQueuePartitionsRequest, opts ...grpc.CallOption) (*v1.ListTaskQueuePartitionsResponse, error) {
+	out := new(v1.ListTaskQueuePartitionsResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ListTaskQueuePartitions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -752,8 +750,8 @@ func (c *workflowServiceClient) ListTaskQueuePartitions(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *workflowServiceClient) CreateSchedule(ctx context.Context, in *CreateScheduleRequest, opts ...grpc.CallOption) (*CreateScheduleResponse, error) {
-	out := new(CreateScheduleResponse)
+func (c *workflowServiceClient) CreateSchedule(ctx context.Context, in *v1.CreateScheduleRequest, opts ...grpc.CallOption) (*v1.CreateScheduleResponse, error) {
+	out := new(v1.CreateScheduleResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/CreateSchedule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -761,8 +759,8 @@ func (c *workflowServiceClient) CreateSchedule(ctx context.Context, in *CreateSc
 	return out, nil
 }
 
-func (c *workflowServiceClient) DescribeSchedule(ctx context.Context, in *DescribeScheduleRequest, opts ...grpc.CallOption) (*DescribeScheduleResponse, error) {
-	out := new(DescribeScheduleResponse)
+func (c *workflowServiceClient) DescribeSchedule(ctx context.Context, in *v1.DescribeScheduleRequest, opts ...grpc.CallOption) (*v1.DescribeScheduleResponse, error) {
+	out := new(v1.DescribeScheduleResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/DescribeSchedule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -770,8 +768,8 @@ func (c *workflowServiceClient) DescribeSchedule(ctx context.Context, in *Descri
 	return out, nil
 }
 
-func (c *workflowServiceClient) UpdateSchedule(ctx context.Context, in *UpdateScheduleRequest, opts ...grpc.CallOption) (*UpdateScheduleResponse, error) {
-	out := new(UpdateScheduleResponse)
+func (c *workflowServiceClient) UpdateSchedule(ctx context.Context, in *v1.UpdateScheduleRequest, opts ...grpc.CallOption) (*v1.UpdateScheduleResponse, error) {
+	out := new(v1.UpdateScheduleResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/UpdateSchedule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -779,8 +777,8 @@ func (c *workflowServiceClient) UpdateSchedule(ctx context.Context, in *UpdateSc
 	return out, nil
 }
 
-func (c *workflowServiceClient) PatchSchedule(ctx context.Context, in *PatchScheduleRequest, opts ...grpc.CallOption) (*PatchScheduleResponse, error) {
-	out := new(PatchScheduleResponse)
+func (c *workflowServiceClient) PatchSchedule(ctx context.Context, in *v1.PatchScheduleRequest, opts ...grpc.CallOption) (*v1.PatchScheduleResponse, error) {
+	out := new(v1.PatchScheduleResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/PatchSchedule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -788,8 +786,8 @@ func (c *workflowServiceClient) PatchSchedule(ctx context.Context, in *PatchSche
 	return out, nil
 }
 
-func (c *workflowServiceClient) ListScheduleMatchingTimes(ctx context.Context, in *ListScheduleMatchingTimesRequest, opts ...grpc.CallOption) (*ListScheduleMatchingTimesResponse, error) {
-	out := new(ListScheduleMatchingTimesResponse)
+func (c *workflowServiceClient) ListScheduleMatchingTimes(ctx context.Context, in *v1.ListScheduleMatchingTimesRequest, opts ...grpc.CallOption) (*v1.ListScheduleMatchingTimesResponse, error) {
+	out := new(v1.ListScheduleMatchingTimesResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ListScheduleMatchingTimes", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -797,8 +795,8 @@ func (c *workflowServiceClient) ListScheduleMatchingTimes(ctx context.Context, i
 	return out, nil
 }
 
-func (c *workflowServiceClient) DeleteSchedule(ctx context.Context, in *DeleteScheduleRequest, opts ...grpc.CallOption) (*DeleteScheduleResponse, error) {
-	out := new(DeleteScheduleResponse)
+func (c *workflowServiceClient) DeleteSchedule(ctx context.Context, in *v1.DeleteScheduleRequest, opts ...grpc.CallOption) (*v1.DeleteScheduleResponse, error) {
+	out := new(v1.DeleteScheduleResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/DeleteSchedule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -806,8 +804,8 @@ func (c *workflowServiceClient) DeleteSchedule(ctx context.Context, in *DeleteSc
 	return out, nil
 }
 
-func (c *workflowServiceClient) ListSchedules(ctx context.Context, in *ListSchedulesRequest, opts ...grpc.CallOption) (*ListSchedulesResponse, error) {
-	out := new(ListSchedulesResponse)
+func (c *workflowServiceClient) ListSchedules(ctx context.Context, in *v1.ListSchedulesRequest, opts ...grpc.CallOption) (*v1.ListSchedulesResponse, error) {
+	out := new(v1.ListSchedulesResponse)
 	err := c.cc.Invoke(ctx, "/temporal.api.workflowservice.v1.WorkflowService/ListSchedules", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -823,11 +821,11 @@ type WorkflowServiceServer interface {
 	// like workflow executions, task queues, etc. A Namespace acts as a sandbox and provides
 	// isolation for all resources within the namespace. All resources belongs to exactly one
 	// namespace.
-	RegisterNamespace(context.Context, *RegisterNamespaceRequest) (*RegisterNamespaceResponse, error)
+	RegisterNamespace(context.Context, *v1.RegisterNamespaceRequest) (*v1.RegisterNamespaceResponse, error)
 	// DescribeNamespace returns the information and configuration for a registered namespace.
-	DescribeNamespace(context.Context, *DescribeNamespaceRequest) (*DescribeNamespaceResponse, error)
+	DescribeNamespace(context.Context, *v1.DescribeNamespaceRequest) (*v1.DescribeNamespaceResponse, error)
 	// ListNamespaces returns the information and configuration for all namespaces.
-	ListNamespaces(context.Context, *ListNamespacesRequest) (*ListNamespacesResponse, error)
+	ListNamespaces(context.Context, *v1.ListNamespacesRequest) (*v1.ListNamespacesResponse, error)
 	// UpdateNamespace is used to update the information and configuration of a registered
 	// namespace.
 	//
@@ -835,40 +833,40 @@ type WorkflowServiceServer interface {
 	//     aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)
 	// (-- api-linter: core::0134::response-message-name=disabled
 	//     aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)
-	UpdateNamespace(context.Context, *UpdateNamespaceRequest) (*UpdateNamespaceResponse, error)
+	UpdateNamespace(context.Context, *v1.UpdateNamespaceRequest) (*v1.UpdateNamespaceResponse, error)
 	// DeprecateNamespace is used to update the state of a registered namespace to DEPRECATED.
 	//
 	// Once the namespace is deprecated it cannot be used to start new workflow executions. Existing
 	// workflow executions will continue to run on deprecated namespaces.
 	// Deprecated.
-	DeprecateNamespace(context.Context, *DeprecateNamespaceRequest) (*DeprecateNamespaceResponse, error)
+	DeprecateNamespace(context.Context, *v1.DeprecateNamespaceRequest) (*v1.DeprecateNamespaceResponse, error)
 	// StartWorkflowExecution starts a new workflow execution.
 	//
 	// It will create the execution with a `WORKFLOW_EXECUTION_STARTED` event in its history and
 	// also schedule the first workflow task. Returns `WorkflowExecutionAlreadyStarted`, if an
 	// instance already exists with same workflow id.
-	StartWorkflowExecution(context.Context, *StartWorkflowExecutionRequest) (*StartWorkflowExecutionResponse, error)
+	StartWorkflowExecution(context.Context, *v1.StartWorkflowExecutionRequest) (*v1.StartWorkflowExecutionResponse, error)
 	// GetWorkflowExecutionHistory returns the history of specified workflow execution. Fails with
 	// `NotFound` if the specified workflow execution is unknown to the service.
-	GetWorkflowExecutionHistory(context.Context, *GetWorkflowExecutionHistoryRequest) (*GetWorkflowExecutionHistoryResponse, error)
+	GetWorkflowExecutionHistory(context.Context, *v1.GetWorkflowExecutionHistoryRequest) (*v1.GetWorkflowExecutionHistoryResponse, error)
 	// GetWorkflowExecutionHistoryReverse returns the history of specified workflow execution in reverse
 	// order (starting from last event). Fails with`NotFound` if the specified workflow execution is
 	// unknown to the service.
-	GetWorkflowExecutionHistoryReverse(context.Context, *GetWorkflowExecutionHistoryReverseRequest) (*GetWorkflowExecutionHistoryReverseResponse, error)
+	GetWorkflowExecutionHistoryReverse(context.Context, *v1.GetWorkflowExecutionHistoryReverseRequest) (*v1.GetWorkflowExecutionHistoryReverseResponse, error)
 	// PollWorkflowTaskQueue is called by workers to make progress on workflows.
 	//
 	// A WorkflowTask is dispatched to callers for active workflow executions with pending workflow
 	// tasks. The worker is expected to call `RespondWorkflowTaskCompleted` when it is done
 	// processing the task. The service will create a `WorkflowTaskStarted` event in the history for
 	// this task before handing it to the worker.
-	PollWorkflowTaskQueue(context.Context, *PollWorkflowTaskQueueRequest) (*PollWorkflowTaskQueueResponse, error)
+	PollWorkflowTaskQueue(context.Context, *v1.PollWorkflowTaskQueueRequest) (*v1.PollWorkflowTaskQueueResponse, error)
 	// RespondWorkflowTaskCompleted is called by workers to successfully complete workflow tasks
 	// they received from `PollWorkflowTaskQueue`.
 	//
 	// Completing a WorkflowTask will write a `WORKFLOW_TASK_COMPLETED` event to the workflow's
 	// history, along with events corresponding to whatever commands the SDK generated while
 	// executing the task (ex timer started, activity task scheduled, etc).
-	RespondWorkflowTaskCompleted(context.Context, *RespondWorkflowTaskCompletedRequest) (*RespondWorkflowTaskCompletedResponse, error)
+	RespondWorkflowTaskCompleted(context.Context, *v1.RespondWorkflowTaskCompletedRequest) (*v1.RespondWorkflowTaskCompletedResponse, error)
 	// RespondWorkflowTaskFailed is called by workers to indicate the processing of a workflow task
 	// failed.
 	//
@@ -878,7 +876,7 @@ type WorkflowServiceServer interface {
 	//
 	// Temporal will only append first WorkflowTaskFailed event to the history of workflow execution
 	// for consecutive failures.
-	RespondWorkflowTaskFailed(context.Context, *RespondWorkflowTaskFailedRequest) (*RespondWorkflowTaskFailedResponse, error)
+	RespondWorkflowTaskFailed(context.Context, *v1.RespondWorkflowTaskFailedRequest) (*v1.RespondWorkflowTaskFailedResponse, error)
 	// PollActivityTaskQueue is called by workers to process activity tasks from a specific task
 	// queue.
 	//
@@ -891,69 +889,69 @@ type WorkflowServiceServer interface {
 	// (`ACTIVITY_TASK_COMPLETED` / `ACTIVITY_TASK_FAILED` / `ACTIVITY_TASK_TIMED_OUT`) will both be
 	// written permanently to Workflow execution history when Activity is finished. This is done to
 	// avoid writing many events in the case of a failure/retry loop.
-	PollActivityTaskQueue(context.Context, *PollActivityTaskQueueRequest) (*PollActivityTaskQueueResponse, error)
+	PollActivityTaskQueue(context.Context, *v1.PollActivityTaskQueueRequest) (*v1.PollActivityTaskQueueResponse, error)
 	// RecordActivityTaskHeartbeat is optionally called by workers while they execute activities.
 	//
 	// If worker fails to heartbeat within the `heartbeat_timeout` interval for the activity task,
 	// then it will be marked as timed out and an `ACTIVITY_TASK_TIMED_OUT` event will be written to
 	// the workflow history. Calling `RecordActivityTaskHeartbeat` will fail with `NotFound` in
 	// such situations, in that event, the SDK should request cancellation of the activity.
-	RecordActivityTaskHeartbeat(context.Context, *RecordActivityTaskHeartbeatRequest) (*RecordActivityTaskHeartbeatResponse, error)
+	RecordActivityTaskHeartbeat(context.Context, *v1.RecordActivityTaskHeartbeatRequest) (*v1.RecordActivityTaskHeartbeatResponse, error)
 	// See `RecordActivityTaskHeartbeat`. This version allows clients to record heartbeats by
 	// namespace/workflow id/activity id instead of task token.
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "By" is used to indicate request type. --)
-	RecordActivityTaskHeartbeatById(context.Context, *RecordActivityTaskHeartbeatByIdRequest) (*RecordActivityTaskHeartbeatByIdResponse, error)
+	RecordActivityTaskHeartbeatById(context.Context, *v1.RecordActivityTaskHeartbeatByIdRequest) (*v1.RecordActivityTaskHeartbeatByIdResponse, error)
 	// RespondActivityTaskCompleted is called by workers when they successfully complete an activity
 	// task.
 	//
 	// This results in a new `ACTIVITY_TASK_COMPLETED` event being written to the workflow history
 	// and a new workflow task created for the workflow. Fails with `NotFound` if the task token is
 	// no longer valid due to activity timeout, already being completed, or never having existed.
-	RespondActivityTaskCompleted(context.Context, *RespondActivityTaskCompletedRequest) (*RespondActivityTaskCompletedResponse, error)
+	RespondActivityTaskCompleted(context.Context, *v1.RespondActivityTaskCompletedRequest) (*v1.RespondActivityTaskCompletedResponse, error)
 	// See `RecordActivityTaskCompleted`. This version allows clients to record completions by
 	// namespace/workflow id/activity id instead of task token.
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "By" is used to indicate request type. --)
-	RespondActivityTaskCompletedById(context.Context, *RespondActivityTaskCompletedByIdRequest) (*RespondActivityTaskCompletedByIdResponse, error)
+	RespondActivityTaskCompletedById(context.Context, *v1.RespondActivityTaskCompletedByIdRequest) (*v1.RespondActivityTaskCompletedByIdResponse, error)
 	// RespondActivityTaskFailed is called by workers when processing an activity task fails.
 	//
 	// This results in a new `ACTIVITY_TASK_FAILED` event being written to the workflow history and
 	// a new workflow task created for the workflow. Fails with `NotFound` if the task token is no
 	// longer valid due to activity timeout, already being completed, or never having existed.
-	RespondActivityTaskFailed(context.Context, *RespondActivityTaskFailedRequest) (*RespondActivityTaskFailedResponse, error)
+	RespondActivityTaskFailed(context.Context, *v1.RespondActivityTaskFailedRequest) (*v1.RespondActivityTaskFailedResponse, error)
 	// See `RecordActivityTaskFailed`. This version allows clients to record failures by
 	// namespace/workflow id/activity id instead of task token.
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "By" is used to indicate request type. --)
-	RespondActivityTaskFailedById(context.Context, *RespondActivityTaskFailedByIdRequest) (*RespondActivityTaskFailedByIdResponse, error)
+	RespondActivityTaskFailedById(context.Context, *v1.RespondActivityTaskFailedByIdRequest) (*v1.RespondActivityTaskFailedByIdResponse, error)
 	// RespondActivityTaskFailed is called by workers when processing an activity task fails.
 	//
 	// This results in a new `ACTIVITY_TASK_CANCELED` event being written to the workflow history
 	// and a new workflow task created for the workflow. Fails with `NotFound` if the task token is
 	// no longer valid due to activity timeout, already being completed, or never having existed.
-	RespondActivityTaskCanceled(context.Context, *RespondActivityTaskCanceledRequest) (*RespondActivityTaskCanceledResponse, error)
+	RespondActivityTaskCanceled(context.Context, *v1.RespondActivityTaskCanceledRequest) (*v1.RespondActivityTaskCanceledResponse, error)
 	// See `RecordActivityTaskCanceled`. This version allows clients to record failures by
 	// namespace/workflow id/activity id instead of task token.
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "By" is used to indicate request type. --)
-	RespondActivityTaskCanceledById(context.Context, *RespondActivityTaskCanceledByIdRequest) (*RespondActivityTaskCanceledByIdResponse, error)
+	RespondActivityTaskCanceledById(context.Context, *v1.RespondActivityTaskCanceledByIdRequest) (*v1.RespondActivityTaskCanceledByIdResponse, error)
 	// RequestCancelWorkflowExecution is called by workers when they want to request cancellation of
 	// a workflow execution.
 	//
 	// This result in a new `WORKFLOW_EXECUTION_CANCEL_REQUESTED` event being written to the
 	// workflow history and a new workflow task created for the workflow. Fails with `NotFound` if
 	// the workflow is already completed or doesn't exist.
-	RequestCancelWorkflowExecution(context.Context, *RequestCancelWorkflowExecutionRequest) (*RequestCancelWorkflowExecutionResponse, error)
+	RequestCancelWorkflowExecution(context.Context, *v1.RequestCancelWorkflowExecutionRequest) (*v1.RequestCancelWorkflowExecutionResponse, error)
 	// SignalWorkflowExecution is used to send a signal to a running workflow execution.
 	//
 	// This results in a `WORKFLOW_EXECUTION_SIGNALED` event recorded in the history and a workflow
 	// task being created for the execution.
-	SignalWorkflowExecution(context.Context, *SignalWorkflowExecutionRequest) (*SignalWorkflowExecutionResponse, error)
+	SignalWorkflowExecution(context.Context, *v1.SignalWorkflowExecutionRequest) (*v1.SignalWorkflowExecutionResponse, error)
 	// SignalWithStartWorkflowExecution is used to ensure a signal is sent to a workflow, even if
 	// it isn't yet started.
 	//
@@ -966,36 +964,36 @@ type WorkflowServiceServer interface {
 	//
 	// (-- api-linter: core::0136::prepositions=disabled
 	//     aip.dev/not-precedent: "With" is used to indicate combined operation. --)
-	SignalWithStartWorkflowExecution(context.Context, *SignalWithStartWorkflowExecutionRequest) (*SignalWithStartWorkflowExecutionResponse, error)
+	SignalWithStartWorkflowExecution(context.Context, *v1.SignalWithStartWorkflowExecutionRequest) (*v1.SignalWithStartWorkflowExecutionResponse, error)
 	// ResetWorkflowExecution will reset an existing workflow execution to a specified
 	// `WORKFLOW_TASK_COMPLETED` event (exclusive). It will immediately terminate the current
 	// execution instance.
 	// TODO: Does exclusive here mean *just* the completed event, or also WFT started? Otherwise the task is doomed to time out?
-	ResetWorkflowExecution(context.Context, *ResetWorkflowExecutionRequest) (*ResetWorkflowExecutionResponse, error)
+	ResetWorkflowExecution(context.Context, *v1.ResetWorkflowExecutionRequest) (*v1.ResetWorkflowExecutionResponse, error)
 	// TerminateWorkflowExecution terminates an existing workflow execution by recording a
 	// `WORKFLOW_EXECUTION_TERMINATED` event in the history and immediately terminating the
 	// execution instance.
-	TerminateWorkflowExecution(context.Context, *TerminateWorkflowExecutionRequest) (*TerminateWorkflowExecutionResponse, error)
+	TerminateWorkflowExecution(context.Context, *v1.TerminateWorkflowExecutionRequest) (*v1.TerminateWorkflowExecutionResponse, error)
 	// ListOpenWorkflowExecutions is a visibility API to list the open executions in a specific namespace.
-	ListOpenWorkflowExecutions(context.Context, *ListOpenWorkflowExecutionsRequest) (*ListOpenWorkflowExecutionsResponse, error)
+	ListOpenWorkflowExecutions(context.Context, *v1.ListOpenWorkflowExecutionsRequest) (*v1.ListOpenWorkflowExecutionsResponse, error)
 	// ListClosedWorkflowExecutions is a visibility API to list the closed executions in a specific namespace.
-	ListClosedWorkflowExecutions(context.Context, *ListClosedWorkflowExecutionsRequest) (*ListClosedWorkflowExecutionsResponse, error)
+	ListClosedWorkflowExecutions(context.Context, *v1.ListClosedWorkflowExecutionsRequest) (*v1.ListClosedWorkflowExecutionsResponse, error)
 	// ListWorkflowExecutions is a visibility API to list workflow executions in a specific namespace.
-	ListWorkflowExecutions(context.Context, *ListWorkflowExecutionsRequest) (*ListWorkflowExecutionsResponse, error)
+	ListWorkflowExecutions(context.Context, *v1.ListWorkflowExecutionsRequest) (*v1.ListWorkflowExecutionsResponse, error)
 	// ListArchivedWorkflowExecutions is a visibility API to list archived workflow executions in a specific namespace.
-	ListArchivedWorkflowExecutions(context.Context, *ListArchivedWorkflowExecutionsRequest) (*ListArchivedWorkflowExecutionsResponse, error)
+	ListArchivedWorkflowExecutions(context.Context, *v1.ListArchivedWorkflowExecutionsRequest) (*v1.ListArchivedWorkflowExecutionsResponse, error)
 	// ScanWorkflowExecutions is a visibility API to list large amount of workflow executions in a specific namespace without order.
-	ScanWorkflowExecutions(context.Context, *ScanWorkflowExecutionsRequest) (*ScanWorkflowExecutionsResponse, error)
+	ScanWorkflowExecutions(context.Context, *v1.ScanWorkflowExecutionsRequest) (*v1.ScanWorkflowExecutionsResponse, error)
 	// CountWorkflowExecutions is a visibility API to count of workflow executions in a specific namespace.
-	CountWorkflowExecutions(context.Context, *CountWorkflowExecutionsRequest) (*CountWorkflowExecutionsResponse, error)
+	CountWorkflowExecutions(context.Context, *v1.CountWorkflowExecutionsRequest) (*v1.CountWorkflowExecutionsResponse, error)
 	// GetSearchAttributes is a visibility API to get all legal keys that could be used in list APIs
-	GetSearchAttributes(context.Context, *GetSearchAttributesRequest) (*GetSearchAttributesResponse, error)
+	GetSearchAttributes(context.Context, *v1.GetSearchAttributesRequest) (*v1.GetSearchAttributesResponse, error)
 	// RespondQueryTaskCompleted is called by workers to complete queries which were delivered on
 	// the `query` (not `queries`) field of a `PollWorkflowTaskQueueResponse`.
 	//
 	// Completing the query will unblock the corresponding client call to `QueryWorkflow` and return
 	// the query result a response.
-	RespondQueryTaskCompleted(context.Context, *RespondQueryTaskCompletedRequest) (*RespondQueryTaskCompletedResponse, error)
+	RespondQueryTaskCompleted(context.Context, *v1.RespondQueryTaskCompletedRequest) (*v1.RespondQueryTaskCompletedResponse, error)
 	// ResetStickyTaskQueue resets the sticky task queue related information in the mutable state of
 	// a given workflow. This is prudent for workers to perform if a workflow has been paged out of
 	// their cache.
@@ -1003,18 +1001,18 @@ type WorkflowServiceServer interface {
 	// Things cleared are:
 	// 1. StickyTaskQueue
 	// 2. StickyScheduleToStartTimeout
-	ResetStickyTaskQueue(context.Context, *ResetStickyTaskQueueRequest) (*ResetStickyTaskQueueResponse, error)
+	ResetStickyTaskQueue(context.Context, *v1.ResetStickyTaskQueueRequest) (*v1.ResetStickyTaskQueueResponse, error)
 	// QueryWorkflow requests a query be executed for a specified workflow execution.
-	QueryWorkflow(context.Context, *QueryWorkflowRequest) (*QueryWorkflowResponse, error)
+	QueryWorkflow(context.Context, *v1.QueryWorkflowRequest) (*v1.QueryWorkflowResponse, error)
 	// DescribeWorkflowExecution returns information about the specified workflow execution.
-	DescribeWorkflowExecution(context.Context, *DescribeWorkflowExecutionRequest) (*DescribeWorkflowExecutionResponse, error)
+	DescribeWorkflowExecution(context.Context, *v1.DescribeWorkflowExecutionRequest) (*v1.DescribeWorkflowExecutionResponse, error)
 	// DescribeTaskQueue returns information about the target task queue.
-	DescribeTaskQueue(context.Context, *DescribeTaskQueueRequest) (*DescribeTaskQueueResponse, error)
+	DescribeTaskQueue(context.Context, *v1.DescribeTaskQueueRequest) (*v1.DescribeTaskQueueResponse, error)
 	// GetClusterInfo returns information about temporal cluster
-	GetClusterInfo(context.Context, *GetClusterInfoRequest) (*GetClusterInfoResponse, error)
+	GetClusterInfo(context.Context, *v1.GetClusterInfoRequest) (*v1.GetClusterInfoResponse, error)
 	// GetSystemInfo returns information about the system.
-	GetSystemInfo(context.Context, *GetSystemInfoRequest) (*GetSystemInfoResponse, error)
-	ListTaskQueuePartitions(context.Context, *ListTaskQueuePartitionsRequest) (*ListTaskQueuePartitionsResponse, error)
+	GetSystemInfo(context.Context, *v1.GetSystemInfoRequest) (*v1.GetSystemInfoResponse, error)
+	ListTaskQueuePartitions(context.Context, *v1.ListTaskQueuePartitionsRequest) (*v1.ListTaskQueuePartitionsResponse, error)
 	// Creates a new schedule.
 	// (-- api-linter: core::0133::method-signature=disabled
 	//     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
@@ -1022,174 +1020,174 @@ type WorkflowServiceServer interface {
 	//     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
 	// (-- api-linter: core::0133::http-uri-parent=disabled
 	//     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
-	CreateSchedule(context.Context, *CreateScheduleRequest) (*CreateScheduleResponse, error)
+	CreateSchedule(context.Context, *v1.CreateScheduleRequest) (*v1.CreateScheduleResponse, error)
 	// Returns the schedule description and current state of an existing schedule.
-	DescribeSchedule(context.Context, *DescribeScheduleRequest) (*DescribeScheduleResponse, error)
+	DescribeSchedule(context.Context, *v1.DescribeScheduleRequest) (*v1.DescribeScheduleResponse, error)
 	// Changes the configuration or state of an existing schedule.
 	// (-- api-linter: core::0134::response-message-name=disabled
 	//     aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)
 	// (-- api-linter: core::0134::method-signature=disabled
 	//     aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)
-	UpdateSchedule(context.Context, *UpdateScheduleRequest) (*UpdateScheduleResponse, error)
+	UpdateSchedule(context.Context, *v1.UpdateScheduleRequest) (*v1.UpdateScheduleResponse, error)
 	// Makes a specific change to a schedule or triggers an immediate action.
 	// (-- api-linter: core::0134::synonyms=disabled
 	//     aip.dev/not-precedent: we have both patch and update. --)
-	PatchSchedule(context.Context, *PatchScheduleRequest) (*PatchScheduleResponse, error)
+	PatchSchedule(context.Context, *v1.PatchScheduleRequest) (*v1.PatchScheduleResponse, error)
 	// Lists matching times within a range.
-	ListScheduleMatchingTimes(context.Context, *ListScheduleMatchingTimesRequest) (*ListScheduleMatchingTimesResponse, error)
+	ListScheduleMatchingTimes(context.Context, *v1.ListScheduleMatchingTimesRequest) (*v1.ListScheduleMatchingTimesResponse, error)
 	// Deletes a schedule, removing it from the system.
 	// (-- api-linter: core::0135::method-signature=disabled
 	//     aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)
 	// (-- api-linter: core::0135::response-message-name=disabled
 	//     aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)
-	DeleteSchedule(context.Context, *DeleteScheduleRequest) (*DeleteScheduleResponse, error)
+	DeleteSchedule(context.Context, *v1.DeleteScheduleRequest) (*v1.DeleteScheduleResponse, error)
 	// List all schedules in a namespace.
-	ListSchedules(context.Context, *ListSchedulesRequest) (*ListSchedulesResponse, error)
+	ListSchedules(context.Context, *v1.ListSchedulesRequest) (*v1.ListSchedulesResponse, error)
 }
 
 // UnimplementedWorkflowServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedWorkflowServiceServer struct {
 }
 
-func (*UnimplementedWorkflowServiceServer) RegisterNamespace(ctx context.Context, req *RegisterNamespaceRequest) (*RegisterNamespaceResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RegisterNamespace(ctx context.Context, req *v1.RegisterNamespaceRequest) (*v1.RegisterNamespaceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterNamespace not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) DescribeNamespace(ctx context.Context, req *DescribeNamespaceRequest) (*DescribeNamespaceResponse, error) {
+func (*UnimplementedWorkflowServiceServer) DescribeNamespace(ctx context.Context, req *v1.DescribeNamespaceRequest) (*v1.DescribeNamespaceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeNamespace not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ListNamespaces(ctx context.Context, req *ListNamespacesRequest) (*ListNamespacesResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ListNamespaces(ctx context.Context, req *v1.ListNamespacesRequest) (*v1.ListNamespacesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListNamespaces not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) UpdateNamespace(ctx context.Context, req *UpdateNamespaceRequest) (*UpdateNamespaceResponse, error) {
+func (*UnimplementedWorkflowServiceServer) UpdateNamespace(ctx context.Context, req *v1.UpdateNamespaceRequest) (*v1.UpdateNamespaceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateNamespace not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) DeprecateNamespace(ctx context.Context, req *DeprecateNamespaceRequest) (*DeprecateNamespaceResponse, error) {
+func (*UnimplementedWorkflowServiceServer) DeprecateNamespace(ctx context.Context, req *v1.DeprecateNamespaceRequest) (*v1.DeprecateNamespaceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeprecateNamespace not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) StartWorkflowExecution(ctx context.Context, req *StartWorkflowExecutionRequest) (*StartWorkflowExecutionResponse, error) {
+func (*UnimplementedWorkflowServiceServer) StartWorkflowExecution(ctx context.Context, req *v1.StartWorkflowExecutionRequest) (*v1.StartWorkflowExecutionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartWorkflowExecution not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) GetWorkflowExecutionHistory(ctx context.Context, req *GetWorkflowExecutionHistoryRequest) (*GetWorkflowExecutionHistoryResponse, error) {
+func (*UnimplementedWorkflowServiceServer) GetWorkflowExecutionHistory(ctx context.Context, req *v1.GetWorkflowExecutionHistoryRequest) (*v1.GetWorkflowExecutionHistoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorkflowExecutionHistory not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) GetWorkflowExecutionHistoryReverse(ctx context.Context, req *GetWorkflowExecutionHistoryReverseRequest) (*GetWorkflowExecutionHistoryReverseResponse, error) {
+func (*UnimplementedWorkflowServiceServer) GetWorkflowExecutionHistoryReverse(ctx context.Context, req *v1.GetWorkflowExecutionHistoryReverseRequest) (*v1.GetWorkflowExecutionHistoryReverseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorkflowExecutionHistoryReverse not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) PollWorkflowTaskQueue(ctx context.Context, req *PollWorkflowTaskQueueRequest) (*PollWorkflowTaskQueueResponse, error) {
+func (*UnimplementedWorkflowServiceServer) PollWorkflowTaskQueue(ctx context.Context, req *v1.PollWorkflowTaskQueueRequest) (*v1.PollWorkflowTaskQueueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PollWorkflowTaskQueue not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RespondWorkflowTaskCompleted(ctx context.Context, req *RespondWorkflowTaskCompletedRequest) (*RespondWorkflowTaskCompletedResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RespondWorkflowTaskCompleted(ctx context.Context, req *v1.RespondWorkflowTaskCompletedRequest) (*v1.RespondWorkflowTaskCompletedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondWorkflowTaskCompleted not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RespondWorkflowTaskFailed(ctx context.Context, req *RespondWorkflowTaskFailedRequest) (*RespondWorkflowTaskFailedResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RespondWorkflowTaskFailed(ctx context.Context, req *v1.RespondWorkflowTaskFailedRequest) (*v1.RespondWorkflowTaskFailedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondWorkflowTaskFailed not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) PollActivityTaskQueue(ctx context.Context, req *PollActivityTaskQueueRequest) (*PollActivityTaskQueueResponse, error) {
+func (*UnimplementedWorkflowServiceServer) PollActivityTaskQueue(ctx context.Context, req *v1.PollActivityTaskQueueRequest) (*v1.PollActivityTaskQueueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PollActivityTaskQueue not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RecordActivityTaskHeartbeat(ctx context.Context, req *RecordActivityTaskHeartbeatRequest) (*RecordActivityTaskHeartbeatResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RecordActivityTaskHeartbeat(ctx context.Context, req *v1.RecordActivityTaskHeartbeatRequest) (*v1.RecordActivityTaskHeartbeatResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RecordActivityTaskHeartbeat not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RecordActivityTaskHeartbeatById(ctx context.Context, req *RecordActivityTaskHeartbeatByIdRequest) (*RecordActivityTaskHeartbeatByIdResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RecordActivityTaskHeartbeatById(ctx context.Context, req *v1.RecordActivityTaskHeartbeatByIdRequest) (*v1.RecordActivityTaskHeartbeatByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RecordActivityTaskHeartbeatById not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RespondActivityTaskCompleted(ctx context.Context, req *RespondActivityTaskCompletedRequest) (*RespondActivityTaskCompletedResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RespondActivityTaskCompleted(ctx context.Context, req *v1.RespondActivityTaskCompletedRequest) (*v1.RespondActivityTaskCompletedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondActivityTaskCompleted not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RespondActivityTaskCompletedById(ctx context.Context, req *RespondActivityTaskCompletedByIdRequest) (*RespondActivityTaskCompletedByIdResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RespondActivityTaskCompletedById(ctx context.Context, req *v1.RespondActivityTaskCompletedByIdRequest) (*v1.RespondActivityTaskCompletedByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondActivityTaskCompletedById not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RespondActivityTaskFailed(ctx context.Context, req *RespondActivityTaskFailedRequest) (*RespondActivityTaskFailedResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RespondActivityTaskFailed(ctx context.Context, req *v1.RespondActivityTaskFailedRequest) (*v1.RespondActivityTaskFailedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondActivityTaskFailed not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RespondActivityTaskFailedById(ctx context.Context, req *RespondActivityTaskFailedByIdRequest) (*RespondActivityTaskFailedByIdResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RespondActivityTaskFailedById(ctx context.Context, req *v1.RespondActivityTaskFailedByIdRequest) (*v1.RespondActivityTaskFailedByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondActivityTaskFailedById not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RespondActivityTaskCanceled(ctx context.Context, req *RespondActivityTaskCanceledRequest) (*RespondActivityTaskCanceledResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RespondActivityTaskCanceled(ctx context.Context, req *v1.RespondActivityTaskCanceledRequest) (*v1.RespondActivityTaskCanceledResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondActivityTaskCanceled not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RespondActivityTaskCanceledById(ctx context.Context, req *RespondActivityTaskCanceledByIdRequest) (*RespondActivityTaskCanceledByIdResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RespondActivityTaskCanceledById(ctx context.Context, req *v1.RespondActivityTaskCanceledByIdRequest) (*v1.RespondActivityTaskCanceledByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondActivityTaskCanceledById not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RequestCancelWorkflowExecution(ctx context.Context, req *RequestCancelWorkflowExecutionRequest) (*RequestCancelWorkflowExecutionResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RequestCancelWorkflowExecution(ctx context.Context, req *v1.RequestCancelWorkflowExecutionRequest) (*v1.RequestCancelWorkflowExecutionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestCancelWorkflowExecution not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) SignalWorkflowExecution(ctx context.Context, req *SignalWorkflowExecutionRequest) (*SignalWorkflowExecutionResponse, error) {
+func (*UnimplementedWorkflowServiceServer) SignalWorkflowExecution(ctx context.Context, req *v1.SignalWorkflowExecutionRequest) (*v1.SignalWorkflowExecutionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignalWorkflowExecution not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) SignalWithStartWorkflowExecution(ctx context.Context, req *SignalWithStartWorkflowExecutionRequest) (*SignalWithStartWorkflowExecutionResponse, error) {
+func (*UnimplementedWorkflowServiceServer) SignalWithStartWorkflowExecution(ctx context.Context, req *v1.SignalWithStartWorkflowExecutionRequest) (*v1.SignalWithStartWorkflowExecutionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignalWithStartWorkflowExecution not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ResetWorkflowExecution(ctx context.Context, req *ResetWorkflowExecutionRequest) (*ResetWorkflowExecutionResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ResetWorkflowExecution(ctx context.Context, req *v1.ResetWorkflowExecutionRequest) (*v1.ResetWorkflowExecutionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetWorkflowExecution not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) TerminateWorkflowExecution(ctx context.Context, req *TerminateWorkflowExecutionRequest) (*TerminateWorkflowExecutionResponse, error) {
+func (*UnimplementedWorkflowServiceServer) TerminateWorkflowExecution(ctx context.Context, req *v1.TerminateWorkflowExecutionRequest) (*v1.TerminateWorkflowExecutionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TerminateWorkflowExecution not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ListOpenWorkflowExecutions(ctx context.Context, req *ListOpenWorkflowExecutionsRequest) (*ListOpenWorkflowExecutionsResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ListOpenWorkflowExecutions(ctx context.Context, req *v1.ListOpenWorkflowExecutionsRequest) (*v1.ListOpenWorkflowExecutionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListOpenWorkflowExecutions not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ListClosedWorkflowExecutions(ctx context.Context, req *ListClosedWorkflowExecutionsRequest) (*ListClosedWorkflowExecutionsResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ListClosedWorkflowExecutions(ctx context.Context, req *v1.ListClosedWorkflowExecutionsRequest) (*v1.ListClosedWorkflowExecutionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListClosedWorkflowExecutions not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ListWorkflowExecutions(ctx context.Context, req *ListWorkflowExecutionsRequest) (*ListWorkflowExecutionsResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ListWorkflowExecutions(ctx context.Context, req *v1.ListWorkflowExecutionsRequest) (*v1.ListWorkflowExecutionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListWorkflowExecutions not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ListArchivedWorkflowExecutions(ctx context.Context, req *ListArchivedWorkflowExecutionsRequest) (*ListArchivedWorkflowExecutionsResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ListArchivedWorkflowExecutions(ctx context.Context, req *v1.ListArchivedWorkflowExecutionsRequest) (*v1.ListArchivedWorkflowExecutionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListArchivedWorkflowExecutions not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ScanWorkflowExecutions(ctx context.Context, req *ScanWorkflowExecutionsRequest) (*ScanWorkflowExecutionsResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ScanWorkflowExecutions(ctx context.Context, req *v1.ScanWorkflowExecutionsRequest) (*v1.ScanWorkflowExecutionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ScanWorkflowExecutions not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) CountWorkflowExecutions(ctx context.Context, req *CountWorkflowExecutionsRequest) (*CountWorkflowExecutionsResponse, error) {
+func (*UnimplementedWorkflowServiceServer) CountWorkflowExecutions(ctx context.Context, req *v1.CountWorkflowExecutionsRequest) (*v1.CountWorkflowExecutionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CountWorkflowExecutions not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) GetSearchAttributes(ctx context.Context, req *GetSearchAttributesRequest) (*GetSearchAttributesResponse, error) {
+func (*UnimplementedWorkflowServiceServer) GetSearchAttributes(ctx context.Context, req *v1.GetSearchAttributesRequest) (*v1.GetSearchAttributesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSearchAttributes not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) RespondQueryTaskCompleted(ctx context.Context, req *RespondQueryTaskCompletedRequest) (*RespondQueryTaskCompletedResponse, error) {
+func (*UnimplementedWorkflowServiceServer) RespondQueryTaskCompleted(ctx context.Context, req *v1.RespondQueryTaskCompletedRequest) (*v1.RespondQueryTaskCompletedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RespondQueryTaskCompleted not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ResetStickyTaskQueue(ctx context.Context, req *ResetStickyTaskQueueRequest) (*ResetStickyTaskQueueResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ResetStickyTaskQueue(ctx context.Context, req *v1.ResetStickyTaskQueueRequest) (*v1.ResetStickyTaskQueueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetStickyTaskQueue not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) QueryWorkflow(ctx context.Context, req *QueryWorkflowRequest) (*QueryWorkflowResponse, error) {
+func (*UnimplementedWorkflowServiceServer) QueryWorkflow(ctx context.Context, req *v1.QueryWorkflowRequest) (*v1.QueryWorkflowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryWorkflow not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) DescribeWorkflowExecution(ctx context.Context, req *DescribeWorkflowExecutionRequest) (*DescribeWorkflowExecutionResponse, error) {
+func (*UnimplementedWorkflowServiceServer) DescribeWorkflowExecution(ctx context.Context, req *v1.DescribeWorkflowExecutionRequest) (*v1.DescribeWorkflowExecutionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeWorkflowExecution not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) DescribeTaskQueue(ctx context.Context, req *DescribeTaskQueueRequest) (*DescribeTaskQueueResponse, error) {
+func (*UnimplementedWorkflowServiceServer) DescribeTaskQueue(ctx context.Context, req *v1.DescribeTaskQueueRequest) (*v1.DescribeTaskQueueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeTaskQueue not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) GetClusterInfo(ctx context.Context, req *GetClusterInfoRequest) (*GetClusterInfoResponse, error) {
+func (*UnimplementedWorkflowServiceServer) GetClusterInfo(ctx context.Context, req *v1.GetClusterInfoRequest) (*v1.GetClusterInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetClusterInfo not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) GetSystemInfo(ctx context.Context, req *GetSystemInfoRequest) (*GetSystemInfoResponse, error) {
+func (*UnimplementedWorkflowServiceServer) GetSystemInfo(ctx context.Context, req *v1.GetSystemInfoRequest) (*v1.GetSystemInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSystemInfo not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ListTaskQueuePartitions(ctx context.Context, req *ListTaskQueuePartitionsRequest) (*ListTaskQueuePartitionsResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ListTaskQueuePartitions(ctx context.Context, req *v1.ListTaskQueuePartitionsRequest) (*v1.ListTaskQueuePartitionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTaskQueuePartitions not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) CreateSchedule(ctx context.Context, req *CreateScheduleRequest) (*CreateScheduleResponse, error) {
+func (*UnimplementedWorkflowServiceServer) CreateSchedule(ctx context.Context, req *v1.CreateScheduleRequest) (*v1.CreateScheduleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSchedule not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) DescribeSchedule(ctx context.Context, req *DescribeScheduleRequest) (*DescribeScheduleResponse, error) {
+func (*UnimplementedWorkflowServiceServer) DescribeSchedule(ctx context.Context, req *v1.DescribeScheduleRequest) (*v1.DescribeScheduleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeSchedule not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) UpdateSchedule(ctx context.Context, req *UpdateScheduleRequest) (*UpdateScheduleResponse, error) {
+func (*UnimplementedWorkflowServiceServer) UpdateSchedule(ctx context.Context, req *v1.UpdateScheduleRequest) (*v1.UpdateScheduleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSchedule not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) PatchSchedule(ctx context.Context, req *PatchScheduleRequest) (*PatchScheduleResponse, error) {
+func (*UnimplementedWorkflowServiceServer) PatchSchedule(ctx context.Context, req *v1.PatchScheduleRequest) (*v1.PatchScheduleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PatchSchedule not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ListScheduleMatchingTimes(ctx context.Context, req *ListScheduleMatchingTimesRequest) (*ListScheduleMatchingTimesResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ListScheduleMatchingTimes(ctx context.Context, req *v1.ListScheduleMatchingTimesRequest) (*v1.ListScheduleMatchingTimesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListScheduleMatchingTimes not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) DeleteSchedule(ctx context.Context, req *DeleteScheduleRequest) (*DeleteScheduleResponse, error) {
+func (*UnimplementedWorkflowServiceServer) DeleteSchedule(ctx context.Context, req *v1.DeleteScheduleRequest) (*v1.DeleteScheduleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSchedule not implemented")
 }
-func (*UnimplementedWorkflowServiceServer) ListSchedules(ctx context.Context, req *ListSchedulesRequest) (*ListSchedulesResponse, error) {
+func (*UnimplementedWorkflowServiceServer) ListSchedules(ctx context.Context, req *v1.ListSchedulesRequest) (*v1.ListSchedulesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListSchedules not implemented")
 }
 
@@ -1198,7 +1196,7 @@ func RegisterWorkflowServiceServer(s *grpc.Server, srv WorkflowServiceServer) {
 }
 
 func _WorkflowService_RegisterNamespace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterNamespaceRequest)
+	in := new(v1.RegisterNamespaceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1210,13 +1208,13 @@ func _WorkflowService_RegisterNamespace_Handler(srv interface{}, ctx context.Con
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RegisterNamespace",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RegisterNamespace(ctx, req.(*RegisterNamespaceRequest))
+		return srv.(WorkflowServiceServer).RegisterNamespace(ctx, req.(*v1.RegisterNamespaceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_DescribeNamespace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DescribeNamespaceRequest)
+	in := new(v1.DescribeNamespaceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1228,13 +1226,13 @@ func _WorkflowService_DescribeNamespace_Handler(srv interface{}, ctx context.Con
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/DescribeNamespace",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).DescribeNamespace(ctx, req.(*DescribeNamespaceRequest))
+		return srv.(WorkflowServiceServer).DescribeNamespace(ctx, req.(*v1.DescribeNamespaceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ListNamespaces_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListNamespacesRequest)
+	in := new(v1.ListNamespacesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1246,13 +1244,13 @@ func _WorkflowService_ListNamespaces_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ListNamespaces",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ListNamespaces(ctx, req.(*ListNamespacesRequest))
+		return srv.(WorkflowServiceServer).ListNamespaces(ctx, req.(*v1.ListNamespacesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_UpdateNamespace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateNamespaceRequest)
+	in := new(v1.UpdateNamespaceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1264,13 +1262,13 @@ func _WorkflowService_UpdateNamespace_Handler(srv interface{}, ctx context.Conte
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/UpdateNamespace",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).UpdateNamespace(ctx, req.(*UpdateNamespaceRequest))
+		return srv.(WorkflowServiceServer).UpdateNamespace(ctx, req.(*v1.UpdateNamespaceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_DeprecateNamespace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeprecateNamespaceRequest)
+	in := new(v1.DeprecateNamespaceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1282,13 +1280,13 @@ func _WorkflowService_DeprecateNamespace_Handler(srv interface{}, ctx context.Co
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/DeprecateNamespace",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).DeprecateNamespace(ctx, req.(*DeprecateNamespaceRequest))
+		return srv.(WorkflowServiceServer).DeprecateNamespace(ctx, req.(*v1.DeprecateNamespaceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_StartWorkflowExecution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StartWorkflowExecutionRequest)
+	in := new(v1.StartWorkflowExecutionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1300,13 +1298,13 @@ func _WorkflowService_StartWorkflowExecution_Handler(srv interface{}, ctx contex
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/StartWorkflowExecution",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).StartWorkflowExecution(ctx, req.(*StartWorkflowExecutionRequest))
+		return srv.(WorkflowServiceServer).StartWorkflowExecution(ctx, req.(*v1.StartWorkflowExecutionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_GetWorkflowExecutionHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetWorkflowExecutionHistoryRequest)
+	in := new(v1.GetWorkflowExecutionHistoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1318,13 +1316,13 @@ func _WorkflowService_GetWorkflowExecutionHistory_Handler(srv interface{}, ctx c
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/GetWorkflowExecutionHistory",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).GetWorkflowExecutionHistory(ctx, req.(*GetWorkflowExecutionHistoryRequest))
+		return srv.(WorkflowServiceServer).GetWorkflowExecutionHistory(ctx, req.(*v1.GetWorkflowExecutionHistoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_GetWorkflowExecutionHistoryReverse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetWorkflowExecutionHistoryReverseRequest)
+	in := new(v1.GetWorkflowExecutionHistoryReverseRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1336,13 +1334,13 @@ func _WorkflowService_GetWorkflowExecutionHistoryReverse_Handler(srv interface{}
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/GetWorkflowExecutionHistoryReverse",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).GetWorkflowExecutionHistoryReverse(ctx, req.(*GetWorkflowExecutionHistoryReverseRequest))
+		return srv.(WorkflowServiceServer).GetWorkflowExecutionHistoryReverse(ctx, req.(*v1.GetWorkflowExecutionHistoryReverseRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_PollWorkflowTaskQueue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PollWorkflowTaskQueueRequest)
+	in := new(v1.PollWorkflowTaskQueueRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1354,13 +1352,13 @@ func _WorkflowService_PollWorkflowTaskQueue_Handler(srv interface{}, ctx context
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/PollWorkflowTaskQueue",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).PollWorkflowTaskQueue(ctx, req.(*PollWorkflowTaskQueueRequest))
+		return srv.(WorkflowServiceServer).PollWorkflowTaskQueue(ctx, req.(*v1.PollWorkflowTaskQueueRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RespondWorkflowTaskCompleted_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RespondWorkflowTaskCompletedRequest)
+	in := new(v1.RespondWorkflowTaskCompletedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1372,13 +1370,13 @@ func _WorkflowService_RespondWorkflowTaskCompleted_Handler(srv interface{}, ctx 
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RespondWorkflowTaskCompleted",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RespondWorkflowTaskCompleted(ctx, req.(*RespondWorkflowTaskCompletedRequest))
+		return srv.(WorkflowServiceServer).RespondWorkflowTaskCompleted(ctx, req.(*v1.RespondWorkflowTaskCompletedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RespondWorkflowTaskFailed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RespondWorkflowTaskFailedRequest)
+	in := new(v1.RespondWorkflowTaskFailedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1390,13 +1388,13 @@ func _WorkflowService_RespondWorkflowTaskFailed_Handler(srv interface{}, ctx con
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RespondWorkflowTaskFailed",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RespondWorkflowTaskFailed(ctx, req.(*RespondWorkflowTaskFailedRequest))
+		return srv.(WorkflowServiceServer).RespondWorkflowTaskFailed(ctx, req.(*v1.RespondWorkflowTaskFailedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_PollActivityTaskQueue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PollActivityTaskQueueRequest)
+	in := new(v1.PollActivityTaskQueueRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1408,13 +1406,13 @@ func _WorkflowService_PollActivityTaskQueue_Handler(srv interface{}, ctx context
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/PollActivityTaskQueue",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).PollActivityTaskQueue(ctx, req.(*PollActivityTaskQueueRequest))
+		return srv.(WorkflowServiceServer).PollActivityTaskQueue(ctx, req.(*v1.PollActivityTaskQueueRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RecordActivityTaskHeartbeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RecordActivityTaskHeartbeatRequest)
+	in := new(v1.RecordActivityTaskHeartbeatRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1426,13 +1424,13 @@ func _WorkflowService_RecordActivityTaskHeartbeat_Handler(srv interface{}, ctx c
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RecordActivityTaskHeartbeat",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RecordActivityTaskHeartbeat(ctx, req.(*RecordActivityTaskHeartbeatRequest))
+		return srv.(WorkflowServiceServer).RecordActivityTaskHeartbeat(ctx, req.(*v1.RecordActivityTaskHeartbeatRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RecordActivityTaskHeartbeatById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RecordActivityTaskHeartbeatByIdRequest)
+	in := new(v1.RecordActivityTaskHeartbeatByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1444,13 +1442,13 @@ func _WorkflowService_RecordActivityTaskHeartbeatById_Handler(srv interface{}, c
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RecordActivityTaskHeartbeatById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RecordActivityTaskHeartbeatById(ctx, req.(*RecordActivityTaskHeartbeatByIdRequest))
+		return srv.(WorkflowServiceServer).RecordActivityTaskHeartbeatById(ctx, req.(*v1.RecordActivityTaskHeartbeatByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RespondActivityTaskCompleted_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RespondActivityTaskCompletedRequest)
+	in := new(v1.RespondActivityTaskCompletedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1462,13 +1460,13 @@ func _WorkflowService_RespondActivityTaskCompleted_Handler(srv interface{}, ctx 
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskCompleted",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RespondActivityTaskCompleted(ctx, req.(*RespondActivityTaskCompletedRequest))
+		return srv.(WorkflowServiceServer).RespondActivityTaskCompleted(ctx, req.(*v1.RespondActivityTaskCompletedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RespondActivityTaskCompletedById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RespondActivityTaskCompletedByIdRequest)
+	in := new(v1.RespondActivityTaskCompletedByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1480,13 +1478,13 @@ func _WorkflowService_RespondActivityTaskCompletedById_Handler(srv interface{}, 
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskCompletedById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RespondActivityTaskCompletedById(ctx, req.(*RespondActivityTaskCompletedByIdRequest))
+		return srv.(WorkflowServiceServer).RespondActivityTaskCompletedById(ctx, req.(*v1.RespondActivityTaskCompletedByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RespondActivityTaskFailed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RespondActivityTaskFailedRequest)
+	in := new(v1.RespondActivityTaskFailedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1498,13 +1496,13 @@ func _WorkflowService_RespondActivityTaskFailed_Handler(srv interface{}, ctx con
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskFailed",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RespondActivityTaskFailed(ctx, req.(*RespondActivityTaskFailedRequest))
+		return srv.(WorkflowServiceServer).RespondActivityTaskFailed(ctx, req.(*v1.RespondActivityTaskFailedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RespondActivityTaskFailedById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RespondActivityTaskFailedByIdRequest)
+	in := new(v1.RespondActivityTaskFailedByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1516,13 +1514,13 @@ func _WorkflowService_RespondActivityTaskFailedById_Handler(srv interface{}, ctx
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskFailedById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RespondActivityTaskFailedById(ctx, req.(*RespondActivityTaskFailedByIdRequest))
+		return srv.(WorkflowServiceServer).RespondActivityTaskFailedById(ctx, req.(*v1.RespondActivityTaskFailedByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RespondActivityTaskCanceled_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RespondActivityTaskCanceledRequest)
+	in := new(v1.RespondActivityTaskCanceledRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1534,13 +1532,13 @@ func _WorkflowService_RespondActivityTaskCanceled_Handler(srv interface{}, ctx c
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskCanceled",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RespondActivityTaskCanceled(ctx, req.(*RespondActivityTaskCanceledRequest))
+		return srv.(WorkflowServiceServer).RespondActivityTaskCanceled(ctx, req.(*v1.RespondActivityTaskCanceledRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RespondActivityTaskCanceledById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RespondActivityTaskCanceledByIdRequest)
+	in := new(v1.RespondActivityTaskCanceledByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1552,13 +1550,13 @@ func _WorkflowService_RespondActivityTaskCanceledById_Handler(srv interface{}, c
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RespondActivityTaskCanceledById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RespondActivityTaskCanceledById(ctx, req.(*RespondActivityTaskCanceledByIdRequest))
+		return srv.(WorkflowServiceServer).RespondActivityTaskCanceledById(ctx, req.(*v1.RespondActivityTaskCanceledByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RequestCancelWorkflowExecution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestCancelWorkflowExecutionRequest)
+	in := new(v1.RequestCancelWorkflowExecutionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1570,13 +1568,13 @@ func _WorkflowService_RequestCancelWorkflowExecution_Handler(srv interface{}, ct
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RequestCancelWorkflowExecution",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RequestCancelWorkflowExecution(ctx, req.(*RequestCancelWorkflowExecutionRequest))
+		return srv.(WorkflowServiceServer).RequestCancelWorkflowExecution(ctx, req.(*v1.RequestCancelWorkflowExecutionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_SignalWorkflowExecution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignalWorkflowExecutionRequest)
+	in := new(v1.SignalWorkflowExecutionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1588,13 +1586,13 @@ func _WorkflowService_SignalWorkflowExecution_Handler(srv interface{}, ctx conte
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/SignalWorkflowExecution",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).SignalWorkflowExecution(ctx, req.(*SignalWorkflowExecutionRequest))
+		return srv.(WorkflowServiceServer).SignalWorkflowExecution(ctx, req.(*v1.SignalWorkflowExecutionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_SignalWithStartWorkflowExecution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignalWithStartWorkflowExecutionRequest)
+	in := new(v1.SignalWithStartWorkflowExecutionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1606,13 +1604,13 @@ func _WorkflowService_SignalWithStartWorkflowExecution_Handler(srv interface{}, 
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/SignalWithStartWorkflowExecution",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).SignalWithStartWorkflowExecution(ctx, req.(*SignalWithStartWorkflowExecutionRequest))
+		return srv.(WorkflowServiceServer).SignalWithStartWorkflowExecution(ctx, req.(*v1.SignalWithStartWorkflowExecutionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ResetWorkflowExecution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResetWorkflowExecutionRequest)
+	in := new(v1.ResetWorkflowExecutionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1624,13 +1622,13 @@ func _WorkflowService_ResetWorkflowExecution_Handler(srv interface{}, ctx contex
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ResetWorkflowExecution",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ResetWorkflowExecution(ctx, req.(*ResetWorkflowExecutionRequest))
+		return srv.(WorkflowServiceServer).ResetWorkflowExecution(ctx, req.(*v1.ResetWorkflowExecutionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_TerminateWorkflowExecution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TerminateWorkflowExecutionRequest)
+	in := new(v1.TerminateWorkflowExecutionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1642,13 +1640,13 @@ func _WorkflowService_TerminateWorkflowExecution_Handler(srv interface{}, ctx co
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/TerminateWorkflowExecution",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).TerminateWorkflowExecution(ctx, req.(*TerminateWorkflowExecutionRequest))
+		return srv.(WorkflowServiceServer).TerminateWorkflowExecution(ctx, req.(*v1.TerminateWorkflowExecutionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ListOpenWorkflowExecutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListOpenWorkflowExecutionsRequest)
+	in := new(v1.ListOpenWorkflowExecutionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1660,13 +1658,13 @@ func _WorkflowService_ListOpenWorkflowExecutions_Handler(srv interface{}, ctx co
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ListOpenWorkflowExecutions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ListOpenWorkflowExecutions(ctx, req.(*ListOpenWorkflowExecutionsRequest))
+		return srv.(WorkflowServiceServer).ListOpenWorkflowExecutions(ctx, req.(*v1.ListOpenWorkflowExecutionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ListClosedWorkflowExecutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListClosedWorkflowExecutionsRequest)
+	in := new(v1.ListClosedWorkflowExecutionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1678,13 +1676,13 @@ func _WorkflowService_ListClosedWorkflowExecutions_Handler(srv interface{}, ctx 
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ListClosedWorkflowExecutions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ListClosedWorkflowExecutions(ctx, req.(*ListClosedWorkflowExecutionsRequest))
+		return srv.(WorkflowServiceServer).ListClosedWorkflowExecutions(ctx, req.(*v1.ListClosedWorkflowExecutionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ListWorkflowExecutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListWorkflowExecutionsRequest)
+	in := new(v1.ListWorkflowExecutionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1696,13 +1694,13 @@ func _WorkflowService_ListWorkflowExecutions_Handler(srv interface{}, ctx contex
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ListWorkflowExecutions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ListWorkflowExecutions(ctx, req.(*ListWorkflowExecutionsRequest))
+		return srv.(WorkflowServiceServer).ListWorkflowExecutions(ctx, req.(*v1.ListWorkflowExecutionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ListArchivedWorkflowExecutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListArchivedWorkflowExecutionsRequest)
+	in := new(v1.ListArchivedWorkflowExecutionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1714,13 +1712,13 @@ func _WorkflowService_ListArchivedWorkflowExecutions_Handler(srv interface{}, ct
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ListArchivedWorkflowExecutions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ListArchivedWorkflowExecutions(ctx, req.(*ListArchivedWorkflowExecutionsRequest))
+		return srv.(WorkflowServiceServer).ListArchivedWorkflowExecutions(ctx, req.(*v1.ListArchivedWorkflowExecutionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ScanWorkflowExecutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ScanWorkflowExecutionsRequest)
+	in := new(v1.ScanWorkflowExecutionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1732,13 +1730,13 @@ func _WorkflowService_ScanWorkflowExecutions_Handler(srv interface{}, ctx contex
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ScanWorkflowExecutions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ScanWorkflowExecutions(ctx, req.(*ScanWorkflowExecutionsRequest))
+		return srv.(WorkflowServiceServer).ScanWorkflowExecutions(ctx, req.(*v1.ScanWorkflowExecutionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_CountWorkflowExecutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CountWorkflowExecutionsRequest)
+	in := new(v1.CountWorkflowExecutionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1750,13 +1748,13 @@ func _WorkflowService_CountWorkflowExecutions_Handler(srv interface{}, ctx conte
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/CountWorkflowExecutions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).CountWorkflowExecutions(ctx, req.(*CountWorkflowExecutionsRequest))
+		return srv.(WorkflowServiceServer).CountWorkflowExecutions(ctx, req.(*v1.CountWorkflowExecutionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_GetSearchAttributes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSearchAttributesRequest)
+	in := new(v1.GetSearchAttributesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1768,13 +1766,13 @@ func _WorkflowService_GetSearchAttributes_Handler(srv interface{}, ctx context.C
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/GetSearchAttributes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).GetSearchAttributes(ctx, req.(*GetSearchAttributesRequest))
+		return srv.(WorkflowServiceServer).GetSearchAttributes(ctx, req.(*v1.GetSearchAttributesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_RespondQueryTaskCompleted_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RespondQueryTaskCompletedRequest)
+	in := new(v1.RespondQueryTaskCompletedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1786,13 +1784,13 @@ func _WorkflowService_RespondQueryTaskCompleted_Handler(srv interface{}, ctx con
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/RespondQueryTaskCompleted",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).RespondQueryTaskCompleted(ctx, req.(*RespondQueryTaskCompletedRequest))
+		return srv.(WorkflowServiceServer).RespondQueryTaskCompleted(ctx, req.(*v1.RespondQueryTaskCompletedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ResetStickyTaskQueue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResetStickyTaskQueueRequest)
+	in := new(v1.ResetStickyTaskQueueRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1804,13 +1802,13 @@ func _WorkflowService_ResetStickyTaskQueue_Handler(srv interface{}, ctx context.
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ResetStickyTaskQueue",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ResetStickyTaskQueue(ctx, req.(*ResetStickyTaskQueueRequest))
+		return srv.(WorkflowServiceServer).ResetStickyTaskQueue(ctx, req.(*v1.ResetStickyTaskQueueRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_QueryWorkflow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryWorkflowRequest)
+	in := new(v1.QueryWorkflowRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1822,13 +1820,13 @@ func _WorkflowService_QueryWorkflow_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/QueryWorkflow",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).QueryWorkflow(ctx, req.(*QueryWorkflowRequest))
+		return srv.(WorkflowServiceServer).QueryWorkflow(ctx, req.(*v1.QueryWorkflowRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_DescribeWorkflowExecution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DescribeWorkflowExecutionRequest)
+	in := new(v1.DescribeWorkflowExecutionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1840,13 +1838,13 @@ func _WorkflowService_DescribeWorkflowExecution_Handler(srv interface{}, ctx con
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/DescribeWorkflowExecution",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).DescribeWorkflowExecution(ctx, req.(*DescribeWorkflowExecutionRequest))
+		return srv.(WorkflowServiceServer).DescribeWorkflowExecution(ctx, req.(*v1.DescribeWorkflowExecutionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_DescribeTaskQueue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DescribeTaskQueueRequest)
+	in := new(v1.DescribeTaskQueueRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1858,13 +1856,13 @@ func _WorkflowService_DescribeTaskQueue_Handler(srv interface{}, ctx context.Con
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/DescribeTaskQueue",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).DescribeTaskQueue(ctx, req.(*DescribeTaskQueueRequest))
+		return srv.(WorkflowServiceServer).DescribeTaskQueue(ctx, req.(*v1.DescribeTaskQueueRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_GetClusterInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetClusterInfoRequest)
+	in := new(v1.GetClusterInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1876,13 +1874,13 @@ func _WorkflowService_GetClusterInfo_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/GetClusterInfo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).GetClusterInfo(ctx, req.(*GetClusterInfoRequest))
+		return srv.(WorkflowServiceServer).GetClusterInfo(ctx, req.(*v1.GetClusterInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_GetSystemInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSystemInfoRequest)
+	in := new(v1.GetSystemInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1894,13 +1892,13 @@ func _WorkflowService_GetSystemInfo_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/GetSystemInfo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).GetSystemInfo(ctx, req.(*GetSystemInfoRequest))
+		return srv.(WorkflowServiceServer).GetSystemInfo(ctx, req.(*v1.GetSystemInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ListTaskQueuePartitions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListTaskQueuePartitionsRequest)
+	in := new(v1.ListTaskQueuePartitionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1912,13 +1910,13 @@ func _WorkflowService_ListTaskQueuePartitions_Handler(srv interface{}, ctx conte
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ListTaskQueuePartitions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ListTaskQueuePartitions(ctx, req.(*ListTaskQueuePartitionsRequest))
+		return srv.(WorkflowServiceServer).ListTaskQueuePartitions(ctx, req.(*v1.ListTaskQueuePartitionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_CreateSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateScheduleRequest)
+	in := new(v1.CreateScheduleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1930,13 +1928,13 @@ func _WorkflowService_CreateSchedule_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/CreateSchedule",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).CreateSchedule(ctx, req.(*CreateScheduleRequest))
+		return srv.(WorkflowServiceServer).CreateSchedule(ctx, req.(*v1.CreateScheduleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_DescribeSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DescribeScheduleRequest)
+	in := new(v1.DescribeScheduleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1948,13 +1946,13 @@ func _WorkflowService_DescribeSchedule_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/DescribeSchedule",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).DescribeSchedule(ctx, req.(*DescribeScheduleRequest))
+		return srv.(WorkflowServiceServer).DescribeSchedule(ctx, req.(*v1.DescribeScheduleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_UpdateSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateScheduleRequest)
+	in := new(v1.UpdateScheduleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1966,13 +1964,13 @@ func _WorkflowService_UpdateSchedule_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/UpdateSchedule",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).UpdateSchedule(ctx, req.(*UpdateScheduleRequest))
+		return srv.(WorkflowServiceServer).UpdateSchedule(ctx, req.(*v1.UpdateScheduleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_PatchSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PatchScheduleRequest)
+	in := new(v1.PatchScheduleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1984,13 +1982,13 @@ func _WorkflowService_PatchSchedule_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/PatchSchedule",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).PatchSchedule(ctx, req.(*PatchScheduleRequest))
+		return srv.(WorkflowServiceServer).PatchSchedule(ctx, req.(*v1.PatchScheduleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ListScheduleMatchingTimes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListScheduleMatchingTimesRequest)
+	in := new(v1.ListScheduleMatchingTimesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2002,13 +2000,13 @@ func _WorkflowService_ListScheduleMatchingTimes_Handler(srv interface{}, ctx con
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ListScheduleMatchingTimes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ListScheduleMatchingTimes(ctx, req.(*ListScheduleMatchingTimesRequest))
+		return srv.(WorkflowServiceServer).ListScheduleMatchingTimes(ctx, req.(*v1.ListScheduleMatchingTimesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_DeleteSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteScheduleRequest)
+	in := new(v1.DeleteScheduleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2020,13 +2018,13 @@ func _WorkflowService_DeleteSchedule_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/DeleteSchedule",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).DeleteSchedule(ctx, req.(*DeleteScheduleRequest))
+		return srv.(WorkflowServiceServer).DeleteSchedule(ctx, req.(*v1.DeleteScheduleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _WorkflowService_ListSchedules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListSchedulesRequest)
+	in := new(v1.ListSchedulesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2038,7 +2036,7 @@ func _WorkflowService_ListSchedules_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/temporal.api.workflowservice.v1.WorkflowService/ListSchedules",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).ListSchedules(ctx, req.(*ListSchedulesRequest))
+		return srv.(WorkflowServiceServer).ListSchedules(ctx, req.(*v1.ListSchedulesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
