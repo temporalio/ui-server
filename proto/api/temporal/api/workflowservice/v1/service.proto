@@ -22,7 +22,7 @@
 
 syntax = "proto3";
 
-package temporal.ui.workflowservice.v1;
+package temporal.api.workflowservice.v1;
 
 option go_package = "github.com/temporalio/ui-server/v2/server/generated/api/workflowservice/v1;workflowservice";
 
@@ -48,7 +48,7 @@ service WorkflowService {
     // like workflow executions, task queues, etc. A Namespace acts as a sandbox and provides
     // isolation for all resources within the namespace. All resources belongs to exactly one
     // namespace.
-    rpc RegisterNamespace (temporal.api.workflowservice.v1.RegisterNamespaceRequest) returns (temporal.api.workflowservice.v1.RegisterNamespaceResponse) {
+    rpc RegisterNamespace (RegisterNamespaceRequest) returns (RegisterNamespaceResponse) {
         option (google.api.http) = {
             post: "/api/v1/namespaces"
             body: "*"
@@ -56,14 +56,14 @@ service WorkflowService {
     }
 
     // DescribeNamespace returns the information and configuration for a registered namespace.
-    rpc DescribeNamespace (temporal.api.workflowservice.v1.DescribeNamespaceRequest) returns (temporal.api.workflowservice.v1.DescribeNamespaceResponse) {
+    rpc DescribeNamespace (DescribeNamespaceRequest) returns (DescribeNamespaceResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}"
         };
     }
 
     // ListNamespaces returns the information and configuration for all namespaces.
-    rpc ListNamespaces (temporal.api.workflowservice.v1.ListNamespacesRequest) returns (temporal.api.workflowservice.v1.ListNamespacesResponse) {
+    rpc ListNamespaces (ListNamespacesRequest) returns (ListNamespacesResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces"
         };
@@ -76,7 +76,7 @@ service WorkflowService {
     //     aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)
     // (-- api-linter: core::0134::response-message-name=disabled
     //     aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)
-    rpc UpdateNamespace (temporal.api.workflowservice.v1.UpdateNamespaceRequest) returns (temporal.api.workflowservice.v1.UpdateNamespaceResponse) {
+    rpc UpdateNamespace (UpdateNamespaceRequest) returns (UpdateNamespaceResponse) {
         option (google.api.http) = {
             put: "/api/v1/namespaces/{namespace}"
             body: "*"
@@ -88,7 +88,7 @@ service WorkflowService {
     // Once the namespace is deprecated it cannot be used to start new workflow executions. Existing
     // workflow executions will continue to run on deprecated namespaces.
     // Deprecated.
-    rpc DeprecateNamespace (temporal.api.workflowservice.v1.DeprecateNamespaceRequest) returns (temporal.api.workflowservice.v1.DeprecateNamespaceResponse) {
+    rpc DeprecateNamespace (DeprecateNamespaceRequest) returns (DeprecateNamespaceResponse) {
         option (google.api.http) = {
             delete: "/api/v1/namespaces/{namespace}"
         };
@@ -99,7 +99,7 @@ service WorkflowService {
     // It will create the execution with a `WORKFLOW_EXECUTION_STARTED` event in its history and
     // also schedule the first workflow task. Returns `WorkflowExecutionAlreadyStarted`, if an
     // instance already exists with same workflow id.
-    rpc StartWorkflowExecution (temporal.api.workflowservice.v1.StartWorkflowExecutionRequest) returns (temporal.api.workflowservice.v1.StartWorkflowExecutionResponse) {
+    rpc StartWorkflowExecution (StartWorkflowExecutionRequest) returns (StartWorkflowExecutionResponse) {
         option (google.api.http) = {
             post: "/api/v1/namespaces/{namespace}/workflows/{workflow_id}/start"
             body: "*"
@@ -108,7 +108,7 @@ service WorkflowService {
 
     // GetWorkflowExecutionHistory returns the history of specified workflow execution. Fails with
     // `NotFound` if the specified workflow execution is unknown to the service.
-    rpc GetWorkflowExecutionHistory (temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryRequest) returns (temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryResponse) {
+    rpc GetWorkflowExecutionHistory (GetWorkflowExecutionHistoryRequest) returns (GetWorkflowExecutionHistoryResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/runs/{execution.run_id}/events"
         };
@@ -117,7 +117,7 @@ service WorkflowService {
     // GetWorkflowExecutionHistoryReverse returns the history of specified workflow execution in reverse 
     // order (starting from last event). Fails with`NotFound` if the specified workflow execution is 
     // unknown to the service.
-    rpc GetWorkflowExecutionHistoryReverse (temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryReverseRequest) returns (temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryReverseResponse) {
+    rpc GetWorkflowExecutionHistoryReverse (GetWorkflowExecutionHistoryReverseRequest) returns (GetWorkflowExecutionHistoryReverseResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/runs/{execution.run_id}/events/reverse"
         };
@@ -129,7 +129,7 @@ service WorkflowService {
     // tasks. The worker is expected to call `RespondWorkflowTaskCompleted` when it is done
     // processing the task. The service will create a `WorkflowTaskStarted` event in the history for
     // this task before handing it to the worker.
-    rpc PollWorkflowTaskQueue (temporal.api.workflowservice.v1.PollWorkflowTaskQueueRequest) returns (temporal.api.workflowservice.v1.PollWorkflowTaskQueueResponse) {
+    rpc PollWorkflowTaskQueue (PollWorkflowTaskQueueRequest) returns (PollWorkflowTaskQueueResponse) {
     }
 
     // RespondWorkflowTaskCompleted is called by workers to successfully complete workflow tasks
@@ -138,7 +138,7 @@ service WorkflowService {
     // Completing a WorkflowTask will write a `WORKFLOW_TASK_COMPLETED` event to the workflow's
     // history, along with events corresponding to whatever commands the SDK generated while
     // executing the task (ex timer started, activity task scheduled, etc).
-    rpc RespondWorkflowTaskCompleted (temporal.api.workflowservice.v1.RespondWorkflowTaskCompletedRequest) returns (temporal.api.workflowservice.v1.RespondWorkflowTaskCompletedResponse) {
+    rpc RespondWorkflowTaskCompleted (RespondWorkflowTaskCompletedRequest) returns (RespondWorkflowTaskCompletedResponse) {
     }
 
     // RespondWorkflowTaskFailed is called by workers to indicate the processing of a workflow task
@@ -150,7 +150,7 @@ service WorkflowService {
     //
     // Temporal will only append first WorkflowTaskFailed event to the history of workflow execution
     // for consecutive failures.
-    rpc RespondWorkflowTaskFailed (temporal.api.workflowservice.v1.RespondWorkflowTaskFailedRequest) returns (temporal.api.workflowservice.v1.RespondWorkflowTaskFailedResponse) {
+    rpc RespondWorkflowTaskFailed (RespondWorkflowTaskFailedRequest) returns (RespondWorkflowTaskFailedResponse) {
     }
 
     // PollActivityTaskQueue is called by workers to process activity tasks from a specific task
@@ -165,7 +165,7 @@ service WorkflowService {
     // (`ACTIVITY_TASK_COMPLETED` / `ACTIVITY_TASK_FAILED` / `ACTIVITY_TASK_TIMED_OUT`) will both be
     // written permanently to Workflow execution history when Activity is finished. This is done to
     // avoid writing many events in the case of a failure/retry loop.
-    rpc PollActivityTaskQueue (temporal.api.workflowservice.v1.PollActivityTaskQueueRequest) returns (temporal.api.workflowservice.v1.PollActivityTaskQueueResponse) {
+    rpc PollActivityTaskQueue (PollActivityTaskQueueRequest) returns (PollActivityTaskQueueResponse) {
     }
 
     // RecordActivityTaskHeartbeat is optionally called by workers while they execute activities.
@@ -174,7 +174,7 @@ service WorkflowService {
     // then it will be marked as timed out and an `ACTIVITY_TASK_TIMED_OUT` event will be written to
     // the workflow history. Calling `RecordActivityTaskHeartbeat` will fail with `NotFound` in
     // such situations, in that event, the SDK should request cancellation of the activity.
-    rpc RecordActivityTaskHeartbeat (temporal.api.workflowservice.v1.RecordActivityTaskHeartbeatRequest) returns (temporal.api.workflowservice.v1.RecordActivityTaskHeartbeatResponse) {
+    rpc RecordActivityTaskHeartbeat (RecordActivityTaskHeartbeatRequest) returns (RecordActivityTaskHeartbeatResponse) {
     }
 
     // See `RecordActivityTaskHeartbeat`. This version allows clients to record heartbeats by
@@ -182,7 +182,7 @@ service WorkflowService {
     //
     // (-- api-linter: core::0136::prepositions=disabled
     //     aip.dev/not-precedent: "By" is used to indicate request type. --)
-    rpc RecordActivityTaskHeartbeatById (temporal.api.workflowservice.v1.RecordActivityTaskHeartbeatByIdRequest) returns (temporal.api.workflowservice.v1.RecordActivityTaskHeartbeatByIdResponse) {
+    rpc RecordActivityTaskHeartbeatById (RecordActivityTaskHeartbeatByIdRequest) returns (RecordActivityTaskHeartbeatByIdResponse) {
     }
 
     // RespondActivityTaskCompleted is called by workers when they successfully complete an activity
@@ -191,7 +191,7 @@ service WorkflowService {
     // This results in a new `ACTIVITY_TASK_COMPLETED` event being written to the workflow history
     // and a new workflow task created for the workflow. Fails with `NotFound` if the task token is
     // no longer valid due to activity timeout, already being completed, or never having existed.
-    rpc RespondActivityTaskCompleted (temporal.api.workflowservice.v1.RespondActivityTaskCompletedRequest) returns (temporal.api.workflowservice.v1.RespondActivityTaskCompletedResponse) {
+    rpc RespondActivityTaskCompleted (RespondActivityTaskCompletedRequest) returns (RespondActivityTaskCompletedResponse) {
     }
 
     // See `RecordActivityTaskCompleted`. This version allows clients to record completions by
@@ -199,7 +199,7 @@ service WorkflowService {
     //
     // (-- api-linter: core::0136::prepositions=disabled
     //     aip.dev/not-precedent: "By" is used to indicate request type. --)
-    rpc RespondActivityTaskCompletedById (temporal.api.workflowservice.v1.RespondActivityTaskCompletedByIdRequest) returns (temporal.api.workflowservice.v1.RespondActivityTaskCompletedByIdResponse) {
+    rpc RespondActivityTaskCompletedById (RespondActivityTaskCompletedByIdRequest) returns (RespondActivityTaskCompletedByIdResponse) {
     }
 
     // RespondActivityTaskFailed is called by workers when processing an activity task fails.
@@ -207,7 +207,7 @@ service WorkflowService {
     // This results in a new `ACTIVITY_TASK_FAILED` event being written to the workflow history and
     // a new workflow task created for the workflow. Fails with `NotFound` if the task token is no
     // longer valid due to activity timeout, already being completed, or never having existed.
-    rpc RespondActivityTaskFailed (temporal.api.workflowservice.v1.RespondActivityTaskFailedRequest) returns (temporal.api.workflowservice.v1.RespondActivityTaskFailedResponse) {
+    rpc RespondActivityTaskFailed (RespondActivityTaskFailedRequest) returns (RespondActivityTaskFailedResponse) {
     }
 
     // See `RecordActivityTaskFailed`. This version allows clients to record failures by
@@ -215,7 +215,7 @@ service WorkflowService {
     //
     // (-- api-linter: core::0136::prepositions=disabled
     //     aip.dev/not-precedent: "By" is used to indicate request type. --)
-    rpc RespondActivityTaskFailedById (temporal.api.workflowservice.v1.RespondActivityTaskFailedByIdRequest) returns (temporal.api.workflowservice.v1.RespondActivityTaskFailedByIdResponse) {
+    rpc RespondActivityTaskFailedById (RespondActivityTaskFailedByIdRequest) returns (RespondActivityTaskFailedByIdResponse) {
     }
 
     // RespondActivityTaskFailed is called by workers when processing an activity task fails.
@@ -223,7 +223,7 @@ service WorkflowService {
     // This results in a new `ACTIVITY_TASK_CANCELED` event being written to the workflow history
     // and a new workflow task created for the workflow. Fails with `NotFound` if the task token is
     // no longer valid due to activity timeout, already being completed, or never having existed.
-    rpc RespondActivityTaskCanceled (temporal.api.workflowservice.v1.RespondActivityTaskCanceledRequest) returns (temporal.api.workflowservice.v1.RespondActivityTaskCanceledResponse) {
+    rpc RespondActivityTaskCanceled (RespondActivityTaskCanceledRequest) returns (RespondActivityTaskCanceledResponse) {
     }
 
     // See `RecordActivityTaskCanceled`. This version allows clients to record failures by
@@ -231,7 +231,7 @@ service WorkflowService {
     //
     // (-- api-linter: core::0136::prepositions=disabled
     //     aip.dev/not-precedent: "By" is used to indicate request type. --)
-    rpc RespondActivityTaskCanceledById (temporal.api.workflowservice.v1.RespondActivityTaskCanceledByIdRequest) returns (temporal.api.workflowservice.v1.RespondActivityTaskCanceledByIdResponse) {
+    rpc RespondActivityTaskCanceledById (RespondActivityTaskCanceledByIdRequest) returns (RespondActivityTaskCanceledByIdResponse) {
     }
 
     // RequestCancelWorkflowExecution is called by workers when they want to request cancellation of
@@ -240,7 +240,7 @@ service WorkflowService {
     // This result in a new `WORKFLOW_EXECUTION_CANCEL_REQUESTED` event being written to the
     // workflow history and a new workflow task created for the workflow. Fails with `NotFound` if
     // the workflow is already completed or doesn't exist.
-    rpc RequestCancelWorkflowExecution (temporal.api.workflowservice.v1.RequestCancelWorkflowExecutionRequest) returns (temporal.api.workflowservice.v1.RequestCancelWorkflowExecutionResponse) {
+    rpc RequestCancelWorkflowExecution (RequestCancelWorkflowExecutionRequest) returns (RequestCancelWorkflowExecutionResponse) {
         option (google.api.http) = {
             post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/runs/{workflow_execution.run_id}/cancel"
             body: "*"
@@ -251,7 +251,7 @@ service WorkflowService {
     //
     // This results in a `WORKFLOW_EXECUTION_SIGNALED` event recorded in the history and a workflow
     // task being created for the execution.
-    rpc SignalWorkflowExecution (temporal.api.workflowservice.v1.SignalWorkflowExecutionRequest) returns (temporal.api.workflowservice.v1.SignalWorkflowExecutionResponse) {
+    rpc SignalWorkflowExecution (SignalWorkflowExecutionRequest) returns (SignalWorkflowExecutionResponse) {
         option (google.api.http) = {
             post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/runs/{workflow_execution.run_id}/signal"
             body: "*"
@@ -270,14 +270,14 @@ service WorkflowService {
     //
     // (-- api-linter: core::0136::prepositions=disabled
     //     aip.dev/not-precedent: "With" is used to indicate combined operation. --)
-    rpc SignalWithStartWorkflowExecution (temporal.api.workflowservice.v1.SignalWithStartWorkflowExecutionRequest) returns (temporal.api.workflowservice.v1.SignalWithStartWorkflowExecutionResponse) {
+    rpc SignalWithStartWorkflowExecution (SignalWithStartWorkflowExecutionRequest) returns (SignalWithStartWorkflowExecutionResponse) {
     }
 
     // ResetWorkflowExecution will reset an existing workflow execution to a specified
     // `WORKFLOW_TASK_COMPLETED` event (exclusive). It will immediately terminate the current
     // execution instance.
     // TODO: Does exclusive here mean *just* the completed event, or also WFT started? Otherwise the task is doomed to time out?
-    rpc ResetWorkflowExecution (temporal.api.workflowservice.v1.ResetWorkflowExecutionRequest) returns (temporal.api.workflowservice.v1.ResetWorkflowExecutionResponse) {
+    rpc ResetWorkflowExecution (ResetWorkflowExecutionRequest) returns (ResetWorkflowExecutionResponse) {
         option (google.api.http) = {
             post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/runs/{workflow_execution.run_id}/reset"
             body: "*"
@@ -287,7 +287,7 @@ service WorkflowService {
     // TerminateWorkflowExecution terminates an existing workflow execution by recording a
     // `WORKFLOW_EXECUTION_TERMINATED` event in the history and immediately terminating the
     // execution instance.
-    rpc TerminateWorkflowExecution (temporal.api.workflowservice.v1.TerminateWorkflowExecutionRequest) returns (temporal.api.workflowservice.v1.TerminateWorkflowExecutionResponse) {
+    rpc TerminateWorkflowExecution (TerminateWorkflowExecutionRequest) returns (TerminateWorkflowExecutionResponse) {
         option (google.api.http) = {
             post: "/api/v1/namespaces/{namespace}/workflows/{workflow_execution.workflow_id}/runs/{workflow_execution.run_id}/terminate"
             body: "*"
@@ -295,46 +295,46 @@ service WorkflowService {
     }
 
     // ListOpenWorkflowExecutions is a visibility API to list the open executions in a specific namespace.
-    rpc ListOpenWorkflowExecutions (temporal.api.workflowservice.v1.ListOpenWorkflowExecutionsRequest) returns (temporal.api.workflowservice.v1.ListOpenWorkflowExecutionsResponse) {
+    rpc ListOpenWorkflowExecutions (ListOpenWorkflowExecutionsRequest) returns (ListOpenWorkflowExecutionsResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/workflows/open"
         };
     }
 
     // ListClosedWorkflowExecutions is a visibility API to list the closed executions in a specific namespace.
-    rpc ListClosedWorkflowExecutions (temporal.api.workflowservice.v1.ListClosedWorkflowExecutionsRequest) returns (temporal.api.workflowservice.v1.ListClosedWorkflowExecutionsResponse) {
+    rpc ListClosedWorkflowExecutions (ListClosedWorkflowExecutionsRequest) returns (ListClosedWorkflowExecutionsResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/workflows/closed"
         };
     }
 
     // ListWorkflowExecutions is a visibility API to list workflow executions in a specific namespace.
-    rpc ListWorkflowExecutions (temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest) returns (temporal.api.workflowservice.v1.ListWorkflowExecutionsResponse) {
+    rpc ListWorkflowExecutions (ListWorkflowExecutionsRequest) returns (ListWorkflowExecutionsResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/workflows"
         };
     }
 
     // ListArchivedWorkflowExecutions is a visibility API to list archived workflow executions in a specific namespace.
-    rpc ListArchivedWorkflowExecutions (temporal.api.workflowservice.v1.ListArchivedWorkflowExecutionsRequest) returns (temporal.api.workflowservice.v1.ListArchivedWorkflowExecutionsResponse) {
+    rpc ListArchivedWorkflowExecutions (ListArchivedWorkflowExecutionsRequest) returns (ListArchivedWorkflowExecutionsResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/workflows/archived"
         };
     }
 
     // ScanWorkflowExecutions is a visibility API to list large amount of workflow executions in a specific namespace without order.
-    rpc ScanWorkflowExecutions (temporal.api.workflowservice.v1.ScanWorkflowExecutionsRequest) returns (temporal.api.workflowservice.v1.ScanWorkflowExecutionsResponse) {
+    rpc ScanWorkflowExecutions (ScanWorkflowExecutionsRequest) returns (ScanWorkflowExecutionsResponse) {
     }
 
     // CountWorkflowExecutions is a visibility API to count of workflow executions in a specific namespace.
-    rpc CountWorkflowExecutions (temporal.api.workflowservice.v1.CountWorkflowExecutionsRequest) returns (temporal.api.workflowservice.v1.CountWorkflowExecutionsResponse) {
+    rpc CountWorkflowExecutions (CountWorkflowExecutionsRequest) returns (CountWorkflowExecutionsResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/workflows/count"
         };
     }
 
     // GetSearchAttributes is a visibility API to get all legal keys that could be used in list APIs
-    rpc GetSearchAttributes (temporal.api.workflowservice.v1.GetSearchAttributesRequest) returns (temporal.api.workflowservice.v1.GetSearchAttributesResponse) {
+    rpc GetSearchAttributes (GetSearchAttributesRequest) returns (GetSearchAttributesResponse) {
         option (google.api.http) = {
             get: "/api/v1/search-attributes"
         };
@@ -345,7 +345,7 @@ service WorkflowService {
     //
     // Completing the query will unblock the corresponding client call to `QueryWorkflow` and return
     // the query result a response.
-    rpc RespondQueryTaskCompleted (temporal.api.workflowservice.v1.RespondQueryTaskCompletedRequest) returns (temporal.api.workflowservice.v1.RespondQueryTaskCompletedResponse) {
+    rpc RespondQueryTaskCompleted (RespondQueryTaskCompletedRequest) returns (RespondQueryTaskCompletedResponse) {
     }
 
     // ResetStickyTaskQueue resets the sticky task queue related information in the mutable state of
@@ -355,11 +355,11 @@ service WorkflowService {
     // Things cleared are:
     // 1. StickyTaskQueue
     // 2. StickyScheduleToStartTimeout
-    rpc ResetStickyTaskQueue (temporal.api.workflowservice.v1.ResetStickyTaskQueueRequest) returns (temporal.api.workflowservice.v1.ResetStickyTaskQueueResponse) {
+    rpc ResetStickyTaskQueue (ResetStickyTaskQueueRequest) returns (ResetStickyTaskQueueResponse) {
     }
 
     // QueryWorkflow requests a query be executed for a specified workflow execution.
-    rpc QueryWorkflow (temporal.api.workflowservice.v1.QueryWorkflowRequest) returns (temporal.api.workflowservice.v1.QueryWorkflowResponse) {
+    rpc QueryWorkflow (QueryWorkflowRequest) returns (QueryWorkflowResponse) {
         option (google.api.http) = {
             post: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/runs/{execution.run_id}/query"
             body: "*"
@@ -367,31 +367,31 @@ service WorkflowService {
     }
 
     // DescribeWorkflowExecution returns information about the specified workflow execution.
-    rpc DescribeWorkflowExecution (temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest) returns (temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse) {
+    rpc DescribeWorkflowExecution (DescribeWorkflowExecutionRequest) returns (DescribeWorkflowExecutionResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/workflows/{execution.workflow_id}/runs/{execution.run_id}"
         };
     }
 
     // DescribeTaskQueue returns information about the target task queue.
-    rpc DescribeTaskQueue (temporal.api.workflowservice.v1.DescribeTaskQueueRequest) returns (temporal.api.workflowservice.v1.DescribeTaskQueueResponse) {
+    rpc DescribeTaskQueue (DescribeTaskQueueRequest) returns (DescribeTaskQueueResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/task-queues/{task_queue.name}"
         };
     }
 
     // GetClusterInfo returns information about temporal cluster
-    rpc GetClusterInfo(temporal.api.workflowservice.v1.GetClusterInfoRequest) returns (temporal.api.workflowservice.v1.GetClusterInfoResponse){
+    rpc GetClusterInfo(GetClusterInfoRequest) returns (GetClusterInfoResponse){
         option (google.api.http) = {
             get: "/api/v1/cluster"
         };
     }
 
     // GetSystemInfo returns information about the system.
-    rpc GetSystemInfo(temporal.api.workflowservice.v1.GetSystemInfoRequest) returns (temporal.api.workflowservice.v1.GetSystemInfoResponse) {
+    rpc GetSystemInfo(GetSystemInfoRequest) returns (GetSystemInfoResponse) {
     }
 
-    rpc ListTaskQueuePartitions(temporal.api.workflowservice.v1.ListTaskQueuePartitionsRequest) returns (temporal.api.workflowservice.v1.ListTaskQueuePartitionsResponse) {
+    rpc ListTaskQueuePartitions(ListTaskQueuePartitionsRequest) returns (ListTaskQueuePartitionsResponse) {
     }
 
     // Creates a new schedule.
@@ -401,7 +401,7 @@ service WorkflowService {
     //     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
     // (-- api-linter: core::0133::http-uri-parent=disabled
     //     aip.dev/not-precedent: CreateSchedule doesn't follow Google API format --)
-    rpc CreateSchedule (temporal.api.workflowservice.v1.CreateScheduleRequest) returns (temporal.api.workflowservice.v1.CreateScheduleResponse) {
+    rpc CreateSchedule (CreateScheduleRequest) returns (CreateScheduleResponse) {
         option (google.api.http) = {
             post: "/api/v1/namespaces/{namespace}/schedules"
             body: "*"    
@@ -409,7 +409,7 @@ service WorkflowService {
     }
 
     // Returns the schedule description and current state of an existing schedule.
-    rpc DescribeSchedule (temporal.api.workflowservice.v1.DescribeScheduleRequest) returns (temporal.api.workflowservice.v1.DescribeScheduleResponse) {
+    rpc DescribeSchedule (DescribeScheduleRequest) returns (DescribeScheduleResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
         };
@@ -420,7 +420,7 @@ service WorkflowService {
     //     aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)
     // (-- api-linter: core::0134::method-signature=disabled
     //     aip.dev/not-precedent: UpdateSchedule RPC doesn't follow Google API format. --)
-    rpc UpdateSchedule (temporal.api.workflowservice.v1.UpdateScheduleRequest) returns (temporal.api.workflowservice.v1.UpdateScheduleResponse) {
+    rpc UpdateSchedule (UpdateScheduleRequest) returns (UpdateScheduleResponse) {
         option (google.api.http) = {
             post: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
             body: "*"    
@@ -430,7 +430,7 @@ service WorkflowService {
     // Makes a specific change to a schedule or triggers an immediate action.
     // (-- api-linter: core::0134::synonyms=disabled
     //     aip.dev/not-precedent: we have both patch and update. --)
-    rpc PatchSchedule (temporal.api.workflowservice.v1.PatchScheduleRequest) returns (temporal.api.workflowservice.v1.PatchScheduleResponse) {
+    rpc PatchSchedule (PatchScheduleRequest) returns (PatchScheduleResponse) {
         option (google.api.http) = {
             patch: "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
             body: "*"    
@@ -438,7 +438,7 @@ service WorkflowService {
     }
 
     // Lists matching times within a range.
-    rpc ListScheduleMatchingTimes (temporal.api.workflowservice.v1.ListScheduleMatchingTimesRequest) returns (temporal.api.workflowservice.v1.ListScheduleMatchingTimesResponse) {
+    rpc ListScheduleMatchingTimes (ListScheduleMatchingTimesRequest) returns (ListScheduleMatchingTimesResponse) {
     }
 
     // Deletes a schedule, removing it from the system.
@@ -446,14 +446,14 @@ service WorkflowService {
     //     aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)
     // (-- api-linter: core::0135::response-message-name=disabled
     //     aip.dev/not-precedent: DeleteSchedule doesn't follow Google API format --)
-    rpc DeleteSchedule (temporal.api.workflowservice.v1.DeleteScheduleRequest) returns (temporal.api.workflowservice.v1.DeleteScheduleResponse) {
+    rpc DeleteSchedule (DeleteScheduleRequest) returns (DeleteScheduleResponse) {
         option (google.api.http) = {
             delete:  "/api/v1/namespaces/{namespace}/schedules/{schedule_id}"
         };
     }
 
     // List all schedules in a namespace.
-    rpc ListSchedules (temporal.api.workflowservice.v1.ListSchedulesRequest) returns (temporal.api.workflowservice.v1.ListSchedulesResponse) {
+    rpc ListSchedules (ListSchedulesRequest) returns (ListSchedulesResponse) {
         option (google.api.http) = {
             get: "/api/v1/namespaces/{namespace}/schedules"
         };

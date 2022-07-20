@@ -49,7 +49,7 @@ build-ui-cloud:
 build-api: build-grpc
 	mkdir -p $(OPENAPI_OUT)
 	cp -r ./third_party/OpenAPI/* $(OPENAPI_OUT)
-	cp $(OPENAPI_OUT)/temporal/ui/workflowservice/v1/service.swagger.json $(OPENAPI_OUT)
+	cp $(OPENAPI_OUT)/temporal/api/workflowservice/v1/service.swagger.json $(OPENAPI_OUT)
 	mkdir -p $(OPENAPI_OUT)
 	rm -rf $(OPENAPI_OUT)/temporal
 
@@ -72,7 +72,7 @@ build-grpc:
 	;)
 	# fix grpc outputs path:
 	printf $(COLOR) "Fixing gRPC output paths"
-	mv -f $(PROTO_OUT)/temporal/ui/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
+	mv -f $(PROTO_OUT)/temporal/api/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
 
 ##### Install dependencies #####
 install: install-submodules install-utils install-ui
