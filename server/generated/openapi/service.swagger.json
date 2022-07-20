@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "temporal/api/workflowservice/v1/service.proto",
+    "title": "temporal/ui/workflowservice/v1/service.proto",
     "version": "version not set"
   },
   "tags": [
@@ -71,6 +71,13 @@
             "required": false,
             "type": "string",
             "format": "byte"
+          },
+          {
+            "name": "namespaceFilter.includeDeleted",
+            "description": "By default namespaces in NAMESPACE_STATE_DELETED state are not included.\nSetting include_deleted to true will include deleted namespaces.\nNote: Namespace is in NAMESPACE_STATE_DELETED state when it was deleted from the system but associated data is not deleted yet.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -1174,8 +1181,7 @@
               "type": "object",
               "properties": {
                 "execution": {
-                  "type": "object",
-                  "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
+                  "$ref": "#/definitions/v1WorkflowExecution"
                 },
                 "query": {
                   "$ref": "#/definitions/v1WorkflowQuery"
@@ -1239,8 +1245,7 @@
               "type": "object",
               "properties": {
                 "workflowExecution": {
-                  "type": "object",
-                  "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
+                  "$ref": "#/definitions/v1WorkflowExecution"
                 },
                 "identity": {
                   "type": "string",
@@ -1253,6 +1258,10 @@
                 "firstExecutionRunId": {
                   "type": "string",
                   "description": "If set, this call will error if the most recent (if no run id is set on\n`workflow_execution`), or specified (if it is) workflow execution is not part of the same\nexecution chain as this id."
+                },
+                "reason": {
+                  "type": "string",
+                  "title": "Reason for requesting the cancellation"
                 }
               }
             }
@@ -1308,8 +1317,7 @@
               "type": "object",
               "properties": {
                 "workflowExecution": {
-                  "type": "object",
-                  "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
+                  "$ref": "#/definitions/v1WorkflowExecution"
                 },
                 "reason": {
                   "type": "string"
@@ -1325,7 +1333,7 @@
                 },
                 "resetReapplyType": {
                   "$ref": "#/definitions/v1ResetReapplyType",
-                  "description": "Should be removed. Appears unused."
+                  "description": "Reset reapplay(replay) options."
                 }
               }
             }
@@ -1382,8 +1390,7 @@
               "type": "object",
               "properties": {
                 "workflowExecution": {
-                  "type": "object",
-                  "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
+                  "$ref": "#/definitions/v1WorkflowExecution"
                 },
                 "signalName": {
                   "type": "string",
@@ -1463,8 +1470,7 @@
               "type": "object",
               "properties": {
                 "workflowExecution": {
-                  "type": "object",
-                  "description": "Identifies a specific workflow within a namespace. Practically speaking, because run_id is a\nuuid, a workflow execution is globally unique. Note that many commands allow specifying an empty\nrun id as a way of saying \"target the latest run of the workflow\"."
+                  "$ref": "#/definitions/v1WorkflowExecution"
                 },
                 "reason": {
                   "type": "string"
@@ -1628,6 +1634,10 @@
         "activityFailureIncludeHeartbeat": {
           "type": "boolean",
           "title": "True if RespondActivityTaskFailed API supports including heartbeat details"
+        },
+        "supportsSchedules": {
+          "type": "boolean",
+          "description": "Supports scheduled workflow features."
         }
       },
       "description": "System capability details."
@@ -1785,9 +1795,6 @@
         },
         "activityType": {
           "$ref": "#/definitions/v1ActivityType"
-        },
-        "namespace": {
-          "type": "string"
         },
         "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
@@ -2000,7 +2007,8 @@
       "type": "string",
       "enum": [
         "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED",
-        "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_EXTERNAL_WORKFLOW_EXECUTION_NOT_FOUND"
+        "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_EXTERNAL_WORKFLOW_EXECUTION_NOT_FOUND",
+        "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_NAMESPACE_NOT_FOUND"
       ],
       "default": "CANCEL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED"
     },
@@ -2037,7 +2045,10 @@
         },
         "namespace": {
           "type": "string",
-          "title": "Namespace of the child workflow"
+          "description": "Namespace of the child workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -2065,7 +2076,10 @@
         },
         "namespace": {
           "type": "string",
-          "title": "Namespace of the child workflow"
+          "description": "Namespace of the child workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -2093,7 +2107,10 @@
         },
         "namespace": {
           "type": "string",
-          "title": "Namespace of the child workflow"
+          "description": "Namespace of the child workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -2146,7 +2163,10 @@
       "properties": {
         "namespace": {
           "type": "string",
-          "title": "Namespace of the child workflow"
+          "description": "Namespace of the child workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "initiatedEventId": {
           "type": "string",
@@ -2169,7 +2189,10 @@
       "properties": {
         "namespace": {
           "type": "string",
-          "title": "Namespace of the child workflow"
+          "description": "Namespace of the child workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -2194,7 +2217,10 @@
       "properties": {
         "namespace": {
           "type": "string",
-          "title": "Namespace of the child workflow"
+          "description": "Namespace of the child workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -2557,7 +2583,10 @@
         },
         "namespace": {
           "type": "string",
-          "title": "namespace of the to-be-cancelled workflow"
+          "description": "Namespace of the to-be-cancelled workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -2574,7 +2603,10 @@
         },
         "namespace": {
           "type": "string",
-          "title": "namespace of the workflow which was signaled"
+          "description": "Namespace of the workflow which was signaled.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -3115,6 +3147,15 @@
         },
         "visibilityArchivalUri": {
           "type": "string"
+        }
+      }
+    },
+    "v1NamespaceFilter": {
+      "type": "object",
+      "properties": {
+        "includeDeleted": {
+          "type": "boolean",
+          "description": "By default namespaces in NAMESPACE_STATE_DELETED state are not included.\nSetting include_deleted to true will include deleted namespaces.\nNote: Namespace is in NAMESPACE_STATE_DELETED state when it was deleted from the system but associated data is not deleted yet."
         }
       }
     },
@@ -3738,6 +3779,10 @@
         "childWorkflowOnly": {
           "type": "boolean",
           "description": "Set this to true if the workflow being cancelled is a child of the workflow originating this\ncommand. The request will be rejected if it is set to true and the target workflow is *not*\na child of the requesting workflow."
+        },
+        "reason": {
+          "type": "string",
+          "title": "Reason for requesting the cancellation"
         }
       }
     },
@@ -3754,7 +3799,10 @@
         },
         "namespace": {
           "type": "string",
-          "title": "namespace of the workflow which failed to cancel"
+          "description": "Namespace of the workflow which failed to cancel.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -3780,7 +3828,10 @@
         },
         "namespace": {
           "type": "string",
-          "title": "The namespace the workflow to be cancelled lives in"
+          "description": "The namespace the workflow to be cancelled lives in.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -3792,6 +3843,10 @@
         "childWorkflowOnly": {
           "type": "boolean",
           "title": "Workers are expected to set this to true if the workflow they are requesting to cancel is\na child of the workflow which issued the request"
+        },
+        "reason": {
+          "type": "string",
+          "title": "Reason for requesting the cancellation"
         }
       }
     },
@@ -3845,7 +3900,7 @@
         "RESET_REAPPLY_TYPE_NONE"
       ],
       "default": "RESET_REAPPLY_TYPE_UNSPECIFIED",
-      "title": "TODO: What is this?"
+      "title": "Reset reapplay(replay) options\n* RESET_REAPPLY_TYPE_SIGNAL (default) - Signals are reapplied when workflow is reset\n* RESET_REAPPLY_TYPE_NONE - nothing is reapplied"
     },
     "v1ResetStickyTaskQueueResponse": {
       "type": "object"
@@ -3911,6 +3966,13 @@
         "workflowTask": {
           "$ref": "#/definitions/v1PollWorkflowTaskQueueResponse",
           "title": "See `RespondWorkflowTaskCompletedResponse::return_new_workflow_task`"
+        },
+        "activityTasks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1PollActivityTaskQueueResponse"
+          },
+          "title": "See `ScheduleActivityTaskCommandAttributes::request_start`"
         }
       }
     },
@@ -4031,9 +4093,6 @@
         "activityType": {
           "$ref": "#/definitions/v1ActivityType"
         },
-        "namespace": {
-          "type": "string"
-        },
         "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
         },
@@ -4063,6 +4122,10 @@
         "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy",
           "description": "Activities are provided by a default retry policy which is controlled through the service's\ndynamic configuration. Retries will be attempted until `schedule_to_close_timeout` has\nelapsed. To disable retries set retry_policy.maximum_attempts to 1."
+        },
+        "requestEagerExecution": {
+          "type": "boolean",
+          "description": "Request to start the activity directly bypassing matching service and worker polling\nThe slot for executing the activity should be reserved when setting this field to true."
         }
       }
     },
@@ -4132,47 +4195,9 @@
         },
         "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
-        },
-        "info": {
-          "$ref": "#/definitions/v1ScheduleListInfo"
         }
       },
       "description": "ScheduleListEntry is returned by ListSchedules."
-    },
-    "v1ScheduleListInfo": {
-      "type": "object",
-      "properties": {
-        "spec": {
-          "$ref": "#/definitions/v1ScheduleSpec",
-          "description": "From spec:\nSome fields are too large/unimportant for the purpose of listing, so we'll clear them\nfrom this copy of spec: exclude_calendar, jitter, timezone_data."
-        },
-        "workflowType": {
-          "$ref": "#/definitions/v1WorkflowType",
-          "title": "From action:\nAction is a oneof field, but we need to encode this in JSON and oneof fields don't work\nwell with JSON. If action is start_workflow, this is set:"
-        },
-        "notes": {
-          "type": "string",
-          "title": "From state:"
-        },
-        "paused": {
-          "type": "boolean"
-        },
-        "recentActions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1ScheduleActionResult"
-          },
-          "title": "From info (maybe fewer entries):"
-        },
-        "futureActionTimes": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "description": "ScheduleListInfo is an abbreviated set of values from Schedule and ScheduleInfo\nthat's returned in ListSchedules."
     },
     "v1ScheduleOverlapPolicy": {
       "type": "string",
@@ -4363,7 +4388,8 @@
       "type": "string",
       "enum": [
         "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED",
-        "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_EXTERNAL_WORKFLOW_EXECUTION_NOT_FOUND"
+        "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_EXTERNAL_WORKFLOW_EXECUTION_NOT_FOUND",
+        "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_NAMESPACE_NOT_FOUND"
       ],
       "default": "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED"
     },
@@ -4379,6 +4405,10 @@
           "title": "The `WORKFLOW_TASK_COMPLETED` event which this command was reported with"
         },
         "namespace": {
+          "type": "string",
+          "description": "Namespace of the workflow which failed the signal.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
           "type": "string"
         },
         "workflowExecution": {
@@ -4404,7 +4434,10 @@
         },
         "namespace": {
           "type": "string",
-          "title": "namespace of the to-be-signalled workflow"
+          "description": "Namespace of the to-be-signalled workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowExecution": {
           "$ref": "#/definitions/v1WorkflowExecution"
@@ -4504,7 +4537,8 @@
       "type": "string",
       "enum": [
         "START_CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED",
-        "START_CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_WORKFLOW_ALREADY_EXISTS"
+        "START_CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_WORKFLOW_ALREADY_EXISTS",
+        "START_CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_NAMESPACE_NOT_FOUND"
       ],
       "default": "START_CHILD_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED"
     },
@@ -4513,7 +4547,10 @@
       "properties": {
         "namespace": {
           "type": "string",
-          "title": "Namespace of the child workflow"
+          "description": "Namespace of the child workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowId": {
           "type": "string"
@@ -4545,7 +4582,10 @@
       "properties": {
         "namespace": {
           "type": "string",
-          "title": "Namespace of the child workflow"
+          "description": "Namespace of the child workflow.\nSDKs and UI tools should use `namespace` field but server must use `namespace_id` only."
+        },
+        "namespaceId": {
+          "type": "string"
         },
         "workflowId": {
           "type": "string"
@@ -4860,7 +4900,7 @@
           "additionalProperties": {
             "type": "string"
           },
-          "description": "A key-value map for any customized purpose."
+          "description": "A key-value map for any customized purpose.\nIf data already exists on the namespace, \nthis will merge with the existing key values."
         },
         "state": {
           "$ref": "#/definitions/v1NamespaceState",
@@ -4955,7 +4995,7 @@
       "properties": {
         "cause": {
           "type": "string",
-          "title": "User provided reason for requesting cancellation"
+          "title": "User provided reason for requesting cancellation\nTODO: shall we create a new field with name \"reason\" and deprecate this one?"
         },
         "externalInitiatedEventId": {
           "type": "string",
@@ -5187,15 +5227,19 @@
         },
         "parentWorkflowNamespace": {
           "type": "string",
-          "title": "If this workflow is a child, the namespace our parent lives in"
+          "description": "If this workflow is a child, the namespace our parent lives in.\nSDKs and UI tools should use `parent_workflow_namespace` field but server must use `parent_workflow_namespace_id` only."
+        },
+        "parentWorkflowNamespaceId": {
+          "type": "string"
         },
         "parentWorkflowExecution": {
-          "$ref": "#/definitions/v1WorkflowExecution"
+          "$ref": "#/definitions/v1WorkflowExecution",
+          "description": "Contains information about parent workflow execution that initiated the child workflow these attributes belong to.\nIf the workflow these attributes belong to is not a child workflow of any other execution, this field will not be populated."
         },
         "parentInitiatedEventId": {
           "type": "string",
           "format": "int64",
-          "title": "TODO: What is this? ID of the event that requested this workflow execution if we are a child?"
+          "title": "EventID of the child execution initiated event in parent workflow"
         },
         "taskQueue": {
           "$ref": "#/definitions/v1TaskQueue"
@@ -5231,7 +5275,7 @@
         },
         "originalExecutionRunId": {
           "type": "string",
-          "title": "This is the run id when the WorkflowExecutionStarted event was written"
+          "description": "This is the run id when the WorkflowExecutionStarted event was written.\nA workflow reset changes the execution run_id, but preserves this field."
         },
         "identity": {
           "type": "string",
@@ -5239,7 +5283,7 @@
         },
         "firstExecutionRunId": {
           "type": "string",
-          "description": "This is the very first runId along the chain of ContinueAsNew and Reset."
+          "description": "This is the very first runId along the chain of ContinueAsNew, Retry, Cron and Reset.\nUsed to identify a chain."
         },
         "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy"
@@ -5273,6 +5317,11 @@
         },
         "header": {
           "$ref": "#/definitions/v1Header"
+        },
+        "parentInitiatedEventVersion": {
+          "type": "string",
+          "format": "int64",
+          "title": "Version of the child execution initiated event in parent workflow\nIt should be used together with parent_initiated_event_id to identify\na child initiated event for global namespace"
         }
       },
       "title": "Always the first event in workflow history"
@@ -5327,10 +5376,11 @@
         "WORKFLOW_ID_REUSE_POLICY_UNSPECIFIED",
         "WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE",
         "WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY",
-        "WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE"
+        "WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE",
+        "WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING"
       ],
       "default": "WORKFLOW_ID_REUSE_POLICY_UNSPECIFIED",
-      "description": "Defines how new runs of a workflow with a particular ID may or may not be allowed. Note that\nit is *never* valid to have two actively running instances of the same workflow id.\n\n - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE: Allow starting a workflow execution using the same workflow id.\n - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY: Allow starting a workflow execution using the same workflow id, only when the last\nexecution's final state is one of [terminated, cancelled, timed out, failed].\n - WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE: Do not permit re-use of the workflow id for this workflow. Future start workflow requests\ncould potentially change the policy, allowing re-use of the workflow id."
+      "description": "Defines how new runs of a workflow with a particular ID may or may not be allowed. Note that\nit is *never* valid to have two actively running instances of the same workflow id.\n\n - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE: Allow starting a workflow execution using the same workflow id.\n - WORKFLOW_ID_REUSE_POLICY_ALLOW_DUPLICATE_FAILED_ONLY: Allow starting a workflow execution using the same workflow id, only when the last\nexecution's final state is one of [terminated, cancelled, timed out, failed].\n - WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE: Do not permit re-use of the workflow id for this workflow. Future start workflow requests\ncould potentially change the policy, allowing re-use of the workflow id.\n - WORKFLOW_ID_REUSE_POLICY_TERMINATE_IF_RUNNING: If a workflow is running using the same workflow ID, terminate it and start a new one.\nIf no running workflow, then the behavior is the same as ALLOW_DUPLICATE"
     },
     "v1WorkflowQuery": {
       "type": "object",
@@ -5500,6 +5550,15 @@
         "requestId": {
           "type": "string",
           "title": "TODO: ? Appears unused?"
+        },
+        "suggestContinueAsNew": {
+          "type": "boolean",
+          "description": "True if this workflow should continue-as-new soon because its history size (in\neither event count or bytes) is getting large."
+        },
+        "historySizeBytes": {
+          "type": "string",
+          "format": "int64",
+          "description": "Total history size in bytes, which the workflow might use to decide when to\ncontinue-as-new regardless of the suggestion. Note that history event count is\njust the event id of this event, so we don't include it explicitly here."
         }
       }
     },
