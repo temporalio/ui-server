@@ -1,1 +1,0 @@
-import{X as s}from"./index-a913e400.js";import{p as r}from"./persist-store-1373753b.js";const a=r("viewedFeatureTags",null),n=t=>{var i;let e=(i=s(a))!=null?i:[];e.includes(t)||(e=[...e,t],a.set(e))};export{a,n as v};
