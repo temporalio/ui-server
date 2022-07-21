@@ -49,6 +49,7 @@ type (
 		// How often to reload the config
 		RefreshInterval time.Duration `yaml:"refreshInterval"`
 		Codec           Codec         `yaml:"codec"`
+		Session         Session       `yaml:"session"`
 	}
 
 	CORS struct {
@@ -86,6 +87,14 @@ type (
 	Codec struct {
 		Endpoint        string `yaml:"endpoint"`
 		PassAccessToken bool   `yaml:"passAccessToken"`
+	}
+
+	Session struct {
+		Filesystem Filesystem `yaml:"filesystem"`
+	}
+
+	Filesystem struct {
+		Path string `yaml:"path"`
 	}
 )
 

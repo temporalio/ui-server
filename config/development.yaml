@@ -38,3 +38,6 @@ tls:
 codec:
   endpoint:
   passAccessToken: false
+session:
+  filesystem:
+    path: # .tmp

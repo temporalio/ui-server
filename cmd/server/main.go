@@ -26,7 +26,10 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 
+	"github.com/gorilla/securecookie"
+	"github.com/gorilla/sessions"
 	"github.com/temporalio/ui-server/v2/plugins/fs_config_provider"
 	"github.com/temporalio/ui-server/v2/server"
 	"github.com/temporalio/ui-server/v2/server/server_options"
@@ -81,18 +84,48 @@ func buildCLI() *cli.App {
 				configDir := path.Join(c.String("root"), c.String("config"))
 				cfgProvider := fs_config_provider.NewFSConfigProvider(configDir, env)
 
-				s := server.NewServer(
+				cfg, err := cfgProvider.GetConfig()
+				if err != nil {
+					return err
+				}
+
+				opts := []server_options.ServerOption{
 					server_options.WithConfigProvider(cfgProvider),
-				)
+				}
+
+				if cfg.Session.Filesystem.Path != "" {
+					fmt.Println("Using filesystem session store at: ", cfg.Session.Filesystem.Path)
+					if _, err := os.Stat(cfg.Session.Filesystem.Path); os.IsNotExist(err) {
+						fmt.Println("Creating session store directory: ", cfg.Session.Filesystem.Path)
+						os.Mkdir(cfg.Session.Filesystem.Path, 0755)
+					}
+
+					sessStore := sessions.NewFilesystemStore(cfg.Session.Filesystem.Path,
+						securecookie.GenerateRandomKey(32),
+						securecookie.GenerateRandomKey(32),
+					)
+					sessStore.MaxLength(64 * 1024)
+					opts = append(opts, server_options.WithSessionStore(sessStore))
+				} else {
+					fmt.Println("Using cookie session store")
+				}
+
+				s := server.NewServer(opts...)
 				defer s.Stop()
-				err := s.Start()
+				err = s.Start()
 
 				if err != nil {
-					return cli.NewExitError(fmt.Sprintf("Unable to start server: %v.", err), 1)
+					return cli.Exit(fmt.Sprintf("Unable to start server: %v.", err), 1)
 				}
-				return cli.NewExitError("All services are stopped.", 0)
+				return cli.Exit("All services are stopped.", 0)
 			},
 		},
 	}
 	return app
+}
+
+func getDefaultFilesystemSessionPath() string {
+	dir, _ := os.Getwd()
+	sessDir := filepath.Join(dir, ".tmp")
+	return sessDir
 }
