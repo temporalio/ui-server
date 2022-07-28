@@ -58,6 +58,7 @@ type SettingsResponse struct {
 	NotifyOnNewVersion          bool
 	Codec                       *CodecResponse
 	Version                     string
+	DisableWriteActions         bool
 }
 
 func TemporalAPIHandler(cfgProvider *config.ConfigProviderWithRefresh, apiMiddleware []Middleware) echo.HandlerFunc {
@@ -129,6 +130,7 @@ func GetSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			NotifyOnNewVersion:          cfg.NotifyOnNewVersion,
 			Codec:                       codec,
 			Version:                     version.UIVersion,
+			DisableWriteActions:         cfg.DisableWriteActions,
 		}
 
 		return c.JSON(http.StatusOK, settings)
