@@ -47,9 +47,10 @@ type (
 		// show temporal-system namespace in namespace selector
 		ShowTemporalSystemNamespace bool `yaml:"showTemporalSystemNamespace"`
 		// How often to reload the config
-		RefreshInterval time.Duration `yaml:"refreshInterval"`
-		Codec           Codec         `yaml:"codec"`
-		Session         Session       `yaml:"session"`
+		RefreshInterval     time.Duration `yaml:"refreshInterval"`
+		Codec               Codec         `yaml:"codec"`
+		Session             Session       `yaml:"session"`
+		DisableWriteActions bool          `yaml:"disableWriteActions"`
 	}
 
 	CORS struct {

@@ -43,3 +43,4 @@ session:
   filesystem:
     # if non-empty, switches to filesystem store instead of cookie store. Increases size limit from 4K to 64K
     path: {{ default .Env.TEMPORAL_SESSION_STORE_PATH "" }}
+disableWriteActions: {{ default .Env.TEMPORAL_DISABLE_WRITE_ACTIONS "false" }}
