@@ -30,8 +30,10 @@ import (
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
+	"github.com/temporalio/ui-server/v2/plugins/forwardheaders"
 	"github.com/temporalio/ui-server/v2/plugins/fs_config_provider"
 	"github.com/temporalio/ui-server/v2/server"
+	"github.com/temporalio/ui-server/v2/server/api"
 	"github.com/temporalio/ui-server/v2/server/server_options"
 	"github.com/temporalio/ui-server/v2/server/version"
 	"github.com/urfave/cli/v2"
@@ -91,6 +93,9 @@ func buildCLI() *cli.App {
 
 				opts := []server_options.ServerOption{
 					server_options.WithConfigProvider(cfgProvider),
+					server_options.WithAPIMiddleware([]api.Middleware{
+						forwardheaders.WithForwardHeaders(cfg.ForwardHeaders),
+					}),
 				}
 
 				if cfg.Session.Filesystem.Path != "" {

@@ -8,6 +8,7 @@ defaultNamespace: default
 showTemporalSystemNamespace: false
 feedbackUrl:
 notifyOnNewVersion: true
+disableWriteActions: false
 auth:
   enabled: false
   providers:
@@ -41,4 +42,5 @@ codec:
 session:
   filesystem:
     path: # .tmp
-disableWriteActions: false
+forwardHeaders: # can be used to pass additional HTTP headers from HTTP requests to Temporal gRPC backend
+  - X-Forwarded-For

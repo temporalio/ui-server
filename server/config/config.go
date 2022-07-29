@@ -51,6 +51,7 @@ type (
 		Codec               Codec         `yaml:"codec"`
 		Session             Session       `yaml:"session"`
 		DisableWriteActions bool          `yaml:"disableWriteActions"`
+		ForwardHeaders      []string      `yaml:"forwardHeaders"`
 	}
 
 	CORS struct {
