@@ -14,6 +14,7 @@ auth:
     - label: Auth0 oidc # for internal use; in future may expose as button text
       type: oidc # for futureproofing; only oidc is supported today
       providerUrl: https://myorg.us.auth0.com/
+      issuerUrl: "" # needed if the Issuer Url and the Provider Url are different
       clientId: xxxxxxxxxxxxxxxxxxxx
       clientSecret: xxxxxxxxxxxxxxxxxxxx
       scopes:

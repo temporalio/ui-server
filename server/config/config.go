@@ -77,6 +77,7 @@ type (
 		Label        string                 `yaml:"label"`
 		Type         string                 `yaml:"type"`
 		ProviderUrl  string                 `yaml:"providerUrl"`
+		IssuerUrl    string                 `yaml:"issuerUrl"`
 		ClientID     string                 `yaml:"clientId"`
 		ClientSecret string                 `yaml:"clientSecret"`
 		Scopes       []string               `yaml:"scopes"`
