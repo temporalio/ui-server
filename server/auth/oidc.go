@@ -50,10 +50,6 @@ type Claims struct {
 	Picture       string `json:"picture"`
 }
 
-func GetErrorDescription(c echo.Context) error {
-	return c.Redirect(http.StatusFound, "/login?error="+r.URL.Query().Get("code"))
-}
-
 func ExchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, provider *oidc.Provider) (*User, error) {
 	state, err := r.Cookie("state")
 	if err != nil {
