@@ -121,7 +121,9 @@ func authenticateCb(ctx context.Context, oauthCfg *oauth2.Config, provider *oidc
 	return func(c echo.Context) error {
 		user, err := auth.ExchangeCode(ctx, c.Request(), oauthCfg, provider)
 		if err != nil {
-			return err
+			// Redirect to login with error param to show to users
+			return c.Redirect(http.StatusSeeOther, "/login?error="+err.Error())
+			// return err
 		}
 
 		err = auth.SetUser(c, user)

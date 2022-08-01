@@ -50,6 +50,10 @@ type Claims struct {
 	Picture       string `json:"picture"`
 }
 
+func GetErrorDescription(c echo.Context) error {
+	return c.Redirect(http.StatusFound, "/login?error="+r.URL.Query().Get("code"))
+}
+
 func ExchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, provider *oidc.Provider) (*User, error) {
 	state, err := r.Cookie("state")
 	if err != nil {
@@ -61,7 +65,11 @@ func ExchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 
 	oauth2Token, err := config.Exchange(ctx, r.URL.Query().Get("code"))
 	if err != nil {
-		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Unable to exchange token: "+err.Error())
+		// Return error description from Auth0 query param or static message?
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, r.URL.Query().Get("error_description"))
+
+		// Current generic error message
+		// return nil, echo.NewHTTPError(http.StatusInternalServerError, "Unable to exchange token: "+err.Error())
 	}
 
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
