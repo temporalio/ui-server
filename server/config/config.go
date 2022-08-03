@@ -44,13 +44,15 @@ type (
 		DefaultNamespace    string `yaml:"defaultNamespace"`
 		FeedbackURL         string `yaml:"feedbackUrl"`
 		NotifyOnNewVersion  bool   `yaml:"notifyOnNewVersion"`
-		// show temporal-system namespace in namespace selector
+		// Show temporal-system namespace in namespace selector
 		ShowTemporalSystemNamespace bool `yaml:"showTemporalSystemNamespace"`
 		// How often to reload the config
 		RefreshInterval     time.Duration `yaml:"refreshInterval"`
 		Codec               Codec         `yaml:"codec"`
 		Session             Session       `yaml:"session"`
 		DisableWriteActions bool          `yaml:"disableWriteActions"`
+		// Forward specified HTTP headers from HTTP API requests to Temporal gRPC backend
+		ForwardHeaders []string `yaml:"forwardHeaders"`
 	}
 
 	CORS struct {

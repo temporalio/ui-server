@@ -9,6 +9,7 @@ notifyOnNewVersion: {{ default .Env.TEMPORAL_NOTIFY_ON_NEW_VERSION "true" }}
 refreshInterval: {{ default .Env.TEMPORAL_CONFIG_REFRESH_INTERVAL "0s" }}
 showTemporalSystemNamespace:
   {{ default .Env.TEMPORAL_SHOW_TEMPORAL_SYSTEM_NAMESPACE "false" }}
+disableWriteActions: {{ default .Env.TEMPORAL_DISABLE_WRITE_ACTIONS "false" }}
 cors:
   allowOrigins:
     # override framework's default that allows all origins "*"
@@ -43,4 +44,9 @@ session:
   filesystem:
     # if non-empty, switches to filesystem store instead of cookie store. Increases size limit from 4K to 64K
     path: {{ default .Env.TEMPORAL_SESSION_STORE_PATH "" }}
-disableWriteActions: {{ default .Env.TEMPORAL_DISABLE_WRITE_ACTIONS "false" }}
+forwardHeaders: # comma separated list of headers to pass from HTTP API requests to Temporal gRPC backend
+{{ if .Env.TEMPORAL_FORWARD_HEADERS }}
+{{ range $seed := (split .Env.TEMPORAL_FORWARD_HEADERS ",") }}
+  - {{ . }}
+{{ end }}
+{{ end }}
