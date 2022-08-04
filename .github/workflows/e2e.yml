@@ -97,7 +97,7 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          # (cd ./canary-go && timeout 60m ./temporal-canary --env e2e start &)
+          (cd ./canary-go && timeout 60m ./temporal-canary --env e2e start &)
           timeout 60m ./ui-server --env e2e start &
           (cd ./ui && timeout 60m pnpm dev:cloud &)
           cd ./e2e
