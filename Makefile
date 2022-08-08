@@ -4,6 +4,11 @@
 all: install build
 
 ##### Variables ######
+define NEWLINE
+
+
+endef
+
 ifndef GOPATH
 GOPATH := $(shell go env GOPATH)
 endif
