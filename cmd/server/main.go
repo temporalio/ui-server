@@ -42,7 +42,12 @@ import (
 // main entry point for the web server
 func main() {
 	app := buildCLI()
-	_ = app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		// An unhandled error was returned, wrap it and run it through the default exit code handler. Any errors
+		// that make it here should be caught further up the call stack and wrapped with cli.Exit and the proper exit code.
+		cli.HandleExitCoder(cli.Exit(fmt.Sprintf("Unexpected error encountered: %v.", err), 9))
+	}
 }
 
 // buildCLI is the main entry point for the web server
@@ -88,7 +93,7 @@ func buildCLI() *cli.App {
 
 				cfg, err := cfgProvider.GetConfig()
 				if err != nil {
-					return err
+					return cli.Exit(err, 1)
 				}
 
 				opts := []server_options.ServerOption{
