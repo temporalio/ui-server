@@ -4,10 +4,6 @@
 all: install build
 
 ##### Variables ######
-define NEWLINE
-
-
-endef
 
 ifndef GOPATH
 GOPATH := $(shell go env GOPATH)
@@ -102,19 +98,9 @@ install-ui:
 	(cd ./ui && pnpm install)
 
 ##### Test #####
-TEST_TIMEOUT := 10m
-ALL_SRC         := $(shell find . -name "*.go")
-TEST_DIRS       := $(sort $(dir $(filter %_test.go,$(ALL_SRC))))
-
-ifdef TEST_TAG
-override TEST_TAG := -tags $(TEST_TAG)
-endif
-
 test: clean-test-results
 	@printf $(COLOR) "Running unit tests..."
-	$(foreach TEST_DIRS,$(TEST_DIRS),\
-		@go test $(TEST_DIRS) -timeout=$(TEST_TIMEOUT) $(TEST_TAG) -race \
-	$(NEWLINE))
+	go test ./...
 
 clean-test-results:
 	@rm -f test.log
