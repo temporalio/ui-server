@@ -100,7 +100,7 @@ install-ui:
 ##### Test #####
 test: clean-test-results
 	@printf $(COLOR) "Running unit tests..."
-	go test ./...
+	go test ./... -race
 
 clean-test-results:
 	@rm -f test.log
