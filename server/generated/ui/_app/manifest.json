@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-85a9011f.js",
+    "file": "start-cd5861be.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -397,7 +397,7 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/__layout.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/__layout.svelte-6a3a5312.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/__layout.svelte-86d16a6e.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -415,6 +415,7 @@
       "_badge-42583471.js",
       "_code-block-7d0d3c82.js",
       "_format-event-attributes-3b33ccba.js",
+      "_to-time-difference-ae78c1c0.js",
       "_empty-state-1894a157.js",
       "_index-d27505fa.js",
       "_loading-ca2c3015.js",
@@ -481,7 +482,7 @@
     ]
   },
   "src/routes/import/events/[namespace]/[workflow]/[run]/history/compact/index.svelte": {
-    "file": "pages/import/events/_namespace_/_workflow_/_run_/history/compact/index.svelte-fa8b6478.js",
+    "file": "pages/import/events/_namespace_/_workflow_/_run_/history/compact/index.svelte-dbb9ad24.js",
     "src": "src/routes/import/events/[namespace]/[workflow]/[run]/history/compact/index.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -489,7 +490,7 @@
       "_index-68c8bf39.js",
       "_stores-5114c64c.js",
       "_import-events-770c86e2.js",
-      "_event-summary-76b003d8.js",
+      "_event-summary-63a8c4d0.js",
       "_index-f99f80f5.js",
       "_event-view-a3a18a2d.js",
       "_persist-store-1f86d88b.js",
@@ -519,10 +520,13 @@
       "_link-47891654.js",
       "_copyable-3ae46b30.js",
       "_empty-state-1894a157.js"
+    ],
+    "css": [
+      "assets/event-group-details.svelte_svelte_type_style_lang-5fac2601.css"
     ]
   },
   "src/routes/import/events/[namespace]/[workflow]/[run]/history/feed/index.svelte": {
-    "file": "pages/import/events/_namespace_/_workflow_/_run_/history/feed/index.svelte-bfc7ef8a.js",
+    "file": "pages/import/events/_namespace_/_workflow_/_run_/history/feed/index.svelte-f810153e.js",
     "src": "src/routes/import/events/[namespace]/[workflow]/[run]/history/feed/index.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -530,7 +534,7 @@
       "_index-68c8bf39.js",
       "_stores-5114c64c.js",
       "_import-events-770c86e2.js",
-      "_event-summary-76b003d8.js",
+      "_event-summary-63a8c4d0.js",
       "_index-f99f80f5.js",
       "_event-view-a3a18a2d.js",
       "_persist-store-1f86d88b.js",
@@ -560,6 +564,9 @@
       "_link-47891654.js",
       "_copyable-3ae46b30.js",
       "_empty-state-1894a157.js"
+    ],
+    "css": [
+      "assets/event-group-details.svelte_svelte_type_style_lang-5fac2601.css"
     ]
   },
   "src/routes/import/events/[namespace]/[workflow]/[run]/history/index.svelte": {
@@ -966,14 +973,14 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/compact/index.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/index.svelte-d3fa870b.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/compact/index.svelte-0bc733b3.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/compact/index.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-68c8bf39.js",
       "_stores-5114c64c.js",
-      "_event-summary-76b003d8.js",
+      "_event-summary-63a8c4d0.js",
       "_page-title-7f1b4fc1.js",
       "_events-ab1f9b52.js",
       "_event-view-a3a18a2d.js",
@@ -1019,10 +1026,13 @@
       "_workflow-run-a2c9d0df.js",
       "_workflow-service-7a54001c.js",
       "_pollers-service-2c1e0e58.js"
+    ],
+    "css": [
+      "assets/event-group-details.svelte_svelte_type_style_lang-5fac2601.css"
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/feed/index.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/feed/index.svelte-f4578630.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/history/feed/index.svelte-7194e1d7.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/feed/index.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -1030,7 +1040,7 @@
       "_index-68c8bf39.js",
       "_stores-5114c64c.js",
       "_events-ab1f9b52.js",
-      "_event-summary-76b003d8.js",
+      "_event-summary-63a8c4d0.js",
       "_page-title-7f1b4fc1.js",
       "_index-f99f80f5.js",
       "_events-service-b7cf0e0e.js",
@@ -1075,6 +1085,9 @@
       "_link-47891654.js",
       "_copyable-3ae46b30.js",
       "_empty-state-1894a157.js"
+    ],
+    "css": [
+      "assets/event-group-details.svelte_svelte_type_style_lang-5fac2601.css"
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/index.svelte": {
@@ -1142,7 +1155,7 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/pending-activities.svelte": {
-    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/pending-activities.svelte-073758df.js",
+    "file": "pages/namespaces/_namespace_/workflows/_workflow_/_run_/pending-activities.svelte-79f2b533.js",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/pending-activities.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -1159,6 +1172,7 @@
       "_page-title-7f1b4fc1.js",
       "_format-event-attributes-3b33ccba.js",
       "_time-format-0ddcf7eb.js",
+      "_to-time-difference-ae78c1c0.js",
       "_index-f99f80f5.js",
       "_with-loading-22689bcc.js",
       "_workflow-service-7a54001c.js",
@@ -1179,7 +1193,8 @@
       "_persist-store-1f86d88b.js"
     ],
     "css": [
-      "assets/pages/namespaces/_namespace_/workflows/_workflow_/_run_/pending-activities.svelte-f0b92bb7.css"
+      "assets/pages/namespaces/_namespace_/workflows/_workflow_/_run_/pending-activities.svelte-f0b92bb7.css",
+      "assets/event-group-details.svelte_svelte_type_style_lang-5fac2601.css"
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/query.svelte": {
@@ -1849,8 +1864,11 @@
       "_index-d27505fa.js"
     ]
   },
-  "_event-summary-76b003d8.js": {
-    "file": "chunks/event-summary-76b003d8.js",
+  "_to-time-difference-ae78c1c0.js": {
+    "file": "chunks/to-time-difference-ae78c1c0.js"
+  },
+  "_event-summary-63a8c4d0.js": {
+    "file": "chunks/event-summary-63a8c4d0.js",
     "imports": [
       "_index-68c8bf39.js",
       "_event-view-a3a18a2d.js",
@@ -1872,7 +1890,8 @@
       "_empty-state-1894a157.js"
     ],
     "css": [
-      "assets/event-summary-42be7302.css"
+      "assets/event-summary-bef77462.css",
+      "assets/event-group-details.svelte_svelte_type_style_lang-5fac2601.css"
     ]
   },
   "_pagination-3618c8ae.js": {
