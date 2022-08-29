@@ -105,6 +105,10 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		panic(err)
 	}
 
+	e.GET("/healthz", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
+	})
+
 	routes.SetAPIRoutes(e, cfgProvider, serverOpts.APIMiddleware)
 	routes.SetAuthRoutes(e, cfgProvider)
 
