@@ -34,6 +34,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/temporalio/ui-server/v2/server/config"
+	"github.com/temporalio/ui-server/v2/server/csrf"
 	"github.com/temporalio/ui-server/v2/server/routes"
 	"github.com/temporalio/ui-server/v2/server/server_options"
 )
@@ -90,6 +91,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		CookieHTTPOnly: false,
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieSecure:   true,
+		Skipper:        csrf.SkipOnAuthorizationHeader,
 	}))
 
 	if serverOpts.SessionStore != nil {
