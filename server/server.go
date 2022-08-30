@@ -107,6 +107,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		panic(err)
 	}
 
+	routes.SetHealthRoute(e)
 	routes.SetAPIRoutes(e, cfgProvider, serverOpts.APIMiddleware)
 	routes.SetAuthRoutes(e, cfgProvider)
 
