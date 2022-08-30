@@ -52,7 +52,7 @@ func (c *AuthProvider) validate() error {
 		return nil
 	}
 
-	if c.ProviderUrl == "" {
+	if c.ProviderURL == "" {
 		return errors.New("auth provider url is not")
 	}
 
