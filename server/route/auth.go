@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package routes
+package route
 
 import (
 	"encoding/base64"
@@ -41,7 +41,7 @@ import (
 )
 
 // SetAuthRoutes sets routes used by auth
-func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) {
+func SetAuthRoutes(e *echo.Group, cfgProvider *config.ConfigProviderWithRefresh) {
 	ctx := context.Background()
 	serverCfg, err := cfgProvider.GetConfig()
 	if err != nil {

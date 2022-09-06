@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package routes
+package route
 
 import (
 	"bytes"
@@ -31,21 +31,30 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// SetAPIRoutes sets api routes
-func SetSwaggerUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
-	e.GET("/openapi", buildSwaggerUIHandler(indexHTML))
-	e.GET("/openapi/*", buildSwaggerUIAssetsHander(assets))
+// SetUIRoutes sets UI routes
+func SetUIRoutes(e *echo.Group, indexHTML []byte, assets embed.FS) {
+	assetsHandler := buildUIAssetsHander(assets)
+	e.GET("/_app/*", assetsHandler)
+	e.GET("/css/*", assetsHandler)
+	e.GET("/prism/*", assetsHandler)
+	e.GET("/android*", assetsHandler)
+	e.GET("/apple*", assetsHandler)
+	e.GET("/banner.png", assetsHandler)
+	e.GET("/favicon*", assetsHandler)
+	e.GET("/logo*", assetsHandler)
+	e.GET("/site.webmanifest", assetsHandler)
+	e.GET("/*", buildUIIndexHandler(indexHTML))
 }
 
-func buildSwaggerUIHandler(indexHTML []byte) echo.HandlerFunc {
+func buildUIIndexHandler(indexHTML []byte) echo.HandlerFunc {
 	return func(c echo.Context) (err error) {
 		return c.Stream(200, "text/html", bytes.NewBuffer(indexHTML))
 	}
 }
 
-func buildSwaggerUIAssetsHander(assets embed.FS) echo.HandlerFunc {
+func buildUIAssetsHander(assets embed.FS) echo.HandlerFunc {
 	stream := fs.FS(assets)
-	stream, _ = fs.Sub(stream, "generated")
+	stream, _ = fs.Sub(stream, "generated/ui")
 	handler := http.FileServer(http.FS(stream))
 	return echo.WrapHandler(handler)
 }

@@ -35,7 +35,7 @@ type (
 		TemporalGRPCAddress string `yaml:"temporalGrpcAddress"`
 		Host                string `yaml:"host"`
 		Port                int    `yaml:"port"`
-		UIRootPath          string `yaml:"uiRootPath"`
+		PublicPath          string `yaml:"publicPath"`
 		TLS                 TLS    `yaml:"tls"`
 		Auth                Auth   `yaml:"auth"`
 		EnableUI            bool   `yaml:"enableUi"`

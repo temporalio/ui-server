@@ -20,10 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package routes
+package route
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/temporalio/ui-server/v2/server/api"
 	"github.com/temporalio/ui-server/v2/server/auth"
@@ -31,8 +32,17 @@ import (
 )
 
 // SetAPIRoutes sets api routes
-func SetAPIRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh, apiMiddleware []api.Middleware) error {
+func SetAPIRoutes(e *echo.Group, cfgProvider *config.ConfigProviderWithRefresh, apiMiddleware []api.Middleware) error {
 	route := e.Group("/api")
+
+	cfg, err := cfgProvider.GetConfig()
+	if err != nil {
+		return err
+	}
+	route.Use(middleware.Rewrite(map[string]string{
+		cfg.PublicPath + "/api/v1/*": "/api/v1/$1",
+	}))
+
 	route.GET("/v1/me", auth.GetCurrentUser)
 	route.GET("/v1/settings", api.GetSettings(cfgProvider))
 	route.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", api.TemporalAPIHandler(cfgProvider, apiMiddleware))

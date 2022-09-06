@@ -20,41 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package routes
+package route
 
 import (
-	"bytes"
-	"embed"
-	"io/fs"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-// SetUIRoutes sets UI routes
-func SetUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
-	assetsHandler := buildUIAssetsHander(assets)
-	e.GET("/_app/*", assetsHandler)
-	e.GET("/css/*", assetsHandler)
-	e.GET("/prism/*", assetsHandler)
-	e.GET("/android*", assetsHandler)
-	e.GET("/apple*", assetsHandler)
-	e.GET("/banner.png", assetsHandler)
-	e.GET("/favicon*", assetsHandler)
-	e.GET("/logo*", assetsHandler)
-	e.GET("/site.webmanifest", assetsHandler)
-	e.GET("/*", buildUIIndexHandler(indexHTML))
-}
-
-func buildUIIndexHandler(indexHTML []byte) echo.HandlerFunc {
-	return func(c echo.Context) (err error) {
-		return c.Stream(200, "text/html", bytes.NewBuffer(indexHTML))
-	}
-}
-
-func buildUIAssetsHander(assets embed.FS) echo.HandlerFunc {
-	stream := fs.FS(assets)
-	stream, _ = fs.Sub(stream, "generated/ui")
-	handler := http.FileServer(http.FS(stream))
-	return echo.WrapHandler(handler)
+func SetHealthRoute(e *echo.Group) {
+	e.GET("/healthz", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
+	})
 }
