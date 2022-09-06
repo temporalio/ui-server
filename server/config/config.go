@@ -71,21 +71,31 @@ type (
 	}
 
 	Auth struct {
-		Enabled   bool           `yaml:"enabled"`
+		// Enabled - UI checks this first before reading your provider config
+		Enabled bool `yaml:"enabled"`
+		// A list of auth providers. Currently enables only the first provider in the list.
 		Providers []AuthProvider `yaml:"providers"`
 	}
 
 	AuthProvider struct {
-		Label        string                 `yaml:"label"`
-		Type         string                 `yaml:"type"`
-		ProviderUrl  string                 `yaml:"providerUrl"`
-		IssuerUrl    string                 `yaml:"issuerUrl"`
-		ClientID     string                 `yaml:"clientId"`
-		ClientSecret string                 `yaml:"clientSecret"`
-		Scopes       []string               `yaml:"scopes"`
-		CallbackURL  string                 `yaml:"callbackUrl"`
-		PassIDToken  bool                   `yaml:"passIdToken"`
-		Options      map[string]interface{} `yaml:"options"`
+		// Label - optional label for the provider
+		Label string `yaml:"label"`
+		// Type of the auth provider. Only OIDC is supported today
+		Type string `yaml:"type"`
+		// OIDC .well-known/openid-configuration URL, ex. https://accounts.google.com/
+		ProviderURL string `yaml:"providerUrl"`
+		// IssuerUrl - optional. Needed only when differs from the auth provider URL
+		IssuerUrl    string `yaml:"issuerUrl"`
+		ClientID     string `yaml:"clientId"`
+		ClientSecret string `yaml:"clientSecret"`
+		// Scopes for auth. Typically [openid, profile, email]
+		Scopes []string `yaml:"scopes"`
+		// CallbackURL - URL for the callback URL, ex. https://localhost:8080/sso/callback
+		CallbackURL string `yaml:"callbackUrl"`
+		// PassIDToken determines whether to attach ID Token when making requests to Temporal gRPC backend. Not needed in most cases.
+		PassIDToken bool `yaml:"passIdToken"`
+		// Options added as URL query params when redirecting to auth provider. Can be used to configure custom auth flows such as Auth0 invitation flow.
+		Options map[string]interface{} `yaml:"options"`
 	}
 
 	Codec struct {
@@ -94,6 +104,7 @@ type (
 	}
 
 	Session struct {
+		//  Filesystem if non-empty, switches session to filesystem store instead of cookie store. Increases size limit from 4K to 64K
 		Filesystem Filesystem `yaml:"filesystem"`
 	}
 
