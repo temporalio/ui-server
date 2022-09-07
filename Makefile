@@ -34,18 +34,16 @@ build: build-ui build-api build-server
 build-cloud: build-ui-cloud build-server
 
 build-ui:
-	(cd ./ui && rm -rf ./build-local)
 	(cd ./ui && VITE_API="" pnpm build:local)
 	rm -rf $(UI_OUT)
 	mkdir -p $(UI_OUT)
-	cp -r ./ui/build-local/* $(UI_OUT)
+	cp -r ./ui/.vercel/output/static/* $(UI_OUT)
 
 build-ui-cloud:
-	(cd ./ui && rm -rf ./build-cloud)
 	(cd ./ui && VITE_API="" pnpm build:cloud)
 	rm -rf $(UI_OUT)
 	mkdir -p $(UI_OUT)
-	cp -r ./ui/build-cloud/* $(UI_OUT)
+	cp -r ./ui/.vercel/output/static/* $(UI_OUT)
 
 build-api: build-grpc
 	mkdir -p $(OPENAPI_OUT)
