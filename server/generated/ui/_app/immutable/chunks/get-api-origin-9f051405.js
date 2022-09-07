@@ -1,0 +1,1 @@
+import{e as o}from"./route-for-4a4bbbc1.js";function s(e=o){const t="",n=!t.startsWith("http");let i="";return n?i=e?window.location.origin+t:"":i=t,i.endsWith("/")&&(i=i.slice(0,-1)),i}export{s as g};
