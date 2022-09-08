@@ -1,1 +1,0 @@
-import{e as n}from"./route-for-b2ab8caf.js";function r(o=n){const i="http://localhost:8080",e=!i.startsWith("http");let t="";return e?t=o?window.location.origin+i:"":t=i,t.endsWith("/")&&(t=t.slice(0,-1)),t}export{r as g};
