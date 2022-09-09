@@ -22,9 +22,14 @@ RUN make install build-cloud
 FROM ${BASE_SERVER_IMAGE} AS ui-server
 WORKDIR /home/ui-server
 
+RUN addgroup -g 5000 temporal
+RUN adduser -u 5000 -G temporal -D temporal
+
 COPY --from=ui-builder /home/ui-builder/ui-server ./
 COPY docker/start-ui-server.sh ./start-ui-server.sh
 COPY docker/config_template.yaml ./config/config_template.yaml
+
+RUN chown temporal:temporal /home/ui-server -R
 
 EXPOSE 8080
 ENTRYPOINT ["./start-ui-server.sh"]
