@@ -35,7 +35,7 @@ import (
 
 	"github.com/temporalio/ui-server/v2/server/config"
 	"github.com/temporalio/ui-server/v2/server/csrf"
-	"github.com/temporalio/ui-server/v2/server/routes"
+	"github.com/temporalio/ui-server/v2/server/route"
 	"github.com/temporalio/ui-server/v2/server/server_options"
 )
 
@@ -103,19 +103,15 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		)))
 	}
 
-	if err != nil {
-		panic(err)
-	}
-
-	routes.SetHealthRoute(e)
-	routes.SetAPIRoutes(e, cfgProvider, serverOpts.APIMiddleware)
-	routes.SetAuthRoutes(e, cfgProvider)
-
+	e.Pre(route.PublicPath(cfg.PublicPath))
+	route.SetHealthRoute(e)
+	route.SetAPIRoutes(e, cfgProvider, serverOpts.APIMiddleware)
+	route.SetAuthRoutes(e, cfgProvider)
 	if cfg.EnableOpenAPI {
-		routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
+		route.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
 	}
 	if cfg.EnableUI {
-		routes.SetUIRoutes(e, uiHTML, uiAssets)
+		route.SetUIRoutes(e, uiHTML, uiAssets)
 	}
 
 	s := &Server{

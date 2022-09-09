@@ -20,41 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package routes
+package route
 
 import (
-	"bytes"
-	"embed"
-	"io/fs"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
+
+	"github.com/temporalio/ui-server/v2/server/api"
+	"github.com/temporalio/ui-server/v2/server/auth"
+	"github.com/temporalio/ui-server/v2/server/config"
 )
 
-// SetUIRoutes sets UI routes
-func SetUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
-	assetsHandler := buildUIAssetsHander(assets)
-	e.GET("/_app/*", assetsHandler)
-	e.GET("/css/*", assetsHandler)
-	e.GET("/prism/*", assetsHandler)
-	e.GET("/android*", assetsHandler)
-	e.GET("/apple*", assetsHandler)
-	e.GET("/banner.png", assetsHandler)
-	e.GET("/favicon*", assetsHandler)
-	e.GET("/logo*", assetsHandler)
-	e.GET("/site.webmanifest", assetsHandler)
-	e.GET("/*", buildUIIndexHandler(indexHTML))
-}
-
-func buildUIIndexHandler(indexHTML []byte) echo.HandlerFunc {
-	return func(c echo.Context) (err error) {
-		return c.Stream(200, "text/html", bytes.NewBuffer(indexHTML))
-	}
-}
-
-func buildUIAssetsHander(assets embed.FS) echo.HandlerFunc {
-	stream := fs.FS(assets)
-	stream, _ = fs.Sub(stream, "generated/ui")
-	handler := http.FileServer(http.FS(stream))
-	return echo.WrapHandler(handler)
+// SetAPIRoutes sets api routes
+func SetAPIRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh, apiMiddleware []api.Middleware) error {
+	route := e.Group("/api")
+	route.GET("/v1/me", auth.GetCurrentUser)
+	route.GET("/v1/settings", api.GetSettings(cfgProvider))
+	route.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", api.TemporalAPIHandler(cfgProvider, apiMiddleware))
+	return nil
 }

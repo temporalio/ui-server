@@ -20,21 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package routes
+package route
 
 import (
-	"github.com/labstack/echo/v4"
+	"bytes"
+	"embed"
+	"io/fs"
+	"net/http"
 
-	"github.com/temporalio/ui-server/v2/server/api"
-	"github.com/temporalio/ui-server/v2/server/auth"
-	"github.com/temporalio/ui-server/v2/server/config"
+	"github.com/labstack/echo/v4"
 )
 
 // SetAPIRoutes sets api routes
-func SetAPIRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh, apiMiddleware []api.Middleware) error {
-	route := e.Group("/api")
-	route.GET("/v1/me", auth.GetCurrentUser)
-	route.GET("/v1/settings", api.GetSettings(cfgProvider))
-	route.Match([]string{"GET", "POST", "PUT", "PATCH", "DELETE"}, "/*", api.TemporalAPIHandler(cfgProvider, apiMiddleware))
-	return nil
+func SetSwaggerUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
+	e.GET("/openapi", buildSwaggerUIHandler(indexHTML))
+	e.GET("/openapi/*", buildSwaggerUIAssetsHander(assets))
+}
+
+func buildSwaggerUIHandler(indexHTML []byte) echo.HandlerFunc {
+	return func(c echo.Context) (err error) {
+		return c.Stream(200, "text/html", bytes.NewBuffer(indexHTML))
+	}
+}
+
+func buildSwaggerUIAssetsHander(assets embed.FS) echo.HandlerFunc {
+	stream := fs.FS(assets)
+	stream, _ = fs.Sub(stream, "generated")
+	handler := http.FileServer(http.FS(stream))
+	return echo.WrapHandler(handler)
 }

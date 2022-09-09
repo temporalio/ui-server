@@ -20,32 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package routes
+package route
 
 import (
-	"bytes"
-	"embed"
-	"io/fs"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-// SetAPIRoutes sets api routes
-func SetSwaggerUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
-	e.GET("/openapi", buildSwaggerUIHandler(indexHTML))
-	e.GET("/openapi/*", buildSwaggerUIAssetsHander(assets))
-}
-
-func buildSwaggerUIHandler(indexHTML []byte) echo.HandlerFunc {
-	return func(c echo.Context) (err error) {
-		return c.Stream(200, "text/html", bytes.NewBuffer(indexHTML))
-	}
-}
-
-func buildSwaggerUIAssetsHander(assets embed.FS) echo.HandlerFunc {
-	stream := fs.FS(assets)
-	stream, _ = fs.Sub(stream, "generated")
-	handler := http.FileServer(http.FS(stream))
-	return echo.WrapHandler(handler)
+func PublicPath(path string) echo.MiddlewareFunc {
+	return middleware.Rewrite(map[string]string{
+		path + "/*": "/$1",
+	})
 }
