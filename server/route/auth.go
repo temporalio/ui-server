@@ -41,7 +41,7 @@ import (
 )
 
 // SetAuthRoutes sets routes used by auth
-func SetAuthRoutes(e *echo.Group, cfgProvider *config.ConfigProviderWithRefresh) {
+func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) {
 	ctx := context.Background()
 	serverCfg, err := cfgProvider.GetConfig()
 	if err != nil {

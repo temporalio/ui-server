@@ -23,13 +23,12 @@
 package route
 
 import (
-	"net/http"
-
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func SetHealthRoute(e *echo.Echo) {
-	e.GET("/healthz", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
+func PublicPath(path string) echo.MiddlewareFunc {
+	return middleware.Rewrite(map[string]string{
+		path + "/*": "/$1",
 	})
 }

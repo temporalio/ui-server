@@ -32,7 +32,7 @@ import (
 )
 
 // SetAPIRoutes sets api routes
-func SetSwaggerUIRoutes(e *echo.Group, indexHTML []byte, assets embed.FS) {
+func SetSwaggerUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
 	e.GET("/openapi", buildSwaggerUIHandler(indexHTML))
 	e.GET("/openapi/*", buildSwaggerUIAssetsHander(assets))
 }

@@ -32,14 +32,14 @@ import (
 )
 
 // SetUIRoutes sets UI routes
-func SetUIRoutes(e *echo.Group, indexHTML []byte, assets embed.FS) {
-	assetsHandler := buildUIAssetsHander(assets)
+func SetUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
+	assetsHandler := buildUIAssetsHandler(assets)
 	e.GET("/_app/*", assetsHandler)
 	e.GET("/css/*", assetsHandler)
 	e.GET("/prism/*", assetsHandler)
 	e.GET("/android*", assetsHandler)
 	e.GET("/apple*", assetsHandler)
-	e.GET("/banner.png", assetsHandler)
+	e.GET("/banner*", assetsHandler)
 	e.GET("/favicon*", assetsHandler)
 	e.GET("/logo*", assetsHandler)
 	e.GET("/site.webmanifest", assetsHandler)
@@ -52,7 +52,7 @@ func buildUIIndexHandler(indexHTML []byte) echo.HandlerFunc {
 	}
 }
 
-func buildUIAssetsHander(assets embed.FS) echo.HandlerFunc {
+func buildUIAssetsHandler(assets embed.FS) echo.HandlerFunc {
 	stream := fs.FS(assets)
 	stream, _ = fs.Sub(stream, "generated/ui")
 	handler := http.FileServer(http.FS(stream))

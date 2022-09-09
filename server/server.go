@@ -103,20 +103,15 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		)))
 	}
 
-	if err != nil {
-		panic(err)
-	}
-
-	routes := e.Group(cfg.PublicPath)
-	route.SetHealthRoute(routes)
-	route.SetAPIRoutes(routes, cfgProvider, serverOpts.APIMiddleware)
-	route.SetAuthRoutes(routes, cfgProvider)
-
+	e.Pre(route.PublicPath(cfg.PublicPath))
+	route.SetHealthRoute(e)
+	route.SetAPIRoutes(e, cfgProvider, serverOpts.APIMiddleware)
+	route.SetAuthRoutes(e, cfgProvider)
 	if cfg.EnableOpenAPI {
-		route.SetSwaggerUIRoutes(routes, swaggeruiHTML, swaggeruiAssets)
+		route.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
 	}
 	if cfg.EnableUI {
-		route.SetUIRoutes(routes, uiHTML, uiAssets)
+		route.SetUIRoutes(e, uiHTML, uiAssets)
 	}
 
 	s := &Server{
