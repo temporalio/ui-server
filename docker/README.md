@@ -30,7 +30,6 @@ docker run \
     -e TEMPORAL_AUTH_CALLBACK_URL=https://xxxx.com:8080/auth/sso/callback \ -- Auth callback url
     -e TEMPORAL_UI_ENABLED=true \                                           -- Serve UI
     -e TEMPORAL_OPENAPI_ENABLED=true \                                      -- Serve Open API UI
-    -e TEMPORAL_CORS_ORIGINS=http://localhost:3000 \                        -- Allow CORS origins
     -e TEMPORAL_TLS_CA=../ca.cert \                                         -- TLS Certificate Authority path
     -e TEMPORAL_TLS_CERT=../cluster.pem \                                   -- TLS cert path
     -e TEMPORAL_TLS_KEY=../cluster.key \                                    -- TLS key path
