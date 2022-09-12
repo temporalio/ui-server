@@ -24,10 +24,10 @@ docker run \
     -e TEMPORAL_ADDRESS=127.0.0.1:7233 \                                    -- Temporal Frontend Address
     -e TEMPORAL_UI_PORT=8080 \                                              -- Port to serve HTTP API and UI on
     -e TEMPORAL_AUTH_ENABLED=true \                                         -- Enable auth
-    -e TEMPORAL_AUTH_PROVIDER_URL=https://accounts.google.com \             -- Auth OIDC provider url
+    -e TEMPORAL_AUTH_PROVIDER_URL=https://accounts.google.com \             -- Auth OIDC provider URL
     -e TEMPORAL_AUTH_CLIENT_ID=xxxxx-xxxx.apps.googleusercontent.com \      -- Auth client ID
     -e TEMPORAL_AUTH_CLIENT_SECRET=xxxxxxxxxxxxxxx \                        -- Auth client secret
-    -e TEMPORAL_AUTH_CALLBACK_URL=https://xxxx.com:8080/auth/sso/callback \ -- Auth callback url
+    -e TEMPORAL_AUTH_CALLBACK_URL=https://xxxx.com:8080/auth/sso/callback \ -- Auth callback URL
     -e TEMPORAL_UI_ENABLED=true \                                           -- Serve UI
     -e TEMPORAL_OPENAPI_ENABLED=true \                                      -- Serve Open API UI
     -e TEMPORAL_TLS_CA=../ca.cert \                                         -- TLS Certificate Authority path
