@@ -16,7 +16,7 @@ RUN go mod download
 
 COPY . .
 ENV VITE_PUBLIC_PATH=$TEMPORAL_PUBLIC_PATH
-RUN make install build-ui build-server
+RUN make install-utils install-ui build-ui build-server
 
 ##### UI server #####
 FROM ${BASE_SERVER_IMAGE} AS ui-server
