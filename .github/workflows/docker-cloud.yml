@@ -30,7 +30,7 @@ jobs:
         with:
           images: temporalio/cloud-ui
           tags: |
-            type=sha,format=short,event=branch
+            type=semver,pattern={{version}}
             latest
 
       - name: Push Cloud Release image to DockerHub
