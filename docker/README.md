@@ -1,6 +1,6 @@
 # Pre-built images
 
-ui-server can be consumed from the Docker Hub: https://hub.docker.com/r/temporalio/ui
+ui-server can be consumed from Docker Hub: https://hub.docker.com/r/temporalio/ui
 
 # Build docker image
 
