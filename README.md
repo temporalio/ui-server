@@ -2,6 +2,9 @@
 # ui-server 
 
 [![build](https://github.com/temporalio/ui-server/actions/workflows/test.yml/badge.svg)](https://github.com/temporalio/ui-server/actions/workflows/test.yml)
+[![E2E Tests](https://github.com/temporalio/ui-server/actions/workflows/e2e.yml/badge.svg)](https://github.com/temporalio/ui-server/actions/workflows/e2e.yml)
+[![Publish Docker image](https://github.com/temporalio/ui-server/actions/workflows/docker.yml/badge.svg)](https://github.com/temporalio/ui-server/actions/workflows/docker.yml)
+[![Update UI Submodule](https://github.com/temporalio/ui-server/actions/workflows/update-ui.yml/badge.svg)](https://github.com/temporalio/ui-server/actions/workflows/update-ui.yml)
 
 ui-server serves an HTTP API analogue of [Temporal gRPC API](https://github.com/temporalio/api) as well as serves Temporal UI https://github.com/temporalio/ui. It can be compiled into a binary or consumed as a Go library.
 
