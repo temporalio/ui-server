@@ -1,19 +1,26 @@
+# Pre-built images
+
+ui-server can be consumed from Docker Hub: https://hub.docker.com/r/temporalio/ui
+
 # Build docker image
-
-## Prerequisites
-
-To build docker image:
-
-- [docker](https://docs.docker.com/engine/installation/)
-
-## Build docker image for any commit
 
 Replace **YOUR_TAG** and **YOUR_CHECKOUT_COMMIT** in the below command to build:
 
-```bash
+``` bash
 git checkout YOUR_CHECKOUT_COMMIT
-docker build . -t temporalio/ui:YOUR_TAG
+docker build -t temporalio/ui:YOUR_TAG .
 ```
+
+### Serve UI under a sub-path
+
+To change the public path under which the UI is served you will want to build your own docker image
+
+``` bash
+docker build -t ui --build-arg TEMPORAL_PUBLIC_PATH=/custom-path .
+docker run --network host -e TEMPORAL_PUBLIC_PATH=/custom-path -t ui
+```
+
+Then navigate to http://localhost:8080/custom-path
 
 ## Quickstart for production
 
