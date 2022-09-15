@@ -42,7 +42,7 @@ func SetUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
 	e.GET("/banner*", assetsHandler)
 	e.GET("/favicon*", assetsHandler)
 	e.GET("/logo*", assetsHandler)
-	e.GET("/Temporal*", assetsHandler)
+	e.GET("/*.gif", assetsHandler)
 	e.GET("/site.webmanifest", assetsHandler)
 	e.GET("/*", buildUIIndexHandler(indexHTML))
 }
