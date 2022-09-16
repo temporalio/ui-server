@@ -18,6 +18,8 @@ docker build -t temporalio/ui:YOUR_TAG .
 To change the public path under which the UI is served you will want to build your own docker image
 
 ``` bash
+git checkout 2987d4e # checkout v2.6.0, see https://github.com/temporalio/ui-server/releases/tag/v2.6.1
+make install-submodules
 docker build -t ui --build-arg TEMPORAL_PUBLIC_PATH=/custom-path .
 docker run --network host -e TEMPORAL_PUBLIC_PATH=/custom-path -t ui
 ```
