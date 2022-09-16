@@ -20,8 +20,8 @@ To change the public path under which the UI is served you will want to build yo
 ``` bash
 git checkout 2987d4e
 make install-submodules
-docker build -t ui --build-arg TEMPORAL_PUBLIC_PATH=/custom-path .
-docker run --network host -e TEMPORAL_PUBLIC_PATH=/custom-path -t ui
+docker build --build-arg TEMPORAL_PUBLIC_PATH=/custom-path -t temporal-ui .
+docker run -d --network host -e TEMPORAL_PUBLIC_PATH=/custom-path -t temporal-ui
 ```
 
 Then navigate to http://localhost:8080/custom-path
