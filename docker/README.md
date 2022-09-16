@@ -13,6 +13,8 @@ docker build -t temporalio/ui:YOUR_TAG .
 
 ### Serve UI under a sub-path
 
+> Public Path is currently disabled in all versions except for v2.6.0. More info https://github.com/temporalio/ui-server/releases/tag/v2.6.1
+
 To change the public path under which the UI is served you will want to build your own docker image
 
 ``` bash
