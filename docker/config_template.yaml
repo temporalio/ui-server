@@ -41,10 +41,6 @@ auth:
 codec:
   endpoint: {{ default .Env.TEMPORAL_CODEC_ENDPOINT "" }}
   passAccessToken: {{ default .Env.TEMPORAL_CODEC_PASS_ACCESS_TOKEN "false" }}
-session:
-  filesystem:
-    # if non-empty, switches to filesystem store instead of cookie store. Increases size limit from 4K to 64K
-    path: {{ default .Env.TEMPORAL_SESSION_STORE_PATH "" }}
 forwardHeaders: # comma separated list of headers to pass from HTTP API requests to Temporal gRPC backend
 {{ if .Env.TEMPORAL_FORWARD_HEADERS }}
 {{ range $seed := (split .Env.TEMPORAL_FORWARD_HEADERS ",") }}

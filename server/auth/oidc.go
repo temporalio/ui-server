@@ -38,9 +38,17 @@ type User struct {
 	IDToken     *IDToken
 }
 
+type UserResponse struct {
+	AccessToken string
+	IDToken     string
+	Name        string
+	Email       string
+	Picture     string
+}
+
 type IDToken struct {
 	RawToken string
-	Claims   Claims
+	Claims   *Claims
 }
 
 type Claims struct {
@@ -86,7 +94,6 @@ func ExchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 	}
 
 	var claims Claims
-
 	if err := idToken.Claims(&claims); err != nil {
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -95,7 +102,7 @@ func ExchangeCode(ctx context.Context, r *http.Request, config *oauth2.Config, p
 		OAuth2Token: oauth2Token,
 		IDToken: &IDToken{
 			RawToken: rawIDToken,
-			Claims:   claims,
+			Claims:   &claims,
 		},
 	}
 

@@ -75,11 +75,9 @@ func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) 
 	}
 
 	api := e.Group("/auth")
-
 	api.GET("/sso", authenticate(&oauthCfg, providerCfg.Options))
 	api.GET("/sso/callback", authenticateCb(ctx, &oauthCfg, provider))
 	api.GET("/sso_callback", authenticateCb(ctx, &oauthCfg, provider)) // compatibility with UI v1
-	api.GET("/logout", logout)
 }
 
 func authenticate(config *oauth2.Config, options map[string]interface{}) func(echo.Context) error {
@@ -148,20 +146,6 @@ func authenticateCb(ctx context.Context, oauthCfg *oauth2.Config, provider *oidc
 
 		return c.Redirect(http.StatusSeeOther, returnUrl)
 	}
-}
-
-func logout(c echo.Context) error {
-	err := auth.ClearUser(c)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "unable to clear user: "+err.Error())
-	}
-
-	returnUrl := c.Request().Header.Get("Referer")
-	if returnUrl == "" {
-		returnUrl = "/"
-	}
-
-	return c.Redirect(http.StatusSeeOther, returnUrl)
 }
 
 func setCallbackCookie(c echo.Context, name, value string) {

@@ -26,14 +26,11 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"path/filepath"
 
-	"github.com/gorilla/securecookie"
-	"github.com/gorilla/sessions"
-	"github.com/temporalio/ui-server/v2/plugins/forwardheaders"
 	"github.com/temporalio/ui-server/v2/plugins/fs_config_provider"
 	"github.com/temporalio/ui-server/v2/server"
 	"github.com/temporalio/ui-server/v2/server/api"
+	"github.com/temporalio/ui-server/v2/server/headers"
 	"github.com/temporalio/ui-server/v2/server/server_options"
 	"github.com/temporalio/ui-server/v2/server/version"
 	"github.com/urfave/cli/v2"
@@ -99,25 +96,8 @@ func buildCLI() *cli.App {
 				opts := []server_options.ServerOption{
 					server_options.WithConfigProvider(cfgProvider),
 					server_options.WithAPIMiddleware([]api.Middleware{
-						forwardheaders.WithForwardHeaders(cfg.ForwardHeaders),
+						headers.WithForwardHeaders(cfg.ForwardHeaders),
 					}),
-				}
-
-				if cfg.Session.Filesystem.Path != "" {
-					fmt.Println("Using filesystem session store at: ", cfg.Session.Filesystem.Path)
-					if _, err := os.Stat(cfg.Session.Filesystem.Path); os.IsNotExist(err) {
-						fmt.Println("Creating session store directory: ", cfg.Session.Filesystem.Path)
-						os.Mkdir(cfg.Session.Filesystem.Path, 0755)
-					}
-
-					sessStore := sessions.NewFilesystemStore(cfg.Session.Filesystem.Path,
-						securecookie.GenerateRandomKey(32),
-						securecookie.GenerateRandomKey(32),
-					)
-					sessStore.MaxLength(64 * 1024)
-					opts = append(opts, server_options.WithSessionStore(sessStore))
-				} else {
-					fmt.Println("Using cookie session store")
 				}
 
 				s := server.NewServer(opts...)
@@ -132,10 +112,4 @@ func buildCLI() *cli.App {
 		},
 	}
 	return app
-}
-
-func getDefaultFilesystemSessionPath() string {
-	dir, _ := os.Getwd()
-	sessDir := filepath.Join(dir, ".tmp")
-	return sessDir
 }

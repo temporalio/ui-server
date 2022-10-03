@@ -27,14 +27,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/securecookie"
-	"github.com/gorilla/sessions"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"github.com/temporalio/ui-server/v2/server/api"
+	"github.com/temporalio/ui-server/v2/server/auth"
 	"github.com/temporalio/ui-server/v2/server/config"
 	"github.com/temporalio/ui-server/v2/server/csrf"
+	"github.com/temporalio/ui-server/v2/server/headers"
 	"github.com/temporalio/ui-server/v2/server/route"
 	"github.com/temporalio/ui-server/v2/server/server_options"
 )
@@ -62,6 +62,16 @@ type (
 
 // NewServer returns a new instance of server that serves one or many services.
 func NewServer(opts ...server_options.ServerOption) *Server {
+	authMiddleware := server_options.WithAPIMiddleware(([]api.Middleware{
+		headers.WithForwardHeaders(
+			[]string{
+				echo.HeaderAuthorization,
+				auth.AuthorizationExtrasHeader,
+			}),
+	}))
+
+	opts = append(opts, authMiddleware)
+
 	serverOpts := server_options.NewServerOptions(opts)
 	cfgProvider, err := config.NewConfigProviderWithRefresh(serverOpts.ConfigProvider)
 	if err != nil {
@@ -81,7 +91,7 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		AllowOrigins: cfg.CORS.AllowOrigins,
 		AllowHeaders: []string{
 			echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
-			echo.HeaderXCSRFToken, echo.HeaderAuthorization,
+			echo.HeaderXCSRFToken, echo.HeaderAuthorization, auth.AuthorizationExtrasHeader,
 		},
 		AllowCredentials: true,
 	}))
@@ -93,15 +103,6 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		CookieSecure:   true,
 		Skipper:        csrf.SkipOnAuthorizationHeader,
 	}))
-
-	if serverOpts.SessionStore != nil {
-		e.Use(session.Middleware(serverOpts.SessionStore))
-	} else {
-		e.Use(session.Middleware(sessions.NewCookieStore(
-			securecookie.GenerateRandomKey(32),
-			securecookie.GenerateRandomKey(32),
-		)))
-	}
 
 	e.Pre(route.PublicPath(cfg.PublicPath))
 	route.SetHealthRoute(e)
