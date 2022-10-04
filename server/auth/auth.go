@@ -77,6 +77,7 @@ func SetUser(c echo.Context, user *User) error {
 			Secure:   c.Request().TLS != nil,
 			HttpOnly: false,
 			Path:     "/",
+			SameSite: http.SameSiteStrictMode,
 		}
 		c.SetCookie(cookie)
 	}
