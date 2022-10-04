@@ -1,1 +1,0 @@
-import{S as e,i as o,s as r}from"../../../../chunks/index-8e660855.js";import{d as a}from"../../../../chunks/route-for-62d7d3b1.js";import"../../../../chunks/get-public-path-6c4a8950.js";const l=async function({error:t}){return{status:302,redirect:a(t.message)}};class c extends e{constructor(s){super(),o(this,s,null,null,r,{})}}export{c as default,l as load};

@@ -1,0 +1,1 @@
+import{a6 as n}from"./index-8e660855.js";import{p as i}from"./persist-store-4b4c2e6c.js";const e=i("AuthUser",{}),m=()=>n(e),p=t=>{const{accessToken:s,idToken:o,name:r,email:a,picture:c}=t;if(!s||s=="{{.AccessToken}}")throw new Error("No access token");e.set({accessToken:s,idToken:o,name:r,email:a,picture:c})},A=()=>{e.set({})};export{e as a,A as c,m as g,p as s};
