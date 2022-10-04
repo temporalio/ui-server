@@ -28,7 +28,6 @@ import (
 
 	"github.com/gogo/gateway"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -46,8 +45,8 @@ type Auth struct {
 }
 
 type CodecResponse struct {
-	Endpoint    string
-	AccessToken string
+	Endpoint        string
+	PassAccessToken bool
 }
 
 type SettingsResponse struct {
@@ -105,20 +104,6 @@ func GetSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			}
 		}
 
-		codec := &CodecResponse{
-			Endpoint: cfg.Codec.Endpoint,
-		}
-		if cfg.Codec.PassAccessToken {
-			sess, _ := session.Get(auth.AuthCookie, c)
-			if sess != nil {
-				token := sess.Values[auth.AccessTokenKey]
-				if token != nil {
-					codec.AccessToken = token.(string)
-				}
-
-			}
-		}
-
 		settings := &SettingsResponse{
 			Auth: &Auth{
 				Enabled: cfg.Auth.Enabled,
@@ -128,9 +113,12 @@ func GetSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			ShowTemporalSystemNamespace: cfg.ShowTemporalSystemNamespace,
 			FeedbackURL:                 cfg.FeedbackURL,
 			NotifyOnNewVersion:          cfg.NotifyOnNewVersion,
-			Codec:                       codec,
-			Version:                     version.UIVersion,
-			DisableWriteActions:         cfg.DisableWriteActions,
+			Codec: &CodecResponse{
+				Endpoint:        cfg.Codec.Endpoint,
+				PassAccessToken: cfg.Codec.PassAccessToken,
+			},
+			Version:             version.UIVersion,
+			DisableWriteActions: cfg.DisableWriteActions,
 		}
 
 		return c.JSON(http.StatusOK, settings)
@@ -146,7 +134,6 @@ func getTemporalClientMux(c echo.Context, temporalConn *grpc.ClientConn, apiMidd
 	tMux := runtime.NewServeMux(
 		append(muxOpts,
 			withMarshaler(),
-			auth.WithAuth(c),
 			version.WithVersionHeader(c),
 			// This is necessary to get error details properly
 			// marshalled in unary requests.

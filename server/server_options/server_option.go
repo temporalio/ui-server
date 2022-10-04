@@ -25,7 +25,6 @@
 package server_options
 
 import (
-	"github.com/gorilla/sessions"
 	"github.com/temporalio/ui-server/v2/server/api"
 	"github.com/temporalio/ui-server/v2/server/config"
 )
@@ -46,13 +45,6 @@ func WithConfigProvider(cfgProvider config.ConfigProvider) ServerOption {
 // WithAPIMiddleware supplies API middleware
 func WithAPIMiddleware(middleware []api.Middleware) ServerOption {
 	return newApplyFuncContainer(func(s *ServerOptions) {
-		s.APIMiddleware = middleware
-	})
-}
-
-// WithSessionStore supplies the session store for the UI server
-func WithSessionStore(store sessions.Store) ServerOption {
-	return newApplyFuncContainer(func(s *ServerOptions) {
-		s.SessionStore = store
+		s.APIMiddleware = append(s.APIMiddleware, middleware...)
 	})
 }
