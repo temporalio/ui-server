@@ -66,7 +66,7 @@ func SetUser(c echo.Context, user *User) error {
 		return errors.New("unable to serialize user data")
 	}
 
-	s := base64.RawURLEncoding.EncodeToString(b)
+	s := base64.StdEncoding.EncodeToString(b)
 	parts := splitCookie(s)
 
 	for i, p := range parts {
@@ -77,6 +77,7 @@ func SetUser(c echo.Context, user *User) error {
 			Secure:   c.Request().TLS != nil,
 			HttpOnly: false,
 			Path:     "/",
+			SameSite: http.SameSiteStrictMode,
 		}
 		c.SetCookie(cookie)
 	}
