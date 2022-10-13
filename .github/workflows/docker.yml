@@ -6,7 +6,7 @@ on:
       - main
   release:
     types:
-      - created
+      - released
 
 jobs:
   publish_to_docker_hub:
