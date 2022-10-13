@@ -91,8 +91,6 @@ type (
 		Scopes []string `yaml:"scopes"`
 		// CallbackURL - URL for the callback URL, ex. https://localhost:8080/sso/callback
 		CallbackURL string `yaml:"callbackUrl"`
-		// PassIDToken determines whether to attach ID Token when making requests to Temporal gRPC backend. Not needed in most cases.
-		PassIDToken bool `yaml:"passIdToken"`
 		// Options added as URL query params when redirecting to auth provider. Can be used to configure custom auth flows such as Auth0 invitation flow.
 		Options map[string]interface{} `yaml:"options"`
 	}
@@ -100,11 +98,6 @@ type (
 	Codec struct {
 		Endpoint        string `yaml:"endpoint"`
 		PassAccessToken bool   `yaml:"passAccessToken"`
-	}
-
-	Session struct {
-		//  Filesystem if non-empty, switches session to filesystem store instead of cookie store. Increases size limit from 4K to 64K
-		Filesystem Filesystem `yaml:"filesystem"`
 	}
 
 	Filesystem struct {
