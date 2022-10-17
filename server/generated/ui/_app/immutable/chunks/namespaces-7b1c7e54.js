@@ -1,0 +1,1 @@
+import{w as a}from"./index-e5247e3a.js";import{a6 as r}from"./index-de024f11.js";import{p as o}from"./persist-store-517b9cd5.js";const p=a(),m=()=>{const t=r(p);return t?Object.entries(t).map(([e,s])=>({label:e,value:e,type:s})):[]},n=o("lastNamespace","default");export{m as a,n as l,p as s};
