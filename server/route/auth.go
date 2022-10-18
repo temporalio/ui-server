@@ -154,6 +154,7 @@ func setCallbackCookie(c echo.Context, name, value string) {
 		Value:    value,
 		MaxAge:   int(time.Hour.Seconds()),
 		Secure:   c.Request().TLS != nil,
+		Path:     "/",
 		HttpOnly: true,
 	}
 	c.SetCookie(cookie)
