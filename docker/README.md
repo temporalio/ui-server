@@ -2,7 +2,9 @@
 
 ui-server can be consumed from Docker Hub: https://hub.docker.com/r/temporalio/ui
 
-## Quickstart
+Check out our [docker-compose](https://github.com/temporalio/docker-compose) for a quick set up with Temporal Server.
+
+## Quickstart for production
 
 An example command to run the UI with Auth and TLS enabled
 
