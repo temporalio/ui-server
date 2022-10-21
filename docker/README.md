@@ -2,9 +2,11 @@
 
 ui-server can be consumed from Docker Hub: https://hub.docker.com/r/temporalio/ui
 
-## Quickstart for production
+## Quickstart
 
-To use the container in a production setting, use the following command:
+An example command to run the UI with Auth and TLS enabled
+
+**Note**: For proper security you will also want to [enable authorization](https://docs.temporal.io/server/security/#authorization) on Temporal Server.
 
 ```shellscript
 docker run \
