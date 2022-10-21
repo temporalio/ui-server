@@ -14,9 +14,12 @@ ui-server is published on Docker Hub: https://hub.docker.com/r/temporalio/ui
 
 You can run it with Temporal Server using the [Temporal docker-compose](https://github.com/temporalio/docker-compose/blob/main/docker-compose.yml).
 
+See this README for more details on Docker images https://github.com/temporalio/ui-server/blob/main/docker/README.md
+
 # Configuration
 
 - When running ui-server as a docker image, you can pass docker env variables to configure auth, TLS and other options. See [quickstart for production](https://github.com/temporalio/ui-server/tree/main/docker#quickstart-for-production). For all options refer to [Dockerize config template](https://github.com/temporalio/ui-server/blob/main/docker/config_template.yaml)
+
 - Alternatively you can pass a .yaml configuration file based on the Dockerize template . Ex [development.yml config](https://github.com/temporalio/ui-server/tree/main/config)
 
 Check out [the configuration docs](https://docs.temporal.io/references/ui-configuration) for more details
