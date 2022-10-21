@@ -14,7 +14,7 @@ ui-server is published on Docker Hub: https://hub.docker.com/r/temporalio/ui
 
 You can run it with Temporal Server using the [Temporal docker-compose](https://github.com/temporalio/docker-compose/blob/main/docker-compose.yml).
 
-See this README for more details on Docker images https://github.com/temporalio/ui-server/blob/main/docker/README.md
+See [Docker README](https://github.com/temporalio/ui-server/blob/main/docker/README.md) for more details on running Docker images 
 
 # Configuration
 
