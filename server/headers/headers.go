@@ -38,8 +38,8 @@ func WithForwardHeaders(headers []string) api.Middleware {
 			func(ctx context.Context, req *http.Request) metadata.MD {
 				md := metadata.MD{}
 				for _, header := range headers {
-					if x, ok := c.Request().Header[header]; ok {
-						md.Append(header, x...)
+					if x := c.Request().Header.Get(header); x != "" {
+						md.Append(header, x)
 					}
 				}
 
