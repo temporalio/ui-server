@@ -149,6 +149,18 @@ func authenticateCb(ctx context.Context, oauthCfg *oauth2.Config, provider *oidc
 }
 
 func setCallbackCookie(c echo.Context, name, value string) {
+	// Explicitly expire pre v2.8.0 state and nonce cookies.
+	// As they had different path, they were not being cleared and in some cases result in "state did not match" error.
+	cookiePreV280 := &http.Cookie{
+		Name:     name,
+		Value:    "",
+		MaxAge:   -1,
+		Secure:   c.Request().TLS != nil,
+		Path:     "",
+		HttpOnly: true,
+	}
+	c.SetCookie(cookiePreV280)
+
 	cookie := &http.Cookie{
 		Name:     name,
 		Value:    value,
