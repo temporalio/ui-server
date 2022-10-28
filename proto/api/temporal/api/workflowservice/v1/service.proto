@@ -458,4 +458,12 @@ service WorkflowService {
             get: "/api/v1/namespaces/{namespace}/schedules"
         };
     }
+
+    // StartBatchOperation starts a new batch operation
+    rpc StartBatchOperation (StartBatchOperationRequest) returns (StartBatchOperationResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/namespaces/{namespace}/workflows/batch/terminate"
+            body: "*"
+        };
+    }
 }
