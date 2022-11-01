@@ -743,6 +743,45 @@
         ]
       }
     },
+    "/api/v1/namespaces/{namespace}/workflows/batch/describe": {
+      "get": {
+        "summary": "DescribeBatchOperation returns the information about a batch operation",
+        "operationId": "WorkflowService_DescribeBatchOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DescribeBatchOperationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace that contains the batch operation",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "jobId",
+            "description": "Batch job id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
     "/api/v1/namespaces/{namespace}/workflows/batch/terminate": {
       "post": {
         "summary": "StartBatchOperation starts a new batch operation",
@@ -2117,6 +2156,16 @@
       },
       "description": "BatchOperationSignal sends signals to batch workflows.\nKeep the parameter in sync with temporal.api.workflowservice.v1.SignalWorkflowExecutionRequest."
     },
+    "v1BatchOperationState": {
+      "type": "string",
+      "enum": [
+        "BATCH_OPERATION_STATE_UNSPECIFIED",
+        "BATCH_OPERATION_STATE_RUNNING",
+        "BATCH_OPERATION_STATE_COMPLETED",
+        "BATCH_OPERATION_STATE_FAILED"
+      ],
+      "default": "BATCH_OPERATION_STATE_UNSPECIFIED"
+    },
     "v1BatchOperationTermination": {
       "type": "object",
       "properties": {
@@ -2130,6 +2179,17 @@
         }
       },
       "description": "BatchOperationTermination sends terminate requests to batch workflows.\nKeep the parameter in sync with temporal.api.workflowservice.v1.TerminateWorkflowExecutionRequest.\nIgnore first_execution_run_id because this is used for single workflow operation."
+    },
+    "v1BatchOperationType": {
+      "type": "string",
+      "enum": [
+        "BATCH_OPERATION_TYPE_UNSPECIFIED",
+        "BATCH_OPERATION_TYPE_TERMINATE",
+        "BATCH_OPERATION_TYPE_CANCEL",
+        "BATCH_OPERATION_TYPE_SIGNAL",
+        "BATCH_OPERATION_TYPE_DELETE"
+      ],
+      "default": "BATCH_OPERATION_TYPE_UNSPECIFIED"
     },
     "v1CalendarSpec": {
       "type": "object",
@@ -2625,6 +2685,56 @@
     "v1DeprecateNamespaceResponse": {
       "type": "object",
       "description": "Deprecated."
+    },
+    "v1DescribeBatchOperationResponse": {
+      "type": "object",
+      "properties": {
+        "operationType": {
+          "$ref": "#/definitions/v1BatchOperationType",
+          "title": "Batch operation type"
+        },
+        "jobId": {
+          "type": "string",
+          "title": "Batch job ID"
+        },
+        "state": {
+          "$ref": "#/definitions/v1BatchOperationState",
+          "title": "Batch operation state"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Batch operation start time"
+        },
+        "closeTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Batch operation close time"
+        },
+        "totalOperationCount": {
+          "type": "string",
+          "format": "int64",
+          "title": "Total operation count"
+        },
+        "completeOperationCount": {
+          "type": "string",
+          "format": "int64",
+          "title": "Complete operation count"
+        },
+        "failureOperationCount": {
+          "type": "string",
+          "format": "int64",
+          "title": "Failure operation count"
+        },
+        "identity": {
+          "type": "string",
+          "title": "Identity indicates the operator identity"
+        },
+        "reason": {
+          "type": "string",
+          "title": "Reason indicates the reason to stop a operation"
+        }
+      }
     },
     "v1DescribeNamespaceResponse": {
       "type": "object",

@@ -466,4 +466,11 @@ service WorkflowService {
             body: "*"
         };
     }
+
+    // DescribeBatchOperation returns the information about a batch operation
+    rpc DescribeBatchOperation (DescribeBatchOperationRequest) returns (DescribeBatchOperationResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/namespaces/{namespace}/workflows/batch/describe"
+        };
+    }
 }
