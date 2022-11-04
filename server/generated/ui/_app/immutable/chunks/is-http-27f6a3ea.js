@@ -1,0 +1,1 @@
+import{w as a}from"./index-b4b51db3.js";import{p as e}from"./persist-store-97aab428.js";const u=e("endpoint",null,!0),s=a("notRequested");function i(){s.set("error")}function p(){s.set("success")}const r=t=>t.substring(0,8)==="https://",n=t=>t.substring(0,7)==="http://",d=t=>n(t)||r(t);export{r as a,p as b,u as d,s as l,i as s,d as v};
