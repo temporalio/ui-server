@@ -20,7 +20,7 @@
     "src": "src/lib/vendor/logo.svg"
   },
   ".svelte-kit/runtime/client/start.js": {
-    "file": "_app/immutable/start-17c99459.js",
+    "file": "_app/immutable/start-f0c33bdf.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -100,7 +100,7 @@
     ]
   },
   "src/routes/__layout-root.svelte": {
-    "file": "_app/immutable/pages/__layout-root.svelte-c208d305.js",
+    "file": "_app/immutable/pages/__layout-root.svelte-68f55026.js",
     "src": "src/routes/__layout-root.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -109,10 +109,9 @@
       "_route-for-06e4a074.js",
       "_parse-with-big-int-561ccb8b.js",
       "_atob-0f2ea7f7.js",
-      "_get-namespace-a384fdef.js",
       "_search-attributes-0f5d84d8.js",
       "_route-for-api-652ea8c7.js",
-      "_namespaces-service-368e3dd8.js",
+      "_namespaces-service-8ff82787.js",
       "_version-check-3a7b1db8.js",
       "_auth-user-bc1ad23a.js",
       "_settings-service-7d5f2d67.js",
@@ -125,7 +124,7 @@
       "_empty-state-5d27ea9d.js",
       "_tooltip-8a52658c.js",
       "_data-encoder-status-41d2e8dd.js",
-      "_namespaces-8acbff9a.js",
+      "_namespaces-c4de61fa.js",
       "_index-d8ed1bec.js",
       "_persist-store-c25f6403.js",
       "_button-b1c22f57.js",
@@ -556,17 +555,16 @@
     ]
   },
   "src/routes/index@root.svelte": {
-    "file": "_app/immutable/pages/index@root.svelte-8fb0e7b8.js",
+    "file": "_app/immutable/pages/index@root.svelte-bab08be1.js",
     "src": "src/routes/index@root.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-7e739eea.js",
-      "_get-namespace-a384fdef.js",
       "_route-for-06e4a074.js",
       "_navigation-fbe70647.js",
       "_workflow-service-edf003eb.js",
-      "_namespaces-8acbff9a.js",
+      "_namespaces-c4de61fa.js",
       "_loading-d00fcc7a.js",
       "_singletons-eca981c1.js",
       "_settings-c94c37e6.js",
@@ -618,13 +616,13 @@
     ]
   },
   "src/routes/namespaces/[namespace]/archival/index@root.svelte": {
-    "file": "_app/immutable/pages/namespaces/_namespace_/archival/index@root.svelte-205bebd3.js",
+    "file": "_app/immutable/pages/namespaces/_namespace_/archival/index@root.svelte-32c457b5.js",
     "src": "src/routes/namespaces/[namespace]/archival/index@root.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-7e739eea.js",
-      "_namespaces-service-368e3dd8.js",
+      "_namespaces-service-8ff82787.js",
       "_workflow-service-edf003eb.js",
       "_search-4e04380e.js",
       "_stores-7f07ccfb.js",
@@ -640,12 +638,13 @@
       "_page-title-5b02a0f2.js",
       "_notifications-7e703e91.js",
       "_index-d8ed1bec.js",
+      "_namespaces-c4de61fa.js",
+      "_persist-store-c25f6403.js",
+      "_parse-with-big-int-561ccb8b.js",
       "_paginated-a5f6e575.js",
       "_route-for-api-652ea8c7.js",
       "_route-for-06e4a074.js",
       "_auth-user-bc1ad23a.js",
-      "_persist-store-c25f6403.js",
-      "_parse-with-big-int-561ccb8b.js",
       "_is-network-error-5f9e2367.js",
       "_settings-c94c37e6.js",
       "_simplify-attributes-055c76f2.js",
@@ -664,7 +663,7 @@
     ]
   },
   "src/routes/namespaces/[namespace]/index@root.svelte": {
-    "file": "_app/immutable/pages/namespaces/_namespace_/index@root.svelte-06ee7d1f.js",
+    "file": "_app/immutable/pages/namespaces/_namespace_/index@root.svelte-7be075df.js",
     "src": "src/routes/namespaces/[namespace]/index@root.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -672,12 +671,12 @@
       "_index-7e739eea.js",
       "_stores-7f07ccfb.js",
       "_event-view-787ec6d5.js",
-      "_namespaces-8acbff9a.js",
+      "_namespaces-c4de61fa.js",
       "_search-attributes-0f5d84d8.js",
       "_format-time-d031c2bc.js",
       "_page-title-5b02a0f2.js",
       "_table-row-88c40201.js",
-      "_namespaces-service-368e3dd8.js",
+      "_namespaces-service-8ff82787.js",
       "_index-d8ed1bec.js",
       "_persist-store-c25f6403.js",
       "_parse-with-big-int-561ccb8b.js",
@@ -1200,7 +1199,7 @@
     ]
   },
   "src/routes/namespaces/[namespace]/workflows/index@root.svelte": {
-    "file": "_app/immutable/pages/namespaces/_namespace_/workflows/index@root.svelte-08a70a05.js",
+    "file": "_app/immutable/pages/namespaces/_namespace_/workflows/index@root.svelte-69226465.js",
     "src": "src/routes/namespaces/[namespace]/workflows/index@root.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -1209,7 +1208,7 @@
       "_stores-7f07ccfb.js",
       "_time-format-353b7e26.js",
       "_terminate-service-189a225c.js",
-      "_namespaces-8acbff9a.js",
+      "_namespaces-c4de61fa.js",
       "_empty-state-5d27ea9d.js",
       "_pagination-6268f248.js",
       "_search-4e04380e.js",
@@ -1254,7 +1253,7 @@
     ]
   },
   "src/routes/namespaces/index@root.svelte": {
-    "file": "_app/immutable/pages/namespaces/index@root.svelte-95397215.js",
+    "file": "_app/immutable/pages/namespaces/index@root.svelte-9f983bff.js",
     "src": "src/routes/namespaces/index@root.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -1262,12 +1261,15 @@
       "_index-7e739eea.js",
       "_route-for-06e4a074.js",
       "_stores-7f07ccfb.js",
+      "_namespaces-c4de61fa.js",
       "_empty-state-5d27ea9d.js",
       "_page-title-5b02a0f2.js",
       "_pagination-6268f248.js",
       "_table-row-88c40201.js",
-      "_icon-e2f06bf3.js",
       "_index-d8ed1bec.js",
+      "_persist-store-c25f6403.js",
+      "_parse-with-big-int-561ccb8b.js",
+      "_icon-e2f06bf3.js",
       "_update-query-parameters-0d565146.js",
       "_navigation-fbe70647.js",
       "_singletons-eca981c1.js",
@@ -1275,7 +1277,7 @@
     ]
   },
   "src/routes/select-namespace/index@root.svelte": {
-    "file": "_app/immutable/pages/select-namespace/index@root.svelte-7496bed6.js",
+    "file": "_app/immutable/pages/select-namespace/index@root.svelte-53adb8d7.js",
     "src": "src/routes/select-namespace/index@root.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -1283,7 +1285,7 @@
       "_index-7e739eea.js",
       "_navigation-fbe70647.js",
       "_stores-7f07ccfb.js",
-      "_namespaces-8acbff9a.js",
+      "_namespaces-c4de61fa.js",
       "_route-for-06e4a074.js",
       "_empty-state-5d27ea9d.js",
       "_icon-e2f06bf3.js",
@@ -1291,8 +1293,8 @@
       "_workflow-service-edf003eb.js",
       "_notifications-7e703e91.js",
       "_singletons-eca981c1.js",
-      "_persist-store-c25f6403.js",
       "_index-d8ed1bec.js",
+      "_persist-store-c25f6403.js",
       "_parse-with-big-int-561ccb8b.js",
       "_settings-c94c37e6.js",
       "_simplify-attributes-055c76f2.js",
@@ -1394,13 +1396,11 @@
   "_route-for-06e4a074.js": {
     "file": "_app/immutable/chunks/route-for-06e4a074.js"
   },
-  "_get-namespace-a384fdef.js": {
-    "file": "_app/immutable/chunks/get-namespace-a384fdef.js"
-  },
-  "_namespaces-service-368e3dd8.js": {
-    "file": "_app/immutable/chunks/namespaces-service-368e3dd8.js",
+  "_namespaces-service-8ff82787.js": {
+    "file": "_app/immutable/chunks/namespaces-service-8ff82787.js",
     "imports": [
       "_notifications-7e703e91.js",
+      "_namespaces-c4de61fa.js",
       "_paginated-a5f6e575.js",
       "_route-for-api-652ea8c7.js"
     ]
@@ -1481,6 +1481,13 @@
       "_index-d8ed1bec.js"
     ]
   },
+  "_namespaces-c4de61fa.js": {
+    "file": "_app/immutable/chunks/namespaces-c4de61fa.js",
+    "imports": [
+      "_index-d8ed1bec.js",
+      "_persist-store-c25f6403.js"
+    ]
+  },
   "_paginated-a5f6e575.js": {
     "file": "_app/immutable/chunks/paginated-a5f6e575.js",
     "imports": [
@@ -1523,12 +1530,6 @@
     ],
     "css": [
       "_app/immutable/assets/data-encoder-status-575485bc.css"
-    ]
-  },
-  "_namespaces-8acbff9a.js": {
-    "file": "_app/immutable/chunks/namespaces-8acbff9a.js",
-    "imports": [
-      "_persist-store-c25f6403.js"
     ]
   },
   "_index-126fba9a.js": {
@@ -2056,9 +2057,37 @@
     "file": "_app/immutable/assets/error-d1800d9f.css",
     "src": "error.css"
   },
-  "tooltip.css": {
-    "file": "_app/immutable/assets/tooltip-a8c31085.css",
-    "src": "tooltip.css"
+  "pagination.css": {
+    "file": "_app/immutable/assets/pagination-8d17dd79.css",
+    "src": "pagination.css"
+  },
+  "event-summary.css": {
+    "file": "_app/immutable/assets/event-summary-81005262.css",
+    "src": "event-summary.css"
+  },
+  "error-boundary.css": {
+    "file": "_app/immutable/assets/error-boundary-6d067cf3.css",
+    "src": "error-boundary.css"
+  },
+  "src/routes/__layout-root.css": {
+    "file": "_app/immutable/assets/__layout-root-47578c7e.css",
+    "src": "src/routes/__layout-root.css"
+  },
+  "toaster.css": {
+    "file": "_app/immutable/assets/toaster-da9bcd6d.css",
+    "src": "toaster.css"
+  },
+  "data-encoder-status.css": {
+    "file": "_app/immutable/assets/data-encoder-status-575485bc.css",
+    "src": "data-encoder-status.css"
+  },
+  "button.css": {
+    "file": "_app/immutable/assets/button-763caefd.css",
+    "src": "button.css"
+  },
+  "icon-button.css": {
+    "file": "_app/immutable/assets/icon-button-83210aee.css",
+    "src": "icon-button.css"
   },
   "badge.css": {
     "file": "_app/immutable/assets/badge-f205ed92.css",
@@ -2068,77 +2097,45 @@
     "file": "_app/immutable/assets/modal-0719b68a.css",
     "src": "modal.css"
   },
+  "src/routes/import/__layout-import.css": {
+    "file": "_app/immutable/assets/__layout-import-d499e15e.css",
+    "src": "src/routes/import/__layout-import.css"
+  },
   "toggle-buttons.css": {
     "file": "_app/immutable/assets/toggle-buttons-642fc5fa.css",
     "src": "toggle-buttons.css"
-  },
-  "data-encoder-status.css": {
-    "file": "_app/immutable/assets/data-encoder-status-575485bc.css",
-    "src": "data-encoder-status.css"
-  },
-  "icon-button.css": {
-    "file": "_app/immutable/assets/icon-button-83210aee.css",
-    "src": "icon-button.css"
-  },
-  "toaster.css": {
-    "file": "_app/immutable/assets/toaster-da9bcd6d.css",
-    "src": "toaster.css"
-  },
-  "src/routes/select-namespace/index@root.css": {
-    "file": "_app/immutable/assets/index@root-4e8ed7bb.css",
-    "src": "src/routes/select-namespace/index@root.css"
-  },
-  "workflow-status.css": {
-    "file": "_app/immutable/assets/workflow-status-1aa6b477.css",
-    "src": "workflow-status.css"
-  },
-  "code-block.css": {
-    "file": "_app/immutable/assets/code-block-86c182bf.css",
-    "src": "code-block.css"
-  },
-  "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/__layout.css": {
-    "file": "_app/immutable/assets/__layout-9401265b.css",
-    "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/__layout.css"
-  },
-  "event-summary.css": {
-    "file": "_app/immutable/assets/event-summary-81005262.css",
-    "src": "event-summary.css"
-  },
-  "pagination.css": {
-    "file": "_app/immutable/assets/pagination-8d17dd79.css",
-    "src": "pagination.css"
   },
   "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/__layout@root.css": {
     "file": "_app/immutable/assets/__layout@root-6f81fac3.css",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/__layout@root.css"
   },
-  "src/routes/import/__layout-import.css": {
-    "file": "_app/immutable/assets/__layout-import-d499e15e.css",
-    "src": "src/routes/import/__layout-import.css"
+  "workflow-status.css": {
+    "file": "_app/immutable/assets/workflow-status-1aa6b477.css",
+    "src": "workflow-status.css"
   },
-  "error-boundary.css": {
-    "file": "_app/immutable/assets/error-boundary-6d067cf3.css",
-    "src": "error-boundary.css"
+  "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/__layout.css": {
+    "file": "_app/immutable/assets/__layout-9401265b.css",
+    "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/__layout.css"
   },
-  "button.css": {
-    "file": "_app/immutable/assets/button-763caefd.css",
-    "src": "button.css"
+  "code-block.css": {
+    "file": "_app/immutable/assets/code-block-86c182bf.css",
+    "src": "code-block.css"
   },
-  "src/routes/__layout-root.css": {
-    "file": "_app/immutable/assets/__layout-root-47578c7e.css",
-    "src": "src/routes/__layout-root.css"
+  "tooltip.css": {
+    "file": "_app/immutable/assets/tooltip-a8c31085.css",
+    "src": "tooltip.css"
   },
   "event-summary-row.css": {
     "file": "_app/immutable/assets/event-summary-row-3f86602d.css",
     "src": "event-summary-row.css"
   },
-  "app.css": {
-    "file": "_app/immutable/assets/app-661f86f2.css",
-    "src": "app.css"
-  },
   "simple-select.css": {
     "file": "_app/immutable/assets/simple-select-51b2afe1.css",
     "src": "simple-select.css"
+  },
+  "hamburger-header.css": {
+    "file": "_app/immutable/assets/hamburger-header-f6350945.css",
+    "src": "hamburger-header.css"
   },
   "src/routes/namespaces/[namespace]/archival/index@root.css": {
     "file": "_app/immutable/assets/index@root-c5268cbc.css",
@@ -2156,9 +2153,9 @@
     "file": "_app/immutable/assets/index-b7b0d2b0.css",
     "src": "src/routes/namespaces/[namespace]/schedules/[schedule]/index.css"
   },
-  "src/routes/namespaces/[namespace]/schedules/index.css": {
-    "file": "_app/immutable/assets/index-75cb2ee6.css",
-    "src": "src/routes/namespaces/[namespace]/schedules/index.css"
+  "src/routes/select-namespace/index@root.css": {
+    "file": "_app/immutable/assets/index@root-4e8ed7bb.css",
+    "src": "src/routes/select-namespace/index@root.css"
   },
   "namespace-selector.css": {
     "file": "_app/immutable/assets/namespace-selector-354a689a.css",
@@ -2172,8 +2169,12 @@
     "file": "_app/immutable/assets/pending-activities-c7b85215.css",
     "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/pending-activities.css"
   },
-  "hamburger-header.css": {
-    "file": "_app/immutable/assets/hamburger-header-f6350945.css",
-    "src": "hamburger-header.css"
+  "src/routes/namespaces/[namespace]/schedules/index.css": {
+    "file": "_app/immutable/assets/index-75cb2ee6.css",
+    "src": "src/routes/namespaces/[namespace]/schedules/index.css"
+  },
+  "app.css": {
+    "file": "_app/immutable/assets/app-661f86f2.css",
+    "src": "app.css"
   }
 }
