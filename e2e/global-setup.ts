@@ -17,6 +17,7 @@ async function globalSetup(config: FullConfig) {
   await page.locator('input[name="password"]').press("Enter");
 
   // Save signed-in state to 'storageState.json'
+  await page.waitForNavigation();
   await page.context().storageState({ path: "storageState.json" });
   await browser.close();
 }
