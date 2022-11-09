@@ -11,10 +11,6 @@ test.describe("Workflows list", () => {
     await expect(page.locator("text=Recent Workflows")).toBeVisible();
   });
 
-  test("should render Workflow Executions table", async ({ page }) => {
-    await expect(page.locator("text=cronWorkflow").first()).toBeVisible();
-  });
-
   test("should render Workflow Execution details", async ({ page }) => {
     await page.locator("text=temporal.canary.cron").first().click();
 
@@ -25,6 +21,6 @@ test.describe("Workflows list", () => {
   test("should render Workflow Execution Events", async ({ page }) => {
     await page.locator("text=temporal.canary.cron").first().click();
 
-    await expect(page.locator("text=WorkflowTaskScheduled").first()).toBeVisible();
+    await expect(page.locator('[data-cy="event-summary-row"').first()).toBeVisible();
   });
 });
