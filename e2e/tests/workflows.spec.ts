@@ -21,6 +21,6 @@ test.describe("Workflows list", () => {
   test("should render Workflow Execution Events", async ({ page }) => {
     await page.locator("text=temporal.canary.cron").first().click();
 
-    await expect(page.locator('[data-cy="event-summary-row"').first()).toBeVisible();
+    await expect(page.locator('[data-cy="event-summary-row"]').first()).toBeVisible();
   });
 });
