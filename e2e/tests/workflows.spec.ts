@@ -12,14 +12,14 @@ test.describe("Workflows list", () => {
   });
 
   test("should render Workflow Execution details", async ({ page }) => {
-    await page.locator("text=temporal.canary.cron").first().click();
+    await page.locator('a.workflow-summary-row').first().click();
 
-    await expect(page.locator("text=cronWorkflow").first()).toBeVisible();
-    await expect(page.locator("text=canary-task-queue").first()).toBeVisible();
+    await expect(page.locator("text=Workflow Type").first()).toBeVisible();
+    await expect(page.locator("text=Task Queue").first()).toBeVisible();
   });
 
   test("should render Workflow Execution Events", async ({ page }) => {
-    await page.locator("text=temporal.canary.cron").first().click();
+    await page.locator("a.workflow-summary-row").first().click();
 
     await expect(page.locator('[data-cy="event-summary-row"]').first()).toBeVisible();
   });
