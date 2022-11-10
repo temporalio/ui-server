@@ -1,0 +1,1 @@
+import{d as o}from"./index-850385bc.js";import{c as m}from"./version-check-abaeeee9.js";import{s as a}from"./settings-82191e74.js";const p=o([m],([r])=>r==null?void 0:r.serverVersion),s=o([a],([r])=>r==null?void 0:r.version);export{p as t,s as u};
