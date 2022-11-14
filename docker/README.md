@@ -19,6 +19,7 @@ docker run \
     -e TEMPORAL_AUTH_CLIENT_ID=xxxxx-xxxx.apps.googleusercontent.com \
     -e TEMPORAL_AUTH_CLIENT_SECRET=xxxxxxxxxxxxxxx \
     -e TEMPORAL_AUTH_CALLBACK_URL=https://xxxx.com:8080/auth/sso/callback \
+    -e TEMPORAL_AUTH_SCOPES=openid,email,profile \
     -e TEMPORAL_TLS_CA=../ca.cert \
     -e TEMPORAL_TLS_CERT=../cluster.pem \
     -e TEMPORAL_TLS_KEY=../cluster.key \
