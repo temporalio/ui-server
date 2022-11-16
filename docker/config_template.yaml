@@ -33,16 +33,10 @@ auth:
     clientId: {{ .Env.TEMPORAL_AUTH_CLIENT_ID }}
     clientSecret: {{ .Env.TEMPORAL_AUTH_CLIENT_SECRET }}
     callbackUrl: {{ .Env.TEMPORAL_AUTH_CALLBACK_URL }}
-    scopes:
-      - openid
-      - profile
-      - email
+    scopes: {{ if .Env.TEMPORAL_AUTH_SCOPES }} {{ range $seed := (split .Env.TEMPORAL_AUTH_SCOPES ",") }}
+      - {{ . }} {{ end }} {{ end }}
 codec:
   endpoint: {{ default .Env.TEMPORAL_CODEC_ENDPOINT "" }}
   passAccessToken: {{ default .Env.TEMPORAL_CODEC_PASS_ACCESS_TOKEN "false" }}
-forwardHeaders: # comma separated list of headers to pass from HTTP API requests to Temporal gRPC backend
-{{ if .Env.TEMPORAL_FORWARD_HEADERS }}
-{{ range $seed := (split .Env.TEMPORAL_FORWARD_HEADERS ",") }}
-  - {{ . }}
-{{ end }}
-{{ end }}
+forwardHeaders: {{ if .Env.TEMPORAL_FORWARD_HEADERS }} {{ range $seed := (split .Env.TEMPORAL_FORWARD_HEADERS ",") }}
+  - {{ . }} {{ end }} {{ end }}
