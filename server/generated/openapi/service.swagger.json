@@ -250,6 +250,211 @@
         ]
       }
     },
+    "/api/v1/namespaces/{namespace}/batch-operations": {
+      "get": {
+        "summary": "ListBatchOperations returns the information about a batch operation",
+        "operationId": "WorkflowService_ListBatchOperations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListBatchOperationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace that contains the batch operation",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "List page size",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "nextPageToken",
+            "description": "Next page token",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      },
+      "post": {
+        "summary": "StartBatchOperation starts a new batch operation",
+        "operationId": "WorkflowService_StartBatchOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StartBatchOperationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace that contains the batch operation",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "visibilityQuery": {
+                  "type": "string",
+                  "title": "Visibility query defines the the group of workflow to do batch operation"
+                },
+                "jobId": {
+                  "type": "string",
+                  "title": "Job ID defines the unique ID for the batch job"
+                },
+                "reason": {
+                  "type": "string",
+                  "title": "Reason to perform the batch operation"
+                },
+                "terminationOperation": {
+                  "$ref": "#/definitions/v1BatchOperationTermination"
+                },
+                "signalOperation": {
+                  "$ref": "#/definitions/v1BatchOperationSignal"
+                },
+                "cancellationOperation": {
+                  "$ref": "#/definitions/v1BatchOperationCancellation"
+                },
+                "deletionOperation": {
+                  "$ref": "#/definitions/v1BatchOperationDeletion"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/batch-operations/describe": {
+      "get": {
+        "summary": "DescribeBatchOperation returns the information about a batch operation",
+        "operationId": "WorkflowService_DescribeBatchOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DescribeBatchOperationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace that contains the batch operation",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "jobId",
+            "description": "Batch job id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/batch-operations/stop": {
+      "put": {
+        "summary": "ListBatchOperations returns the information about a batch operation",
+        "operationId": "WorkflowService_StopBatchOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StopBatchOperationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace that contains the batch operation",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jobId": {
+                  "type": "string",
+                  "title": "Batch job id"
+                },
+                "reason": {
+                  "type": "string",
+                  "title": "Reason to stop a batch operation"
+                },
+                "identity": {
+                  "type": "string",
+                  "title": "Identity of the operator"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
     "/api/v1/namespaces/{namespace}/schedules": {
       "get": {
         "summary": "List all schedules in a namespace.",
@@ -733,157 +938,6 @@
           },
           {
             "name": "query",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "WorkflowService"
-        ]
-      }
-    },
-    "/api/v1/namespaces/{namespace}/workflows/batch-operations": {
-      "get": {
-        "summary": "ListBatchOperations returns the information about a batch operation",
-        "operationId": "WorkflowService_ListBatchOperations",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListBatchOperationsRequest"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "description": "Namespace that contains the batch operation",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "pageSize",
-            "description": "List page size",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "nextPageToken",
-            "description": "Next page token",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "byte"
-          }
-        ],
-        "tags": [
-          "WorkflowService"
-        ]
-      },
-      "post": {
-        "summary": "StartBatchOperation starts a new batch operation",
-        "operationId": "WorkflowService_StartBatchOperation",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1StartBatchOperationResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "description": "Namespace that contains the batch operation",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "visibilityQuery": {
-                  "type": "string",
-                  "title": "Visibility query defines the the group of workflow to do batch operation"
-                },
-                "jobId": {
-                  "type": "string",
-                  "title": "Job ID defines the unique ID for the batch job"
-                },
-                "reason": {
-                  "type": "string",
-                  "title": "Reason to perform the batch operation"
-                },
-                "terminationOperation": {
-                  "$ref": "#/definitions/v1BatchOperationTermination"
-                },
-                "signalOperation": {
-                  "$ref": "#/definitions/v1BatchOperationSignal"
-                },
-                "cancellationOperation": {
-                  "$ref": "#/definitions/v1BatchOperationCancellation"
-                },
-                "deletionOperation": {
-                  "$ref": "#/definitions/v1BatchOperationDeletion"
-                }
-              }
-            }
-          }
-        ],
-        "tags": [
-          "WorkflowService"
-        ]
-      }
-    },
-    "/api/v1/namespaces/{namespace}/workflows/batch-operations/describe": {
-      "get": {
-        "summary": "DescribeBatchOperation returns the information about a batch operation",
-        "operationId": "WorkflowService_DescribeBatchOperation",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1DescribeBatchOperationResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "description": "Namespace that contains the batch operation",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "jobId",
-            "description": "Batch job id",
             "in": "query",
             "required": false,
             "type": "string"
@@ -2182,6 +2236,29 @@
       },
       "description": "BatchOperationDeletion sends deletion requests to batch workflows.\nKeep the parameter in sync with temporal.api.workflowservice.v1.DeleteWorkflowExecutionRequest."
     },
+    "v1BatchOperationInfo": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string",
+          "title": "Batch job ID"
+        },
+        "state": {
+          "$ref": "#/definitions/v1BatchOperationState",
+          "title": "Batch operation state"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Batch operation start time"
+        },
+        "closeTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Batch operation close time"
+        }
+      }
+    },
     "v1BatchOperationSignal": {
       "type": "object",
       "properties": {
@@ -3427,22 +3504,19 @@
         }
       }
     },
-    "v1ListBatchOperationsRequest": {
+    "v1ListBatchOperationsResponse": {
       "type": "object",
       "properties": {
-        "namespace": {
-          "type": "string",
-          "title": "Namespace that contains the batch operation"
-        },
-        "pageSize": {
-          "type": "integer",
-          "format": "int32",
-          "title": "List page size"
+        "operationInfo": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1BatchOperationInfo"
+          },
+          "title": "BatchOperationInfo contains the basic info about batch operation"
         },
         "nextPageToken": {
           "type": "string",
-          "format": "byte",
-          "title": "Next page token"
+          "format": "byte"
         }
       }
     },
@@ -5322,6 +5396,9 @@
         }
       }
     },
+    "v1StopBatchOperationResponse": {
+      "type": "object"
+    },
     "v1StructuredCalendarSpec": {
       "type": "object",
       "properties": {
@@ -6207,10 +6284,14 @@
         "WORKFLOW_TASK_FAILED_CAUSE_SCHEDULE_ACTIVITY_DUPLICATE_ID",
         "WORKFLOW_TASK_FAILED_CAUSE_BAD_SEARCH_ATTRIBUTES",
         "WORKFLOW_TASK_FAILED_CAUSE_NON_DETERMINISTIC_ERROR",
-        "WORKFLOW_TASK_FAILED_CAUSE_BAD_MODIFY_WORKFLOW_PROPERTIES_ATTRIBUTES"
+        "WORKFLOW_TASK_FAILED_CAUSE_BAD_MODIFY_WORKFLOW_PROPERTIES_ATTRIBUTES",
+        "WORKFLOW_TASK_FAILED_CAUSE_PENDING_CHILD_WORKFLOWS_LIMIT_EXCEEDED",
+        "WORKFLOW_TASK_FAILED_CAUSE_PENDING_ACTIVITIES_LIMIT_EXCEEDED",
+        "WORKFLOW_TASK_FAILED_CAUSE_PENDING_SIGNALS_LIMIT_EXCEEDED",
+        "WORKFLOW_TASK_FAILED_CAUSE_PENDING_REQUEST_CANCEL_LIMIT_EXCEEDED"
       ],
       "default": "WORKFLOW_TASK_FAILED_CAUSE_UNSPECIFIED",
-      "description": "Workflow tasks can fail for various reasons. Note that some of these reasons can only originate\nfrom the server, and some of them can only originate from the SDK/worker.\n\n - WORKFLOW_TASK_FAILED_CAUSE_UNHANDLED_COMMAND: Between starting and completing the workflow task (with a workflow completion command), some\nnew command (like a signal) was processed into workflow history. The outstanding task will be\nfailed with this reason, and a worker must pick up a new task.\n - WORKFLOW_TASK_FAILED_CAUSE_RESET_STICKY_TASK_QUEUE: The worker wishes to fail the task and have the next one be generated on a normal, not sticky\nqueue. Generally workers should prefer to use the explicit `ResetStickyTaskQueue` RPC call.\n - WORKFLOW_TASK_FAILED_CAUSE_NON_DETERMINISTIC_ERROR: The worker encountered a mismatch while replaying history between what was expected, and\nwhat the workflow code actually did."
+      "description": "Workflow tasks can fail for various reasons. Note that some of these reasons can only originate\nfrom the server, and some of them can only originate from the SDK/worker.\n\n - WORKFLOW_TASK_FAILED_CAUSE_UNHANDLED_COMMAND: Between starting and completing the workflow task (with a workflow completion command), some\nnew command (like a signal) was processed into workflow history. The outstanding task will be\nfailed with this reason, and a worker must pick up a new task.\n - WORKFLOW_TASK_FAILED_CAUSE_RESET_STICKY_TASK_QUEUE: The worker wishes to fail the task and have the next one be generated on a normal, not sticky\nqueue. Generally workers should prefer to use the explicit `ResetStickyTaskQueue` RPC call.\n - WORKFLOW_TASK_FAILED_CAUSE_NON_DETERMINISTIC_ERROR: The worker encountered a mismatch while replaying history between what was expected, and\nwhat the workflow code actually did.\n - WORKFLOW_TASK_FAILED_CAUSE_PENDING_CHILD_WORKFLOWS_LIMIT_EXCEEDED: We send the below error codes to users when their requests would violate a size constraint\nof their workflow. We do this to ensure that the state of their workflow does not become too\nlarge because that can cause severe performance degradation. You can modify the thresholds for\neach of these errors within your dynamic config.\n\nSpawning a new child workflow would cause this workflow to exceed its limit of pending child\nworkflows.\n - WORKFLOW_TASK_FAILED_CAUSE_PENDING_ACTIVITIES_LIMIT_EXCEEDED: Starting a new activity would cause this workflow to exceed its limit of pending activities\nthat we track.\n - WORKFLOW_TASK_FAILED_CAUSE_PENDING_SIGNALS_LIMIT_EXCEEDED: A workflow has a buffer of signals that have not yet reached their destination. We return this\nerror when sending a new signal would exceed the capacity of this buffer.\n - WORKFLOW_TASK_FAILED_CAUSE_PENDING_REQUEST_CANCEL_LIMIT_EXCEEDED: Similarly, we have a buffer of pending requests to cancel other workflows. We return this error\nwhen our capacity for pending cancel requests is already reached."
     },
     "v1WorkflowTaskFailedEventAttributes": {
       "type": "object",

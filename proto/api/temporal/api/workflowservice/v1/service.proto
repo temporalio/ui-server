@@ -462,7 +462,7 @@ service WorkflowService {
     // StartBatchOperation starts a new batch operation
     rpc StartBatchOperation (StartBatchOperationRequest) returns (StartBatchOperationResponse) {
         option (google.api.http) = {
-            post: "/api/v1/namespaces/{namespace}/workflows/batch-operations"
+            post: "/api/v1/namespaces/{namespace}/batch-operations"
             body: "*"
         };
     }
@@ -470,21 +470,21 @@ service WorkflowService {
     // DescribeBatchOperation returns the information about a batch operation
     rpc DescribeBatchOperation (DescribeBatchOperationRequest) returns (DescribeBatchOperationResponse) {
         option (google.api.http) = {
-            get: "/api/v1/namespaces/{namespace}/workflows/batch-operations/{runId}/describe"
+            get: "/api/v1/namespaces/{namespace}/batch-operations/describe"
         };
     }
 
     // ListBatchOperations returns the information about a batch operation
     rpc ListBatchOperations (ListBatchOperationsRequest) returns (ListBatchOperationsResponse) {
         option (google.api.http) = {
-            get: "/api/v1/namespaces/{namespace}/workflows/batch-operations"
+            get: "/api/v1/namespaces/{namespace}/batch-operations"
         };
     }
 
     // ListBatchOperations returns the information about a batch operation
     rpc StopBatchOperation (StopBatchOperationRequest) returns (StopBatchOperationResponse) {
         option (google.api.http) = {
-            put: "/api/v1/namespaces/{namespace}/workflows/batch-operations/{runId}/stop",
+            put: "/api/v1/namespaces/{namespace}/batch-operations/stop",
             body: "*"
         };
     }
