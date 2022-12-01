@@ -948,6 +948,110 @@
         ]
       }
     },
+    "/api/v1/namespaces/{namespace}/workflows/batch/describe": {
+      "get": {
+        "summary": "DescribeBatchOperation returns the information about a batch operation",
+        "operationId": "WorkflowService_OldDescribeBatchOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DescribeBatchOperationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace that contains the batch operation",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "jobId",
+            "description": "Batch job id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/batch/terminate": {
+      "post": {
+        "operationId": "WorkflowService_OldStartBatchOperation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StartBatchOperationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace that contains the batch operation",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "visibilityQuery": {
+                  "type": "string",
+                  "title": "Visibility query defines the the group of workflow to do batch operation"
+                },
+                "jobId": {
+                  "type": "string",
+                  "title": "Job ID defines the unique ID for the batch job"
+                },
+                "reason": {
+                  "type": "string",
+                  "title": "Reason to perform the batch operation"
+                },
+                "terminationOperation": {
+                  "$ref": "#/definitions/v1BatchOperationTermination"
+                },
+                "signalOperation": {
+                  "$ref": "#/definitions/v1BatchOperationSignal"
+                },
+                "cancellationOperation": {
+                  "$ref": "#/definitions/v1BatchOperationCancellation"
+                },
+                "deletionOperation": {
+                  "$ref": "#/definitions/v1BatchOperationDeletion"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
     "/api/v1/namespaces/{namespace}/workflows/closed": {
       "get": {
         "summary": "ListClosedWorkflowExecutions is a visibility API to list the closed executions in a specific namespace.",
