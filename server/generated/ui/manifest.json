@@ -20,7 +20,7 @@
     "src": "src/lib/vendor/logo.svg"
   },
   ".svelte-kit/runtime/client/start.js": {
-    "file": "_app/immutable/start-24fbe22b.js",
+    "file": "_app/immutable/start-855ced5e.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -2152,29 +2152,25 @@
     "file": "_app/immutable/assets/__layout-root-aa4cd784.css",
     "src": "src/routes/__layout-root.css"
   },
-  "error-boundary.css": {
-    "file": "_app/immutable/assets/error-boundary-2e6b13c8.css",
-    "src": "error-boundary.css"
+  "icon-button.css": {
+    "file": "_app/immutable/assets/icon-button-83210aee.css",
+    "src": "icon-button.css"
   },
-  "toaster.css": {
-    "file": "_app/immutable/assets/toaster-31d9fce5.css",
-    "src": "toaster.css"
+  "checkbox.css": {
+    "file": "_app/immutable/assets/checkbox-03be0843.css",
+    "src": "checkbox.css"
   },
   "tooltip.css": {
     "file": "_app/immutable/assets/tooltip-a8c31085.css",
     "src": "tooltip.css"
   },
-  "search.css": {
-    "file": "_app/immutable/assets/search-0765b54e.css",
-    "src": "search.css"
+  "pagination.css": {
+    "file": "_app/immutable/assets/pagination-8d17dd79.css",
+    "src": "pagination.css"
   },
-  "modal.css": {
-    "file": "_app/immutable/assets/modal-f452b936.css",
-    "src": "modal.css"
-  },
-  "checkbox.css": {
-    "file": "_app/immutable/assets/checkbox-03be0843.css",
-    "src": "checkbox.css"
+  "toaster.css": {
+    "file": "_app/immutable/assets/toaster-31d9fce5.css",
+    "src": "toaster.css"
   },
   "src/routes/import/__layout-import.css": {
     "file": "_app/immutable/assets/__layout-import-15ab09fc.css",
@@ -2184,85 +2180,9 @@
     "file": "_app/immutable/assets/toggle-buttons-642fc5fa.css",
     "src": "toggle-buttons.css"
   },
-  "event-summary.css": {
-    "file": "_app/immutable/assets/event-summary-d26e47e5.css",
-    "src": "event-summary.css"
-  },
-  "src/routes/namespaces/[namespace]/schedules/index.css": {
-    "file": "_app/immutable/assets/index-75cb2ee6.css",
-    "src": "src/routes/namespaces/[namespace]/schedules/index.css"
-  },
-  "app.css": {
-    "file": "_app/immutable/assets/app-997de915.css",
-    "src": "app.css"
-  },
-  "pagination.css": {
-    "file": "_app/immutable/assets/pagination-8d17dd79.css",
-    "src": "pagination.css"
-  },
-  "simple-select.css": {
-    "file": "_app/immutable/assets/simple-select-51b2afe1.css",
-    "src": "simple-select.css"
-  },
-  "table-header-row.css": {
-    "file": "_app/immutable/assets/table-header-row-be744db9.css",
-    "src": "table-header-row.css"
-  },
-  "dropdown-menu.css": {
-    "file": "_app/immutable/assets/dropdown-menu-0eec5aad.css",
-    "src": "dropdown-menu.css"
-  },
-  "code-block.css": {
-    "file": "_app/immutable/assets/code-block-86c182bf.css",
-    "src": "code-block.css"
-  },
-  "hamburger-header.css": {
-    "file": "_app/immutable/assets/hamburger-header-f6350945.css",
-    "src": "hamburger-header.css"
-  },
-  "src/routes/namespaces/[namespace]/archival/index@root.css": {
-    "file": "_app/immutable/assets/index@root-c5268cbc.css",
-    "src": "src/routes/namespaces/[namespace]/archival/index@root.css"
-  },
-  "menu.css": {
-    "file": "_app/immutable/assets/menu-8bbb4d53.css",
-    "src": "menu.css"
-  },
-  "button.css": {
-    "file": "_app/immutable/assets/button-1a98e9aa.css",
-    "src": "button.css"
-  },
-  "input.css": {
-    "file": "_app/immutable/assets/input-8dd23f70.css",
-    "src": "input.css"
-  },
-  "tab.css": {
-    "file": "_app/immutable/assets/tab-03a88e22.css",
-    "src": "tab.css"
-  },
-  "schedule-form-view.css": {
-    "file": "_app/immutable/assets/schedule-form-view-12b492a1.css",
-    "src": "schedule-form-view.css"
-  },
-  "icon-button.css": {
-    "file": "_app/immutable/assets/icon-button-83210aee.css",
-    "src": "icon-button.css"
-  },
-  "src/routes/namespaces/[namespace]/workflows/index@root.css": {
-    "file": "_app/immutable/assets/index@root-8b0e7195.css",
-    "src": "src/routes/namespaces/[namespace]/workflows/index@root.css"
-  },
-  "workflow-status.css": {
-    "file": "_app/immutable/assets/workflow-status-bfb8cfc9.css",
-    "src": "workflow-status.css"
-  },
-  "simple-split-button.css": {
-    "file": "_app/immutable/assets/simple-split-button-adc774ad.css",
-    "src": "simple-split-button.css"
-  },
-  "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/index.css": {
-    "file": "_app/immutable/assets/index-faedfd5c.css",
-    "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/index.css"
+  "modal.css": {
+    "file": "_app/immutable/assets/modal-f452b936.css",
+    "src": "modal.css"
   },
   "src/routes/namespaces/[namespace]/schedules/[schedule]/index.css": {
     "file": "_app/immutable/assets/index-54d937eb.css",
@@ -2272,20 +2192,100 @@
     "file": "_app/immutable/assets/split-button-b90704aa.css",
     "src": "split-button.css"
   },
-  "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/pending-activities.css": {
-    "file": "_app/immutable/assets/pending-activities-c7b85215.css",
-    "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/pending-activities.css"
+  "src/routes/namespaces/[namespace]/schedules/index.css": {
+    "file": "_app/immutable/assets/index-75cb2ee6.css",
+    "src": "src/routes/namespaces/[namespace]/schedules/index.css"
   },
   "menu-item.css": {
     "file": "_app/immutable/assets/menu-item-fdd33253.css",
     "src": "menu-item.css"
   },
-  "src/routes/select-namespace/index@root.css": {
-    "file": "_app/immutable/assets/index@root-4e8ed7bb.css",
-    "src": "src/routes/select-namespace/index@root.css"
+  "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/index.css": {
+    "file": "_app/immutable/assets/index-faedfd5c.css",
+    "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/history/index.css"
   },
   "workflow-run-layout.css": {
     "file": "_app/immutable/assets/workflow-run-layout-3e5bde4d.css",
     "src": "workflow-run-layout.css"
+  },
+  "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/pending-activities.css": {
+    "file": "_app/immutable/assets/pending-activities-c7b85215.css",
+    "src": "src/routes/namespaces/[namespace]/workflows/[workflow]/[run]/pending-activities.css"
+  },
+  "src/routes/namespaces/[namespace]/workflows/index@root.css": {
+    "file": "_app/immutable/assets/index@root-8b0e7195.css",
+    "src": "src/routes/namespaces/[namespace]/workflows/index@root.css"
+  },
+  "src/routes/select-namespace/index@root.css": {
+    "file": "_app/immutable/assets/index@root-4e8ed7bb.css",
+    "src": "src/routes/select-namespace/index@root.css"
+  },
+  "input.css": {
+    "file": "_app/immutable/assets/input-8dd23f70.css",
+    "src": "input.css"
+  },
+  "error-boundary.css": {
+    "file": "_app/immutable/assets/error-boundary-2e6b13c8.css",
+    "src": "error-boundary.css"
+  },
+  "button.css": {
+    "file": "_app/immutable/assets/button-1a98e9aa.css",
+    "src": "button.css"
+  },
+  "menu.css": {
+    "file": "_app/immutable/assets/menu-8bbb4d53.css",
+    "src": "menu.css"
+  },
+  "tab.css": {
+    "file": "_app/immutable/assets/tab-03a88e22.css",
+    "src": "tab.css"
+  },
+  "simple-split-button.css": {
+    "file": "_app/immutable/assets/simple-split-button-adc774ad.css",
+    "src": "simple-split-button.css"
+  },
+  "hamburger-header.css": {
+    "file": "_app/immutable/assets/hamburger-header-f6350945.css",
+    "src": "hamburger-header.css"
+  },
+  "schedule-form-view.css": {
+    "file": "_app/immutable/assets/schedule-form-view-12b492a1.css",
+    "src": "schedule-form-view.css"
+  },
+  "event-summary.css": {
+    "file": "_app/immutable/assets/event-summary-d26e47e5.css",
+    "src": "event-summary.css"
+  },
+  "app.css": {
+    "file": "_app/immutable/assets/app-997de915.css",
+    "src": "app.css"
+  },
+  "table-header-row.css": {
+    "file": "_app/immutable/assets/table-header-row-be744db9.css",
+    "src": "table-header-row.css"
+  },
+  "simple-select.css": {
+    "file": "_app/immutable/assets/simple-select-51b2afe1.css",
+    "src": "simple-select.css"
+  },
+  "dropdown-menu.css": {
+    "file": "_app/immutable/assets/dropdown-menu-0eec5aad.css",
+    "src": "dropdown-menu.css"
+  },
+  "code-block.css": {
+    "file": "_app/immutable/assets/code-block-86c182bf.css",
+    "src": "code-block.css"
+  },
+  "src/routes/namespaces/[namespace]/archival/index@root.css": {
+    "file": "_app/immutable/assets/index@root-c5268cbc.css",
+    "src": "src/routes/namespaces/[namespace]/archival/index@root.css"
+  },
+  "search.css": {
+    "file": "_app/immutable/assets/search-0765b54e.css",
+    "src": "search.css"
+  },
+  "workflow-status.css": {
+    "file": "_app/immutable/assets/workflow-status-bfb8cfc9.css",
+    "src": "workflow-status.css"
   }
 }
