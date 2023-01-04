@@ -58,6 +58,10 @@ type SettingsResponse struct {
 	Codec                       *CodecResponse
 	Version                     string
 	DisableWriteActions         bool
+	WorkflowTerminateDisabled   bool
+	WorkflowCancelDisabled      bool
+	WorkflowSignalDisabled      bool
+	WorkflowResetDisabled       bool
 }
 
 func TemporalAPIHandler(cfgProvider *config.ConfigProviderWithRefresh, apiMiddleware []Middleware) echo.HandlerFunc {
@@ -117,8 +121,12 @@ func GetSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 				Endpoint:        cfg.Codec.Endpoint,
 				PassAccessToken: cfg.Codec.PassAccessToken,
 			},
-			Version:             version.UIVersion,
-			DisableWriteActions: cfg.DisableWriteActions,
+			Version:                   version.UIVersion,
+			DisableWriteActions:       cfg.DisableWriteActions,
+			WorkflowTerminateDisabled: cfg.WorkflowTerminateDisabled,
+			WorkflowCancelDisabled:    cfg.WorkflowCancelDisabled,
+			WorkflowSignalDisabled:    cfg.WorkflowSignalDisabled,
+			WorkflowResetDisabled:     cfg.WorkflowResetDisabled,
 		}
 
 		return c.JSON(http.StatusOK, settings)
