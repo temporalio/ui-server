@@ -24,7 +24,6 @@ package route
 
 import (
 	"bytes"
-	"embed"
 	"io/fs"
 	"net/http"
 
@@ -32,7 +31,7 @@ import (
 )
 
 // SetUIRoutes sets UI routes
-func SetUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
+func SetUIRoutes(e *echo.Echo, assets fs.FS) error {
 	assetsHandler := buildUIAssetsHandler(assets)
 	e.GET("/_app/*", assetsHandler)
 	e.GET("/css/*", assetsHandler)
@@ -44,18 +43,28 @@ func SetUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
 	e.GET("/logo*", assetsHandler)
 	e.GET("/Temporal_Logo_Animation.gif", assetsHandler)
 	e.GET("/site.webmanifest", assetsHandler)
-	e.GET("/*", buildUIIndexHandler(indexHTML))
+	indexHandler, err := buildUIIndexHandler(assets)
+	if err != nil {
+		return err
+	}
+
+	e.GET("/*", indexHandler)
+
+	return nil
 }
 
-func buildUIIndexHandler(indexHTML []byte) echo.HandlerFunc {
+func buildUIIndexHandler(assets fs.FS) (echo.HandlerFunc, error) {
+	indexHTML, err := fs.ReadFile(assets, "index.html")
+	if err != nil {
+		return nil, err
+	}
+
 	return func(c echo.Context) (err error) {
 		return c.Stream(200, "text/html", bytes.NewBuffer(indexHTML))
-	}
+	}, nil
 }
 
-func buildUIAssetsHandler(assets embed.FS) echo.HandlerFunc {
-	stream := fs.FS(assets)
-	stream, _ = fs.Sub(stream, "generated/ui")
-	handler := http.FileServer(http.FS(stream))
+func buildUIAssetsHandler(assets fs.FS) echo.HandlerFunc {
+	handler := http.FileServer(http.FS(assets))
 	return echo.WrapHandler(handler)
 }

@@ -39,6 +39,7 @@ type (
 		TLS                 TLS    `yaml:"tls"`
 		Auth                Auth   `yaml:"auth"`
 		EnableUI            bool   `yaml:"enableUi"`
+		UIAssetPath         string `yaml:"uiAssetPath"`
 		EnableOpenAPI       bool   `yaml:"enableOpenApi"`
 		CORS                CORS   `yaml:"cors"`
 		DefaultNamespace    string `yaml:"defaultNamespace"`
