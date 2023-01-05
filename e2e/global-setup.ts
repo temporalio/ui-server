@@ -17,7 +17,6 @@ async function globalSetup(config: FullConfig) {
     await page.goto(address);
     await page.locator("[data-cy=login-button]").click();
     await page.locator('input[name="username"]').fill(username);
-    await page.screenshot();
     await page.locator('input[name="username"]').press("Enter");
     await page.locator('input[name="password"]').fill(password);
     await page.locator('input[name="password"]').press("Enter");
