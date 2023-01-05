@@ -19,7 +19,6 @@ async function globalSetup(config: FullConfig) {
   // Save signed-in state to 'storageState.json'
   await page.waitForNavigation();
   await page.context().storageState({ path: "storageState.json" });
-
   await browser.close();
 }
 
