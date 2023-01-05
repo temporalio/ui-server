@@ -9,21 +9,16 @@ async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();
   const page = await browser.newPage({ ignoreHTTPSErrors: true });
 
-  try {
-    await page.goto(address);
-    await page.locator("[data-cy=login-button]").click();
-    await page.locator('input[name="username"]').fill(username);
-    await page.locator('input[name="username"]').press("Enter");
-    await page.locator('input[name="password"]').fill(password);
-    await page.locator('input[name="password"]').press("Enter");
+  await page.goto(address);
+  await page.locator("[data-cy=login-button]").click();
+  await page.locator('input[name="username"]').fill(username);
+  await page.locator('input[name="username"]').press("Enter");
+  await page.locator('input[name="password"]').fill(password);
+  await page.locator('input[name="password"]').press("Enter");
 
-    // Save signed-in state to 'storageState.json'
-    await page.waitForNavigation();
-    await page.context().storageState({ path: "storageState.json" });
-  } catch (error) {
-    await browser.close();
-    throw error;
-  }
+  // Save signed-in state to 'storageState.json'
+  await page.waitForNavigation();
+  await page.context().storageState({ path: "storageState.json" });
 
   await browser.close();
 }
