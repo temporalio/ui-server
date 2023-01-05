@@ -7,15 +7,10 @@ const password = process.env.E2E_PASSWORD ?? "";
 
 async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();
-  const context = await browser.newContext({
-    recordVideo: { dir: "test-results/global-setup-video/" },
-    ignoreHTTPSErrors: true,
-  });
-  const page = await context.newPage();
+  const page = await browser.newPage({ ignoreHTTPSErrors: true });
 
   try {
     await page.goto(address);
-    await page.waitForNavigation();
     await page.locator("[data-cy=login-button]").click();
     await page.locator('input[name="username"]').fill(username);
     await page.locator('input[name="username"]').press("Enter");
