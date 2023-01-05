@@ -7,18 +7,29 @@ const password = process.env.E2E_PASSWORD ?? "";
 
 async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();
-  const page = await browser.newPage({ ignoreHTTPSErrors: true });
+  const context = await browser.newContext({
+    recordVideo: { dir: "test-results/global-setup-video/" },
+    ignoreHTTPSErrors: true,
+  });
+  const page = await context.newPage();
 
-  await page.goto(address);
-  await page.locator("[data-cy=login-button]").click();
-  await page.locator('input[name="username"]').fill(username);
-  await page.locator('input[name="username"]').press("Enter");
-  await page.locator('input[name="password"]').fill(password);
-  await page.locator('input[name="password"]').press("Enter");
+  try {
+    await page.goto(address);
+    await page.locator("[data-cy=login-button]").click();
+    await page.locator('input[name="username"]').fill(username);
+    await page.screenshot();
+    await page.locator('input[name="username"]').press("Enter");
+    await page.locator('input[name="password"]').fill(password);
+    await page.locator('input[name="password"]').press("Enter");
 
-  // Save signed-in state to 'storageState.json'
-  await page.waitForNavigation();
-  await page.context().storageState({ path: "storageState.json" });
+    // Save signed-in state to 'storageState.json'
+    await page.waitForNavigation();
+    await page.context().storageState({ path: "storageState.json" });
+  } catch (error) {
+    await browser.close();
+    throw error;
+  }
+
   await browser.close();
 }
 
