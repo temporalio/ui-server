@@ -25,7 +25,9 @@ package server
 import (
 	"embed"
 	"fmt"
+	"io/fs"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -38,9 +40,6 @@ import (
 	"github.com/temporalio/ui-server/v2/server/route"
 	"github.com/temporalio/ui-server/v2/server/server_options"
 )
-
-//go:embed generated/ui/index.html
-var uiHTML []byte
 
 //go:embed all:generated/ui
 var uiAssets embed.FS
@@ -112,7 +111,16 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		route.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
 	}
 	if cfg.EnableUI {
-		route.SetUIRoutes(e, uiHTML, uiAssets)
+		var assets fs.FS
+		if cfg.UIAssetPath != "" {
+			assets = os.DirFS(cfg.UIAssetPath)
+		} else {
+			assets, err = fs.Sub(uiAssets, "generated/ui")
+			if err != nil {
+				panic(err)
+			}
+		}
+		route.SetUIRoutes(e, assets)
 	}
 
 	s := &Server{
