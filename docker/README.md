@@ -8,7 +8,7 @@ Check out our [docker-compose](https://github.com/temporalio/docker-compose) for
 
 An example command to run the UI with Auth and TLS enabled
 
-**Note**: For proper security you will also want to [enable authorization](https://docs.temporal.io/server/security/#authorization) on Temporal Server.
+**Note**: For proper security you will also want to [enable authorization](https://docs.temporal.io/security/#authorization) on Temporal Server.
 
 ```shellscript
 docker run \
@@ -28,7 +28,7 @@ docker run \
     temporalio/ui:latest
 ```
 
-For all env options see [Config template file](https://github.com/temporalio/ui-server/blob/main/docker/config_template.yaml) or [Configuration Docs](https://docs.temporal.io/references/ui-configuration)
+For all env options see [Config template file](./config_template.yaml) or [Configuration Docs](https://docs.temporal.io/references/web-ui-configuration)
 
 ## Serve UI under a sub-path
 
