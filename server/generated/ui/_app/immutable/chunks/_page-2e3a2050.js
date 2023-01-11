@@ -1,0 +1,1 @@
+import{r as o}from"./index-dc735eee.js";import{f as t}from"./route-for-a6a4e2f3.js";const r=async function(){const e=t({importType:"events",view:"feed"});throw o(302,e)},c=Object.freeze(Object.defineProperty({__proto__:null,load:r},Symbol.toStringTag,{value:"Module"}));export{c as _,r as l};

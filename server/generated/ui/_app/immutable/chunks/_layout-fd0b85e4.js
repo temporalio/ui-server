@@ -1,0 +1,1 @@
+/* empty css            */import"./prism-33684961.js";import{f as e}from"./settings-service-9a2027ab.js";import{g as r}from"./auth-user-8a53b420.js";const s=async function({fetch:t}){const o=await e(t);return{user:r(),settings:o}},l=Object.freeze(Object.defineProperty({__proto__:null,load:s},Symbol.toStringTag,{value:"Module"}));export{l as _,s as l};
