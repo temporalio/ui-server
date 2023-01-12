@@ -10,6 +10,10 @@ refreshInterval: {{ default .Env.TEMPORAL_CONFIG_REFRESH_INTERVAL "0s" }}
 showTemporalSystemNamespace:
   {{ default .Env.TEMPORAL_SHOW_TEMPORAL_SYSTEM_NAMESPACE "false" }}
 disableWriteActions: {{ default .Env.TEMPORAL_DISABLE_WRITE_ACTIONS "false" }}
+workflowTerminateDisabled: {{ default .Env.TEMPORAL_WORKFLOW_TERMINATE_DISABLED "false" }}
+workflowCancelDisabled: {{ default .Env.TEMPORAL_WORKFLOW_CANCEL_DISABLED "false" }}
+workflowSignalDisabled: {{ default .Env.TEMPORAL_WORKFLOW_SIGNAL_DISABLED "false" }}
+workflowResetDisabled: {{ default .Env.TEMPORAL_WORKFLOW_RESET_DISABLED "false" }}
 cors:
   allowOrigins:
     # override framework's default that allows all origins "*"

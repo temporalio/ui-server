@@ -51,6 +51,11 @@ type (
 		RefreshInterval     time.Duration `yaml:"refreshInterval"`
 		Codec               Codec         `yaml:"codec"`
 		DisableWriteActions bool          `yaml:"disableWriteActions"`
+		// Discrete configuration for Workflow Actions in the UI
+		WorkflowTerminateDisabled bool `yaml:"workflowTerminateDisabled"`
+		WorkflowCancelDisabled    bool `yaml:"workflowCancelDisabled"`
+		WorkflowSignalDisabled    bool `yaml:"workflowSignalDisabled"`
+		WorkflowResetDisabled     bool `yaml:"workflowResetDisabled"`
 		// Forward specified HTTP headers from HTTP API requests to Temporal gRPC backend
 		ForwardHeaders []string `yaml:"forwardHeaders"`
 	}
