@@ -1,1 +1,1 @@
-import{_ as e}from"./_page-aff9933a.js";export{e as universal};
+import{_ as e}from"./_page-2e824c41.js";export{e as universal};
