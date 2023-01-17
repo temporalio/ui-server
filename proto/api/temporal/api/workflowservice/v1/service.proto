@@ -200,6 +200,10 @@ service WorkflowService {
     // (-- api-linter: core::0136::prepositions=disabled
     //     aip.dev/not-precedent: "By" is used to indicate request type. --)
     rpc RespondActivityTaskCompletedById (RespondActivityTaskCompletedByIdRequest) returns (RespondActivityTaskCompletedByIdResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/namespaces/{namespace}/workflows/{workflow_id}/runs/{run_id}/activities/{activity_id}/complete"
+            body: "*"
+        };
     }
 
     // RespondActivityTaskFailed is called by workers when processing an activity task fails.
@@ -216,6 +220,10 @@ service WorkflowService {
     // (-- api-linter: core::0136::prepositions=disabled
     //     aip.dev/not-precedent: "By" is used to indicate request type. --)
     rpc RespondActivityTaskFailedById (RespondActivityTaskFailedByIdRequest) returns (RespondActivityTaskFailedByIdResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/namespaces/{namespace}/workflows/{workflow_id}/runs/{run_id}/activities/{activity_id}/fail"
+            body: "*"
+        };
     }
 
     // RespondActivityTaskFailed is called by workers when processing an activity task fails.
