@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 const address = process.env.E2E_UI_ADDRESS ?? "";
 
@@ -12,15 +12,23 @@ test.describe("Workflows list", () => {
   });
 
   test("should render Workflow Execution details", async ({ page }) => {
-    await page.locator('a.workflow-summary-row').first().click();
+    await page
+      .locator("a.workflow-summary-row")
+      .first()
+      .click({ position: { x: 0, y: 0 } });
 
     await expect(page.locator("text=Workflow Type").first()).toBeVisible();
     await expect(page.locator("text=Task Queue").first()).toBeVisible();
   });
 
   test("should render Workflow Execution Events", async ({ page }) => {
-    await page.locator("a.workflow-summary-row").first().click();
+    await page
+      .locator("a.workflow-summary-row")
+      .first()
+      .click({ position: { x: 0, y: 0 } });
 
-    await expect(page.locator('[data-cy="event-summary-row"]').first()).toBeVisible();
+    await expect(
+      page.locator('[data-cy="event-summary-row"]').first()
+    ).toBeVisible();
   });
 });
