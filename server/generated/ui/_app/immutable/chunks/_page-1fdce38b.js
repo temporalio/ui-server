@@ -1,1 +1,0 @@
-import{r as o}from"./index-dc735eee.js";import{f as r}from"./route-for-a6a4e2f3.js";const t=async()=>{const e=r({importType:"events"});throw o(302,e)},s=Object.freeze(Object.defineProperty({__proto__:null,load:t},Symbol.toStringTag,{value:"Module"}));export{s as _,t as l};
