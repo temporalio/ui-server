@@ -1810,6 +1810,154 @@
         ]
       }
     },
+    "/api/v1/namespaces/{namespace}/workflows/{workflowId}/runs/{runId}/activities/{activityId}/complete": {
+      "post": {
+        "summary": "See `RecordActivityTaskCompleted`. This version allows clients to record completions by\nnamespace/workflow id/activity id instead of task token.",
+        "description": "(-- api-linter: core::0136::prepositions=disabled\n    aip.dev/not-precedent: \"By\" is used to indicate request type. --)",
+        "operationId": "WorkflowService_RespondActivityTaskCompletedById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RespondActivityTaskCompletedByIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace of the workflow which scheduled this activity",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflowId",
+            "description": "Id of the workflow which scheduled this activity",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "runId",
+            "description": "Run Id of the workflow which scheduled this activity",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "activityId",
+            "description": "Id of the activity to complete",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/v1Payloads",
+                  "title": "The serialized result of activity execution"
+                },
+                "identity": {
+                  "type": "string",
+                  "title": "The identity of the worker/client"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/workflows/{workflowId}/runs/{runId}/activities/{activityId}/fail": {
+      "post": {
+        "summary": "See `RecordActivityTaskFailed`. This version allows clients to record failures by\nnamespace/workflow id/activity id instead of task token.",
+        "description": "(-- api-linter: core::0136::prepositions=disabled\n    aip.dev/not-precedent: \"By\" is used to indicate request type. --)",
+        "operationId": "WorkflowService_RespondActivityTaskFailedById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RespondActivityTaskFailedByIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "description": "Namespace of the workflow which scheduled this activity",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "workflowId",
+            "description": "Id of the workflow which scheduled this activity",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "runId",
+            "description": "Run Id of the workflow which scheduled this activity",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "activityId",
+            "description": "Id of the activity to fail",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "failure": {
+                  "$ref": "#/definitions/v1Failure",
+                  "title": "Detailed failure information"
+                },
+                "identity": {
+                  "type": "string",
+                  "title": "The identity of the worker/client"
+                },
+                "lastHeartbeatDetails": {
+                  "$ref": "#/definitions/v1Payloads",
+                  "title": "Additional details to be stored as last activity heartbeat"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
     "/api/v1/namespaces/{namespace}/workflows/{workflowId}/start": {
       "post": {
         "summary": "StartWorkflowExecution starts a new workflow execution.",
@@ -5066,7 +5214,7 @@
           "items": {
             "$ref": "#/definitions/v1CalendarSpec"
           },
-          "description": "Any timestamps matching any of exclude_* will be skipped."
+          "description": "Any timestamps matching any of exclude_* will be skipped.\n\nuse exclude_structured_calendar"
         },
         "excludeStructuredCalendar": {
           "type": "array",
