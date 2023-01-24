@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("Workflows list", () => {
   test("should render Workflow Executions page", async ({ page }) => {
-    await expect(page.locator("text=Recent Workflows")).toBeVisible();
+    await expect(page.locator('h1:has-text("Recent Workflows")')).toBeVisible();
   });
 
   test("should render Workflow Execution details", async ({ page }) => {
@@ -17,8 +17,11 @@ test.describe("Workflows list", () => {
       .first()
       .click({ position: { x: 0, y: 0 } });
 
-    await expect(page.locator("text=Workflow Type").first()).toBeVisible();
-    await expect(page.locator("text=Task Queue").first()).toBeVisible();
+    await expect(page.locator('h2:has-text("Summary")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Relationships")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Input and Results")')
+    ).toBeVisible();
   });
 
   test("should render Workflow Execution Events", async ({ page }) => {
