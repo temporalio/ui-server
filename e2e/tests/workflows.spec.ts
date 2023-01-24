@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("Workflows list", () => {
   test("should render Workflow Executions page", async ({ page }) => {
-    await expect(page.locator("text=Recent Workflows")).toBeVisible();
+    await expect(page.locator('h1:has-text("Recent Workflows")')).toBeVisible();
   });
 
   test("should render Workflow Execution details", async ({ page }) => {
