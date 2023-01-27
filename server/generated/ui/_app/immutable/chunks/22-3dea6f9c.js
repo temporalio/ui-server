@@ -1,0 +1,1 @@
+import{_ as r}from"./_page-ed77219c.js";import{default as t}from"../components/pages/(app)/namespaces/_namespace_/workflows/_workflow_/_run_/history/_page.svelte-3b5a93ea.js";export{t as component,r as universal};
