@@ -99,6 +99,8 @@ type (
 		CallbackURL string `yaml:"callbackUrl"`
 		// Options added as URL query params when redirecting to auth provider. Can be used to configure custom auth flows such as Auth0 invitation flow.
 		Options map[string]interface{} `yaml:"options"`
+
+		AllowedUsers []string `yaml:"allowedUsers"`
 	}
 
 	Codec struct {

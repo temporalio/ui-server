@@ -80,6 +80,7 @@ jobs:
             echo '        - email';
             echo '        - permissions';
             echo '      callbackUrl: ${{ secrets.E2E_VITE_API }}/auth/sso/callback';
+            echo '      allowedUsers: []';
             echo '      options:';
             echo '        audience: ${{ secrets.E2E_AUTH_AUDIENCE }}';
             echo 'cors:';

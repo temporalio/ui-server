@@ -76,8 +76,8 @@ func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) 
 
 	api := e.Group("/auth")
 	api.GET("/sso", authenticate(&oauthCfg, providerCfg.Options))
-	api.GET("/sso/callback", authenticateCb(ctx, &oauthCfg, provider))
-	api.GET("/sso_callback", authenticateCb(ctx, &oauthCfg, provider)) // compatibility with UI v1
+	api.GET("/sso/callback", authenticateCb(ctx, &oauthCfg, provider, providerCfg.AllowedUsers))
+	api.GET("/sso_callback", authenticateCb(ctx, &oauthCfg, provider, providerCfg.AllowedUsers)) // compatibility with UI v1
 }
 
 func authenticate(config *oauth2.Config, options map[string]interface{}) func(echo.Context) error {
@@ -118,11 +118,29 @@ func authenticate(config *oauth2.Config, options map[string]interface{}) func(ec
 	}
 }
 
-func authenticateCb(ctx context.Context, oauthCfg *oauth2.Config, provider *oidc.Provider) func(echo.Context) error {
+func authenticateCb(ctx context.Context, oauthCfg *oauth2.Config, provider *oidc.Provider, allowedUsers []string) func(echo.Context) error {
 	return func(c echo.Context) error {
 		user, err := auth.ExchangeCode(ctx, c.Request(), oauthCfg, provider)
 		if err != nil {
 			return err
+		}
+
+		if len(allowedUsers) > 0 {
+			if user.IDToken == nil || user.IDToken.Claims == nil || user.IDToken.Claims.Email == "" {
+				return echo.NewHTTPError(http.StatusBadRequest, "IDToken is invalid")
+			}
+
+			allowed := false
+			for _, allowedUser := range allowedUsers {
+				if user.IDToken.Claims.Email == allowedUser {
+					allowed = true
+					break
+				}
+			}
+
+			if !allowed {
+				return echo.NewHTTPError(http.StatusForbidden, "Current user is not allowed")
+			}
 		}
 
 		err = auth.SetUser(c, user)
