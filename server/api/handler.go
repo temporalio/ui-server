@@ -62,7 +62,7 @@ type SettingsResponse struct {
 	WorkflowCancelDisabled      bool
 	WorkflowSignalDisabled      bool
 	WorkflowResetDisabled       bool
-	BulkActionsDisabled         bool
+	BatchActionsDisabled        bool
 }
 
 func TemporalAPIHandler(cfgProvider *config.ConfigProviderWithRefresh, apiMiddleware []Middleware) echo.HandlerFunc {
@@ -128,7 +128,7 @@ func GetSettings(cfgProvier *config.ConfigProviderWithRefresh) func(echo.Context
 			WorkflowCancelDisabled:    cfg.WorkflowCancelDisabled,
 			WorkflowSignalDisabled:    cfg.WorkflowSignalDisabled,
 			WorkflowResetDisabled:     cfg.WorkflowResetDisabled,
-			BulkActionsDisabled:       cfg.BulkActionsDisabled,
+			BatchActionsDisabled:      cfg.BatchActionsDisabled,
 		}
 
 		return c.JSON(http.StatusOK, settings)
