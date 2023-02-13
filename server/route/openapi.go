@@ -24,28 +24,41 @@ package route
 
 import (
 	"bytes"
-	"embed"
 	"io/fs"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-// SetAPIRoutes sets api routes
-func SetSwaggerUIRoutes(e *echo.Echo, indexHTML []byte, assets embed.FS) {
-	e.GET("/openapi", buildSwaggerUIHandler(indexHTML))
-	e.GET("/openapi/*", buildSwaggerUIAssetsHander(assets))
+// SetOpenAPIRoutes sets api routes
+func SetOpenAPIUIRoutes(e *echo.Echo, assets fs.FS) error {
+	indexHandler, err := buildOpenAPIUIHandler(assets)
+	if err != nil {
+		return err
+	}
+	e.GET("/openapi/", indexHandler)
+
+	e.GET("/openapi/*", buildOpenAPIUIAssetsHander(assets))
+
+	e.GET("/openapi", func(c echo.Context) (err error) {
+		return c.Redirect(http.StatusMovedPermanently, "/openapi/")
+	})
+
+	return nil
 }
 
-func buildSwaggerUIHandler(indexHTML []byte) echo.HandlerFunc {
+func buildOpenAPIUIHandler(assets fs.FS) (echo.HandlerFunc, error) {
+	indexHTML, err := fs.ReadFile(assets, "index.html")
+	if err != nil {
+		return nil, err
+	}
+
 	return func(c echo.Context) (err error) {
 		return c.Stream(200, "text/html", bytes.NewBuffer(indexHTML))
-	}
+	}, nil
 }
 
-func buildSwaggerUIAssetsHander(assets embed.FS) echo.HandlerFunc {
-	stream := fs.FS(assets)
-	stream, _ = fs.Sub(stream, "generated")
-	handler := http.FileServer(http.FS(stream))
+func buildOpenAPIUIAssetsHander(assets fs.FS) echo.HandlerFunc {
+	handler := http.StripPrefix("/openapi/", http.FileServer(http.FS(assets)))
 	return echo.WrapHandler(handler)
 }

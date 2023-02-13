@@ -33,7 +33,7 @@ import (
 	"gopkg.in/validator.v2"
 	"gopkg.in/yaml.v3"
 
-	"github.com/temporalio/ui-server/v2/server/config"
+	"github.com/temporalio/ui/server/v2/server/config"
 )
 
 const (
@@ -63,9 +63,8 @@ const (
 //
 // The hierarchy is as follows from lowest to highest
 //
-//   base.yaml
-//       env.yaml   -- environment is one of the input params ex-development
-//
+//	base.yaml
+//	    env.yaml   -- environment is one of the input params ex-development
 func Load(configDir string, config interface{}, env string) error {
 	if len(env) == 0 {
 		env = envDevelopment

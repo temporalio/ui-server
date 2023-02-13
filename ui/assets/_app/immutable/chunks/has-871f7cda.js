@@ -1,0 +1,1 @@
+import{i as s}from"./is-199b1f9e.js";const f=(r,...e)=>{if(!n(r))return!1;for(const t of e)if(!Object.prototype.hasOwnProperty.call(r,t))return!1;return!0},n=r=>s(r)?!!Object.keys(r).length:!1;export{f as h};

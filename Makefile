@@ -17,7 +17,7 @@ COLOR := "\e[1;36m%s\e[0m\n"
 PROTO_ROOT := proto/api
 PROTO_FILES = $(shell find $(PROTO_ROOT) -name "*.proto")
 PROTO_DIRS = $(sort $(dir $(PROTO_FILES)))
-PROTO_OUT := ./server/generated/api
+PROTO_OUT := api
 PROTO_IMPORTS := \
 	-I $(PROTO_ROOT) \
 	-I ./proto/dependencies/github.com/grpc-ecosystem/grpc-gateway/ \
@@ -25,43 +25,30 @@ PROTO_IMPORTS := \
 	-I ./proto/dependencies/api/ \
 	-I ./proto/dependencies/
 PROTO_REFS := Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api
-OPENAPI_OUT := ./server/generated/openapi
-UI_OUT := ./server/generated/ui
+OPENAPI_OUT := openapi/assets
+UI_OUT := ui/assets
 
 ##### Build #####
-build: build-ui build-api build-server
+build: build-ui build-grpc build-server
 
-build-cloud: build-ui-cloud build-server
+build-cloud: build-ui-cloud build-grpc build-server
 
 build-ui:
-	(cd ./ui && VITE_API="" pnpm build:local)
 	rm -rf $(UI_OUT)
-	mkdir -p $(UI_OUT)
-	cp -r ./ui/build/* $(UI_OUT)
+	go generate ./ui
 
 build-ui-cloud:
-	(cd ./ui && VITE_API="" pnpm build:cloud)
 	rm -rf $(UI_OUT)
-	mkdir -p $(UI_OUT)
-	cp -r ./ui/build/* $(UI_OUT)
-
-build-api: build-grpc
-	mkdir -p $(OPENAPI_OUT)
-	cp -r ./third_party/OpenAPI/* $(OPENAPI_OUT)
-	cp $(OPENAPI_OUT)/temporal/api/workflowservice/v1/service.swagger.json $(OPENAPI_OUT)
-	mkdir -p $(OPENAPI_OUT)
-	rm -rf $(OPENAPI_OUT)/temporal
+	VITE_TEMPORAL_UI_BUILD_TARGET=cloud go generate ./ui
 
 build-server:
 	go mod tidy
 	go build -o ui-server ./cmd/server/main.go
 
 build-grpc:
-	printf $(COLOR) "Compiling gRPC..."
-	rm -rf $(PROTO_OUT)/*
+	@printf $(COLOR) "Compiling gRPC..."
+	rm -rf $(PROTO_OUT)
 	mkdir -p $(PROTO_OUT)
-	rm -rf $(OPENAPI_OUT)/*
-	mkdir -p $(OPENAPI_OUT)
 	$(foreach PROTO_DIR,$(PROTO_DIRS),\
 		protoc $(PROTO_IMPORTS) \
 			--gogoslick_out=plugins=grpc,paths=source_relative,$(PROTO_REFS):$(PROTO_OUT) \
@@ -69,8 +56,7 @@ build-grpc:
 			--openapiv2_out=$(OPENAPI_OUT) \
 		$(PROTO_DIR)*.proto \
 	;)
-	# fix grpc outputs path:
-	printf $(COLOR) "Fixing gRPC output paths"
+	@printf $(COLOR) "Fixing gRPC output paths"
 	mv -f $(PROTO_OUT)/temporal/api/* $(PROTO_OUT) && rm -rf $(PROTO_OUT)/temporal
 
 ##### Install dependencies #####
@@ -85,15 +71,11 @@ install-utils:
 	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 
 install-submodules:
-	printf $(COLOR) "fetching submudules..."
+	@printf $(COLOR) "fetching submodules..."
 	git submodule update --init
 
-update-submodules:
-	printf $(COLOR) "updating submudules..."
-	git submodule update --force --remote ui
-
 install-ui:
-	(cd ./ui && pnpm install)
+	(cd ../ && pnpm install)
 
 ##### Test #####
 test: clean-test-results
