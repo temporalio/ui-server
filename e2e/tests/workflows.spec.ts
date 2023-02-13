@@ -31,7 +31,7 @@ test.describe("Workflows list", () => {
       .click({ position: { x: 0, y: 0 } });
 
     await expect(
-      page.locator('[data-cy="event-summary-row"]').first()
+      page.locator('[data-testid="event-summary-row"]').first()
     ).toBeVisible();
   });
 });
