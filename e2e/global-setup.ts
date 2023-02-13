@@ -10,7 +10,7 @@ async function globalSetup(config: FullConfig) {
   const page = await browser.newPage({ ignoreHTTPSErrors: true });
 
   await page.goto(address);
-  await page.locator("[data-cy=login-button]").click();
+  await page.locator("[data-testid=login-button]").click();
   await page.locator('input[name="username"]').fill(username);
   await page.locator('input[name="username"]').press("Enter");
   await page.locator('input[name="password"]').fill(password);
