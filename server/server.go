@@ -23,7 +23,6 @@
 package server
 
 import (
-	"embed"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -39,16 +38,10 @@ import (
 	"github.com/temporalio/ui-server/v2/server/headers"
 	"github.com/temporalio/ui-server/v2/server/route"
 	"github.com/temporalio/ui-server/v2/server/server_options"
+
+	"github.com/temporalio/ui-server/v2/openapi"
+	"github.com/temporalio/ui-server/v2/ui"
 )
-
-//go:embed all:generated/ui
-var uiAssets embed.FS
-
-//go:embed generated/openapi/index.html
-var swaggeruiHTML []byte
-
-//go:embed all:generated/openapi
-var swaggeruiAssets embed.FS
 
 type (
 	// Server ui server.
@@ -108,14 +101,18 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 	route.SetAPIRoutes(e, cfgProvider, serverOpts.APIMiddleware)
 	route.SetAuthRoutes(e, cfgProvider)
 	if cfg.EnableOpenAPI {
-		route.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
+		assets, err := openapi.Assets()
+		if err != nil {
+			panic(err)
+		}
+		route.SetOpenAPIUIRoutes(e, assets)
 	}
 	if cfg.EnableUI {
 		var assets fs.FS
 		if cfg.UIAssetPath != "" {
 			assets = os.DirFS(cfg.UIAssetPath)
 		} else {
-			assets, err = fs.Sub(uiAssets, "generated/ui")
+			assets, err = ui.Assets()
 			if err != nil {
 				panic(err)
 			}
