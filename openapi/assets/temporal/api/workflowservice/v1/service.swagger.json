@@ -344,6 +344,7 @@
                 "executions": {
                   "type": "array",
                   "items": {
+                    "type": "object",
                     "$ref": "#/definitions/v1WorkflowExecution"
                   },
                   "title": "Executions to apply the batch operation\nThis field and VisibilityQuery are mutually exclusive"
@@ -2062,6 +2063,7 @@
         "details": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
         }
@@ -3026,6 +3028,7 @@
         "failoverHistory": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1FailoverStatus"
           },
           "description": "Contains the historical state of failover_versions for the cluster, truncated to contain only the last N\nstates to ensure that the list does not grow unbounded."
@@ -3063,6 +3066,7 @@
         "pollers": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1PollerInfo"
           }
         },
@@ -3083,12 +3087,14 @@
         "pendingActivities": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1PendingActivityInfo"
           }
         },
         "pendingChildren": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1PendingChildExecutionInfo"
           }
         },
@@ -3342,6 +3348,7 @@
         "rawHistory": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1DataBlob"
           },
           "description": "Raw history is an alternate representation of history that may be returned if configured on\nthe frontend. This is not supported by all SDKs. Either this or `history` will be set."
@@ -3387,6 +3394,7 @@
         "events": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1HistoryEvent"
           }
         }
@@ -3620,6 +3628,7 @@
         "executions": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
@@ -3635,6 +3644,7 @@
         "operationInfo": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1BatchOperationInfo"
           },
           "title": "BatchOperationInfo contains the basic info about batch operation"
@@ -3651,6 +3661,7 @@
         "executions": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
@@ -3666,6 +3677,7 @@
         "namespaces": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1DescribeNamespaceResponse"
           }
         },
@@ -3681,6 +3693,7 @@
         "executions": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
@@ -3708,6 +3721,7 @@
         "schedules": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1ScheduleListEntry"
           }
         },
@@ -3723,12 +3737,14 @@
         "activityTaskQueuePartitions": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1TaskQueuePartitionMetadata"
           }
         },
         "workflowTaskQueuePartitions": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1TaskQueuePartitionMetadata"
           }
         }
@@ -3740,6 +3756,7 @@
         "executions": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
@@ -3919,6 +3936,7 @@
         "clusters": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1ClusterReplicationConfig"
           }
         },
@@ -4039,6 +4057,7 @@
         "payloads": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Payload"
           }
         }
@@ -4308,6 +4327,7 @@
         "messages": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Message"
           },
           "title": "Protocol messages piggybacking on a WFT as a transport"
@@ -4460,6 +4480,7 @@
         "clusters": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1ClusterReplicationConfig"
           }
         },
@@ -4672,6 +4693,7 @@
         "points": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1ResetPointInfo"
           }
         }
@@ -4724,6 +4746,7 @@
         "failures": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Failure"
           },
           "title": "Server validation failures could include\nlast_heartbeat_details payload is too large, request failure is too large"
@@ -4736,6 +4759,7 @@
         "failures": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Failure"
           },
           "title": "Server validation failures could include\nlast_heartbeat_details payload is too large, request failure is too large"
@@ -4755,6 +4779,7 @@
         "activityTasks": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1PollActivityTaskQueueResponse"
           },
           "title": "See `ScheduleActivityTaskCommandAttributes::request_start`"
@@ -4819,6 +4844,7 @@
         "executions": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1WorkflowExecutionInfo"
           }
         },
@@ -4939,6 +4965,7 @@
         "runningWorkflows": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1WorkflowExecution"
           },
           "description": "Currently-running workflows started by this schedule. (There might be\nmore than one if the overlap policy allows overlaps.)\nNote that the run_ids in here are the original execution run ids as\nstarted by the schedule. If the workflows retried, did continue-as-new,\nor were reset, they might still be running but with a different run_id."
@@ -4946,6 +4973,7 @@
         "recentActions": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1ScheduleActionResult"
           },
           "description": "Most recent ten actual action times (including manual triggers)."
@@ -5011,6 +5039,7 @@
         "recentActions": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1ScheduleActionResult"
           },
           "title": "From info (maybe fewer entries):"
@@ -5049,6 +5078,7 @@
         "backfillRequest": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1BackfillRequest"
           },
           "description": "If set, runs though the specified time period(s) and takes actions as if that time\npassed by right now, all at once. The overlap policy can be overridden for the\nscope of the backfill."
@@ -5085,6 +5115,7 @@
         "structuredCalendar": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1StructuredCalendarSpec"
           },
           "description": "Calendar-based specifications of times."
@@ -5099,6 +5130,7 @@
         "calendar": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1CalendarSpec"
           },
           "description": "Calendar-based specifications of times."
@@ -5106,6 +5138,7 @@
         "interval": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1IntervalSpec"
           },
           "description": "Interval-based specifications of times."
@@ -5113,6 +5146,7 @@
         "excludeCalendar": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1CalendarSpec"
           },
           "description": "Any timestamps matching any of exclude_* will be skipped.\n\nuse exclude_structured_calendar"
@@ -5120,6 +5154,7 @@
         "excludeStructuredCalendar": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1StructuredCalendarSpec"
           }
         },
@@ -5562,6 +5597,7 @@
         "second": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Range"
           },
           "title": "Match seconds (0-59)"
@@ -5569,6 +5605,7 @@
         "minute": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Range"
           },
           "title": "Match minutes (0-59)"
@@ -5576,6 +5613,7 @@
         "hour": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Range"
           },
           "title": "Match hours (0-23)"
@@ -5583,6 +5621,7 @@
         "dayOfMonth": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Range"
           },
           "title": "Match days of the month (1-31)\n(-- api-linter: core::0140::prepositions=disabled\n    aip.dev/not-precedent: standard name of field --)"
@@ -5590,6 +5629,7 @@
         "month": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Range"
           },
           "title": "Match months (1-12)"
@@ -5597,6 +5637,7 @@
         "year": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Range"
           },
           "description": "Match years."
@@ -5604,6 +5645,7 @@
         "dayOfWeek": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Range"
           },
           "description": "Match days of the week (0-6; 0 is Sunday)."
@@ -5893,6 +5935,7 @@
         "alerts": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/v1Alert"
           }
         },
