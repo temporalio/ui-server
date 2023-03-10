@@ -56,10 +56,30 @@ jobs:
             latest
 
       - name: Push Release image to DockerHub
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         if: github.event_name == 'release'
         with:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta_release.outputs.tags }}
           labels: ${{ steps.meta_release.outputs.labels }}
+
+      - name: Docker meta for Release image
+        id: cloud_meta_release
+        uses: docker/metadata-action@v3
+        if: github.event_name == 'release'
+        with:
+          images: temporalio/cloud-ui
+          tags: |
+            type=semver,pattern={{version}}
+            latest
+
+      - name: Push Release image to DockerHub
+        uses: docker/build-push-action@v4
+        if: github.event_name == 'release'
+        with:
+          push: true
+          build-args: TEMPORAL_CLOUD_UI="true"
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.cloud_meta_release.outputs.tags }}
+          labels: ${{ steps.cloud_meta_release.outputs.labels }}
