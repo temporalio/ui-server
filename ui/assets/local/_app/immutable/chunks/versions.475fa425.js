@@ -1,0 +1,1 @@
+import{d as o}from"./index.1bc7843a.js";import{c as m}from"./cluster.bd2d96c9.js";import{s as a}from"./settings.f748c225.js";const p=o([m],([r])=>r==null?void 0:r.serverVersion),s=o([a],([r])=>r==null?void 0:r.version);export{p as t,s as u};
