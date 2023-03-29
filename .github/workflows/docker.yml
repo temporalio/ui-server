@@ -79,7 +79,7 @@ jobs:
         if: github.event_name == 'release'
         with:
           push: true
-          build-args: TEMPORAL_CLOUD_UI="true"
+          build-args: TEMPORAL_CLOUD_UI=true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.cloud_meta_release.outputs.tags }}
           labels: ${{ steps.cloud_meta_release.outputs.labels }}
