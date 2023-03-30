@@ -25,7 +25,8 @@
 package server_options
 
 import (
-	"github.com/temporalio/ui-server/server/config"
+	"github.com/temporalio/ui-server/v2/server/api"
+	"github.com/temporalio/ui-server/v2/server/config"
 )
 
 type (
@@ -38,5 +39,12 @@ type (
 func WithConfigProvider(cfgProvider config.ConfigProvider) ServerOption {
 	return newApplyFuncContainer(func(s *ServerOptions) {
 		s.ConfigProvider = cfgProvider
+	})
+}
+
+// WithAPIMiddleware supplies API middleware
+func WithAPIMiddleware(middleware []api.Middleware) ServerOption {
+	return newApplyFuncContainer(func(s *ServerOptions) {
+		s.APIMiddleware = append(s.APIMiddleware, middleware...)
 	})
 }

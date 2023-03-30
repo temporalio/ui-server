@@ -28,10 +28,6 @@ import (
 	"time"
 )
 
-var (
-	configCache Config
-)
-
 func NewConfigProviderWithRefresh(cfgProvider ConfigProvider) (*ConfigProviderWithRefresh, error) {
 	cfg, err := cfgProvider.GetConfig()
 	if err != nil {
@@ -39,8 +35,8 @@ func NewConfigProviderWithRefresh(cfgProvider ConfigProvider) (*ConfigProviderWi
 	}
 
 	cfgRefresh := &ConfigProviderWithRefresh{
-		config:          cfg,
-		configProvider:  cfgProvider,
+		cache:           cfg,
+		provider:        cfgProvider,
 		refreshInterval: cfg.RefreshInterval,
 	}
 	cfgRefresh.initialize()
@@ -51,10 +47,8 @@ func NewConfigProviderWithRefresh(cfgProvider ConfigProvider) (*ConfigProviderWi
 type ConfigProviderWithRefresh struct {
 	sync.RWMutex
 
-	config *Config
-
-	configProvider ConfigProvider
-
+	cache           *Config
+	provider        ConfigProvider
 	refreshInterval time.Duration
 
 	ticker *time.Ticker
@@ -64,7 +58,7 @@ type ConfigProviderWithRefresh struct {
 func (r *ConfigProviderWithRefresh) GetConfig() (*Config, error) {
 	r.RLock()
 	defer r.RUnlock()
-	return r.config, nil
+	return r.cache, nil
 }
 
 func (s *ConfigProviderWithRefresh) initialize() {
@@ -83,7 +77,7 @@ func (s *ConfigProviderWithRefresh) refreshConfig() {
 		case <-s.ticker.C:
 		}
 
-		newConfig, err := s.configProvider.GetConfig()
+		newConfig, err := s.provider.GetConfig()
 		if err != nil {
 			log.Printf("unable to load new UI server configuration: %s", err)
 			continue
@@ -91,7 +85,7 @@ func (s *ConfigProviderWithRefresh) refreshConfig() {
 
 		log.Printf("loaded new UI server configuration")
 		s.Lock()
-		s.config = newConfig
+		s.cache = newConfig
 		s.Unlock()
 	}
 }

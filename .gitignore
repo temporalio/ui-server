@@ -7,11 +7,13 @@
 __debug_bin
 ui-server
 
-# Test binary, built with `go test -c`
-*.test
-
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+.vscode/*.log
+node_modules
+e2e/storageState.json
+e2e/playwright-report
+e2e/test-results
+e2e/playwright/.cache
+e2e/.env
 
 # Output of code generation tools
 third_party/OpenAPI/temporal

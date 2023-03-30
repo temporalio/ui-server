@@ -27,24 +27,32 @@ import (
 	"os"
 	"path"
 
-	"github.com/temporalio/ui-server/plugins/fs_config_provider"
-	"github.com/temporalio/ui-server/server"
-	"github.com/temporalio/ui-server/server/server_options"
+	"github.com/temporalio/ui-server/v2/plugins/fs_config_provider"
+	"github.com/temporalio/ui-server/v2/server"
+	"github.com/temporalio/ui-server/v2/server/api"
+	"github.com/temporalio/ui-server/v2/server/headers"
+	"github.com/temporalio/ui-server/v2/server/server_options"
+	"github.com/temporalio/ui-server/v2/server/version"
 	"github.com/urfave/cli/v2"
 )
 
 // main entry point for the web server
 func main() {
 	app := buildCLI()
-	_ = app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		// An unhandled error was returned, wrap it and run it through the default exit code handler. Any errors
+		// that make it here should be caught further up the call stack and wrapped with cli.Exit and the proper exit code.
+		cli.HandleExitCoder(cli.Exit(fmt.Sprintf("Unexpected error encountered: %v.", err), 9))
+	}
 }
 
 // buildCLI is the main entry point for the web server
 func buildCLI() *cli.App {
 	app := cli.NewApp()
-	app.Name = "Web"
-	app.Usage = "Temporal Web"
-	app.Version = "0.1.0"
+	app.Name = "Temporal UI"
+	app.Usage = "https://github.com/temporalio/ui"
+	app.Version = version.UIVersion
 	app.ArgsUsage = " "
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
@@ -80,16 +88,26 @@ func buildCLI() *cli.App {
 				configDir := path.Join(c.String("root"), c.String("config"))
 				cfgProvider := fs_config_provider.NewFSConfigProvider(configDir, env)
 
-				s := server.NewServer(
+				cfg, err := cfgProvider.GetConfig()
+				if err != nil {
+					return cli.Exit(err, 1)
+				}
+
+				opts := []server_options.ServerOption{
 					server_options.WithConfigProvider(cfgProvider),
-				)
+					server_options.WithAPIMiddleware([]api.Middleware{
+						headers.WithForwardHeaders(cfg.ForwardHeaders),
+					}),
+				}
+
+				s := server.NewServer(opts...)
 				defer s.Stop()
-				err := s.Start()
+				err = s.Start()
 
 				if err != nil {
-					return cli.NewExitError(fmt.Sprintf("Unable to start server: %v.", err), 1)
+					return cli.Exit(fmt.Sprintf("Unable to start server: %v.", err), 1)
 				}
-				return cli.NewExitError("All services are stopped.", 0)
+				return cli.Exit("All services are stopped.", 0)
 			},
 		},
 	}

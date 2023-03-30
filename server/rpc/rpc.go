@@ -79,6 +79,9 @@ func Dial(hostName string, tlsConfig *tls.Config) (*grpc.ClientConn, error) {
 	}
 	cp.Backoff.MaxDelay = MaxBackoffDelay
 
+	mb := 1024 * 1024
+	maxPayloadSize := 64 * mb
+
 	return grpc.Dial(hostName,
 		grpcSecureOpt,
 		grpc.WithChainUnaryInterceptor(
@@ -86,6 +89,7 @@ func Dial(hostName string, tlsConfig *tls.Config) (*grpc.ClientConn, error) {
 		grpc.WithDefaultServiceConfig(DefaultServiceConfig),
 		grpc.WithDisableServiceConfig(),
 		grpc.WithConnectParams(cp),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxPayloadSize)),
 	)
 }
 

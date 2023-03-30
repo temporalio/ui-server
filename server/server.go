@@ -23,31 +23,25 @@
 package server
 
 import (
-	"embed"
 	"fmt"
+	"io/fs"
+	"net/http"
+	"os"
 
-	"github.com/gorilla/securecookie"
-	"github.com/gorilla/sessions"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/temporalio/ui-server/server/config"
-	"github.com/temporalio/ui-server/server/routes"
-	"github.com/temporalio/ui-server/server/server_options"
+	"github.com/temporalio/ui-server/v2/server/api"
+	"github.com/temporalio/ui-server/v2/server/auth"
+	"github.com/temporalio/ui-server/v2/server/config"
+	"github.com/temporalio/ui-server/v2/server/csrf"
+	"github.com/temporalio/ui-server/v2/server/headers"
+	"github.com/temporalio/ui-server/v2/server/route"
+	"github.com/temporalio/ui-server/v2/server/server_options"
+
+	"github.com/temporalio/ui-server/v2/openapi"
+	"github.com/temporalio/ui-server/v2/ui"
 )
-
-//go:embed generated/ui/index.html
-var uiHTML []byte
-
-//go:embed all:generated/ui
-var uiAssets embed.FS
-
-//go:embed generated/openapi/index.html
-var swaggeruiHTML []byte
-
-//go:embed all:generated/openapi
-var swaggeruiAssets embed.FS
 
 type (
 	// Server ui server.
@@ -60,6 +54,16 @@ type (
 
 // NewServer returns a new instance of server that serves one or many services.
 func NewServer(opts ...server_options.ServerOption) *Server {
+	authMiddleware := server_options.WithAPIMiddleware(([]api.Middleware{
+		headers.WithForwardHeaders(
+			[]string{
+				echo.HeaderAuthorization,
+				auth.AuthorizationExtrasHeader,
+			}),
+	}))
+
+	opts = append(opts, authMiddleware)
+
 	serverOpts := server_options.NewServerOptions(opts)
 	cfgProvider, err := config.NewConfigProviderWithRefresh(serverOpts.ConfigProvider)
 	if err != nil {
@@ -79,31 +83,51 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 		AllowOrigins: cfg.CORS.AllowOrigins,
 		AllowHeaders: []string{
 			echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
-			echo.HeaderXCSRFToken,
+			echo.HeaderXCSRFToken, echo.HeaderAuthorization, auth.AuthorizationExtrasHeader,
 		},
 		AllowCredentials: true,
 	}))
 	e.Use(middleware.Secure())
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		CookiePath: "/",
+		CookiePath:     "/",
+		CookieHTTPOnly: false,
+		CookieSameSite: http.SameSiteStrictMode,
+		CookieSecure:   !cfg.CORS.CookieInsecure,
+		Skipper:        csrf.SkipOnAuthorizationHeader,
 	}))
-	e.Use(session.Middleware(sessions.NewCookieStore(
-		securecookie.GenerateRandomKey(32),
-		securecookie.GenerateRandomKey(32),
-	)))
 
-	if err != nil {
-		panic(err)
-	}
-
-	routes.SetAPIRoutes(e, cfgProvider)
-	routes.SetAuthRoutes(e, cfgProvider)
-
+	e.Pre(route.PublicPath(cfg.PublicPath))
+	route.SetHealthRoute(e)
+	route.SetAPIRoutes(e, cfgProvider, serverOpts.APIMiddleware)
+	route.SetAuthRoutes(e, cfgProvider)
 	if cfg.EnableOpenAPI {
-		routes.SetSwaggerUIRoutes(e, swaggeruiHTML, swaggeruiAssets)
+		assets, err := openapi.Assets()
+		if err != nil {
+			panic(err)
+		}
+		route.SetOpenAPIUIRoutes(e, assets)
 	}
 	if cfg.EnableUI {
-		routes.SetUIRoutes(e, uiHTML, uiAssets)
+		var assets fs.FS
+		if cfg.UIAssetPath != "" {
+			assets = os.DirFS(cfg.UIAssetPath)
+		} else {
+			assets, err = ui.Assets()
+			if err != nil {
+				panic(err)
+			}
+
+			dir := "local"
+			if cfg.CloudUI {
+				dir = "cloud"
+			}
+
+			assets, err = fs.Sub(assets, dir)
+			if err != nil {
+				panic(err)
+			}
+		}
+		route.SetUIRoutes(e, cfg.PublicPath, assets)
 	}
 
 	s := &Server{

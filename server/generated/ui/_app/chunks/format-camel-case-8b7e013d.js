@@ -1,1 +1,0 @@
-const c=(n,e)=>{const t=n.charCodeAt(e);return t>=65&&t<=90},s=n=>{let e="",t=0;for(;t<n.length;){const o=n[t],r=n[t+1];if(t===0){e+=n[t].toUpperCase(),t++;continue}if(o+r==="Id"){e+=" ID",t+=2;continue}if(c(n,t)){e+=" ",e+=o.toUpperCase(),t++;continue}e+=o,t++}return e};export{s as f};
