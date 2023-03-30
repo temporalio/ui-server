@@ -1,1 +1,0 @@
-import{W as r}from"./index.a36c9cb0.js";import{p as t}from"./persist-store.863ae031.js";const a=t("viewedFeatureTags",null),i=s=>{let e=r(a)??[];e.includes(s)||(e=[...e,s],a.set(e))},p=t("navOpen",!1);export{i as a,p as n,a as v};
