@@ -1,0 +1,1 @@
+import{f as n}from"./route-for.12502c32.js";function t(o){return decodeURIComponent(window.atob(o).split("").map(function(e){return"%"+("00"+e.charCodeAt(0).toString(16)).slice(-2)}).join(""))}const i=(o,e=n)=>e?t(o):o;export{i as a};
