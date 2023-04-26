@@ -1,1 +1,0 @@
-import"../chunks/index.b1f5b21f.js";import{l as d}from"../chunks/_layout.010739c8.js";/* empty css                    */import"../chunks/settings-service.6b3d968c.js";import"../chunks/auth-user.fd48d192.js";import"../chunks/namespaces-service.1885c441.js";import"../chunks/route-for.254db4ec.js";export{d as load};
