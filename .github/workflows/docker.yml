@@ -15,20 +15,20 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker meta for Commit image
         id: meta_commit
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         if: github.event_name == 'push'
         with:
           images: temporaliotest/ui
@@ -37,7 +37,7 @@ jobs:
             latest
 
       - name: Push Commit image to DockerHub
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         if: github.event_name == 'push'
         with:
           push: true
@@ -47,7 +47,7 @@ jobs:
 
       - name: Docker meta for Release image
         id: meta_release
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         if: github.event_name == 'release'
         with:
           images: temporalio/ui
@@ -66,7 +66,7 @@ jobs:
 
       - name: Docker meta for Release image
         id: cloud_meta_release
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         if: github.event_name == 'release'
         with:
           images: temporalio/cloud-ui
