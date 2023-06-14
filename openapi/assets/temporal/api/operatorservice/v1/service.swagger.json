@@ -1,0 +1,121 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "temporal/api/operatorservice/v1/service.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "OperatorService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/namespaces/{namespace}/search-attributes": {
+      "get": {
+        "summary": "ListSearchAttributes returns comprehensive information about search attributes.",
+        "operationId": "OperatorService_ListSearchAttributes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListSearchAttributesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "OperatorService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1IndexedValueType": {
+      "type": "string",
+      "enum": [
+        "INDEXED_VALUE_TYPE_UNSPECIFIED",
+        "INDEXED_VALUE_TYPE_TEXT",
+        "INDEXED_VALUE_TYPE_KEYWORD",
+        "INDEXED_VALUE_TYPE_INT",
+        "INDEXED_VALUE_TYPE_DOUBLE",
+        "INDEXED_VALUE_TYPE_BOOL",
+        "INDEXED_VALUE_TYPE_DATETIME",
+        "INDEXED_VALUE_TYPE_KEYWORD_LIST"
+      ],
+      "default": "INDEXED_VALUE_TYPE_UNSPECIFIED"
+    },
+    "v1ListSearchAttributesResponse": {
+      "type": "object",
+      "properties": {
+        "customAttributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1IndexedValueType"
+          },
+          "description": "Mapping between custom (user-registered) search attribute name to its IndexedValueType."
+        },
+        "systemAttributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1IndexedValueType"
+          },
+          "description": "Mapping between system (predefined) search attribute name to its IndexedValueType."
+        },
+        "storageSchema": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Mapping from the attribute name to the visibility storage native type."
+        }
+      }
+    }
+  }
+}

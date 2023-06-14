@@ -360,6 +360,9 @@
                 },
                 "deletionOperation": {
                   "$ref": "#/definitions/v1BatchOperationDeletion"
+                },
+                "resetOperation": {
+                  "$ref": "#/definitions/v1BatchOperationReset"
                 }
               }
             }
@@ -828,6 +831,13 @@
               "TASK_QUEUE_KIND_STICKY"
             ],
             "default": "TASK_QUEUE_KIND_UNSPECIFIED"
+          },
+          {
+            "name": "taskQueue.normalName",
+            "description": "Iff kind == TASK_QUEUE_KIND_STICKY, then this field contains the name of\nthe normal task queue that the sticky worker is running on.",
+            "in": "query",
+            "required": false,
+            "type": "string"
           },
           {
             "name": "taskQueueType",
@@ -1632,6 +1642,10 @@
                 "header": {
                   "$ref": "#/definitions/v1Header",
                   "description": "Headers that are passed with the signal to the processing workflow.\nThese can include things like auth or tracing tokens."
+                },
+                "skipGenerateWorkflowTask": {
+                  "type": "boolean",
+                  "description": "Indicates that a new workflow task should not be generated when this signal is received."
                 }
               }
             }
@@ -1962,6 +1976,10 @@
                 },
                 "lastCompletionResult": {
                   "$ref": "#/definitions/v1Payloads"
+                },
+                "workflowStartDelay": {
+                  "type": "string",
+                  "description": "Time to wait before dispatching the first workflow task. Cannot be used with `cron_schedule`.\nIf the workflow gets a signal before the delay, a workflow task will be dispatched and the rest\nof the delay will be ignored."
                 }
               }
             }
@@ -2148,6 +2166,10 @@
         "identity": {
           "type": "string",
           "title": "id of the worker who canceled this activity"
+        },
+        "workerVersion": {
+          "$ref": "#/definitions/v1WorkerVersionStamp",
+          "description": "Version info of the worker who processed this workflow task."
         }
       }
     },
@@ -2171,6 +2193,10 @@
         "identity": {
           "type": "string",
           "title": "id of the worker that completed this task"
+        },
+        "workerVersion": {
+          "$ref": "#/definitions/v1WorkerVersionStamp",
+          "description": "Version info of the worker who processed this workflow task."
         }
       }
     },
@@ -2197,6 +2223,10 @@
         },
         "retryState": {
           "$ref": "#/definitions/v1RetryState"
+        },
+        "workerVersion": {
+          "$ref": "#/definitions/v1WorkerVersionStamp",
+          "description": "Version info of the worker who processed this workflow task."
         }
       }
     },
@@ -2243,6 +2273,10 @@
         "retryPolicy": {
           "$ref": "#/definitions/v1RetryPolicy",
           "description": "Activities are assigned a default retry policy controlled by the service's dynamic\nconfiguration. Retries will happen up to `schedule_to_close_timeout`. To disable retries set\nretry_policy.maximum_attempts to 1."
+        },
+        "useCompatibleVersion": {
+          "type": "boolean",
+          "description": "If this is set, the workflow executing this command wishes to start the activity using\na version compatible with the version that this workflow most recently ran on, if such\nbehavior is possible."
         }
       }
     },
@@ -2426,6 +2460,24 @@
         }
       }
     },
+    "v1BatchOperationReset": {
+      "type": "object",
+      "properties": {
+        "resetType": {
+          "$ref": "#/definitions/v1ResetType",
+          "description": "Reset type."
+        },
+        "resetReapplyType": {
+          "$ref": "#/definitions/v1ResetReapplyType",
+          "description": "History event reapply options."
+        },
+        "identity": {
+          "type": "string",
+          "description": "The identity of the worker/client."
+        }
+      },
+      "description": "BatchOperationReset sends reset requests to batch workflows.\nKeep the parameter in sync with temporal.api.workflowservice.v1.ResetWorkflowExecutionRequest."
+    },
     "v1BatchOperationSignal": {
       "type": "object",
       "properties": {
@@ -2479,7 +2531,8 @@
         "BATCH_OPERATION_TYPE_TERMINATE",
         "BATCH_OPERATION_TYPE_CANCEL",
         "BATCH_OPERATION_TYPE_SIGNAL",
-        "BATCH_OPERATION_TYPE_DELETE"
+        "BATCH_OPERATION_TYPE_DELETE",
+        "BATCH_OPERATION_TYPE_RESET"
       ],
       "default": "BATCH_OPERATION_TYPE_UNSPECIFIED"
     },
@@ -2916,6 +2969,10 @@
         },
         "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
+        },
+        "useCompatibleVersion": {
+          "type": "boolean",
+          "description": "If this is set, the workflow executing this command wishes to continue as new using a version\ncompatible with the version that this workflow most recently ran on."
         }
       }
     },
@@ -3846,6 +3903,17 @@
       },
       "description": "Metadata about a workflow execution update."
     },
+    "v1MeteringMetadata": {
+      "type": "object",
+      "properties": {
+        "nonfirstLocalActivityExecutionAttempts": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Count of local activities which have begun an execution attempt during this workflow task,\nand whose first attempt occurred in some previous task. This is used for metering\npurposes, and does not affect workflow state.\n\n(-- api-linter: core::0141::forbidden-types=disabled\n    aip.dev/not-precedent: Negative values make no sense to represent. --)"
+        }
+      },
+      "title": "Metadata relevant for metering purposes"
+    },
     "v1ModifyWorkflowPropertiesCommandAttributes": {
       "type": "object",
       "properties": {
@@ -4339,8 +4407,7 @@
       "properties": {
         "lastAccessTime": {
           "type": "string",
-          "format": "date-time",
-          "title": "Unix Nano"
+          "format": "date-time"
         },
         "identity": {
           "type": "string"
@@ -4349,9 +4416,9 @@
           "type": "number",
           "format": "double"
         },
-        "workerVersioningId": {
-          "$ref": "#/definitions/v1VersionId",
-          "description": "If a worker has specified an ID for use with the worker versioning feature while polling,\nthat id must appear here."
+        "workerVersionCapabilities": {
+          "$ref": "#/definitions/v1WorkerVersionCapabilities",
+          "description": "If a worker has opted into the worker versioning feature while polling, its capabilities will\nappear here."
         }
       }
     },
@@ -4663,14 +4730,17 @@
       "type": "object",
       "properties": {
         "binaryChecksum": {
-          "type": "string"
+          "type": "string",
+          "description": "A worker binary version identifier, will be deprecated and superseded by a newer concept of\nbuild_id."
         },
         "runId": {
-          "type": "string"
+          "type": "string",
+          "description": "The first run ID in the execution chain that was touched by this worker build."
         },
         "firstWorkflowTaskCompletedId": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "Event ID of the first WorkflowTaskCompleted event processed by this worker build."
         },
         "createTime": {
           "type": "string",
@@ -4711,6 +4781,17 @@
     },
     "v1ResetStickyTaskQueueResponse": {
       "type": "object"
+    },
+    "v1ResetType": {
+      "type": "string",
+      "enum": [
+        "RESET_TYPE_UNSPECIFIED",
+        "RESET_TYPE_FIRST_WORKFLOW_TASK",
+        "RESET_TYPE_LAST_WORKFLOW_TASK"
+      ],
+      "default": "RESET_TYPE_UNSPECIFIED",
+      "description": "- RESET_TYPE_FIRST_WORKFLOW_TASK: Resets to event of the first workflow task completed, or if it does not exist, the event after task scheduled.\n - RESET_TYPE_LAST_WORKFLOW_TASK: Resets to event of the last workflow task completed, or if it does not exist, the event after task scheduled.",
+      "title": "Reset type options"
     },
     "v1ResetWorkflowExecutionResponse": {
       "type": "object",
@@ -4941,6 +5022,10 @@
         "requestEagerExecution": {
           "type": "boolean",
           "description": "Request to start the activity directly bypassing matching service and worker polling\nThe slot for executing the activity should be reserved when setting this field to true."
+        },
+        "useCompatibleVersion": {
+          "type": "boolean",
+          "description": "If this is set, the workflow executing this command wishes to start the activity using\na version compatible with the version that this workflow most recently ran on, if such\nbehavior is possible."
         }
       }
     },
@@ -5270,9 +5355,11 @@
       "enum": [
         "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED",
         "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_EXTERNAL_WORKFLOW_EXECUTION_NOT_FOUND",
-        "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_NAMESPACE_NOT_FOUND"
+        "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_NAMESPACE_NOT_FOUND",
+        "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_SIGNAL_COUNT_LIMIT_EXCEEDED"
       ],
-      "default": "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED"
+      "default": "SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_UNSPECIFIED",
+      "title": "- SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED_CAUSE_SIGNAL_COUNT_LIMIT_EXCEEDED: Signal count limit is per workflow and controlled by server dynamic config \"history.maximumSignalsPerExecution\""
     },
     "v1SignalExternalWorkflowExecutionFailedEventAttributes": {
       "type": "object",
@@ -5414,6 +5501,10 @@
         },
         "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
+        },
+        "useCompatibleVersion": {
+          "type": "boolean",
+          "description": "If this is set, the workflow executing this command wishes to start the child workflow using\na version compatible with the version that this workflow most recently ran on, if such\nbehavior is possible."
         }
       }
     },
@@ -5527,6 +5618,10 @@
         },
         "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
+        },
+        "useCompatibleVersion": {
+          "type": "boolean",
+          "description": "If this is set, the workflow executing this command wishes to start the child workflow using\na version compatible with the version that this workflow most recently ran on, if such\nbehavior is possible."
         }
       }
     },
@@ -5679,6 +5774,10 @@
         "kind": {
           "$ref": "#/definitions/v1TaskQueueKind",
           "description": "Default: TASK_QUEUE_KIND_NORMAL."
+        },
+        "normalName": {
+          "type": "string",
+          "description": "Iff kind == TASK_QUEUE_KIND_STICKY, then this field contains the name of\nthe normal task queue that the sticky worker is running on."
         }
       },
       "title": "See https://docs.temporal.io/docs/concepts/task-queues/"
@@ -5910,16 +6009,6 @@
         }
       }
     },
-    "v1VersionId": {
-      "type": "object",
-      "properties": {
-        "workerBuildId": {
-          "type": "string",
-          "title": "An opaque whole-worker identifier"
-        }
-      },
-      "description": "Used by the worker versioning APIs, represents a specific version of something\nCurrently, that's just a whole-worker id. In the future, if we support\nWASM workflow bundle based versioning, for example, then the inside of this\nmessage may become a oneof of different version types."
-    },
     "v1VersionInfo": {
       "type": "object",
       "properties": {
@@ -5945,6 +6034,38 @@
         }
       },
       "description": "VersionInfo contains details about current and recommended release versions as well as alerts and upgrade instructions."
+    },
+    "v1WorkerVersionCapabilities": {
+      "type": "object",
+      "properties": {
+        "buildId": {
+          "type": "string",
+          "title": "An opaque whole-worker identifier"
+        },
+        "useVersioning": {
+          "type": "boolean",
+          "description": "If set, the worker is opting in to worker versioning, and wishes to only receive appropriate\ntasks."
+        }
+      },
+      "description": "Identifies the version(s) that a worker is compatible with when polling or identifying itself,\nand whether or not this worker is opting into the build-id based versioning feature. This is\nused by matching to determine which workers ought to receive what tasks."
+    },
+    "v1WorkerVersionStamp": {
+      "type": "object",
+      "properties": {
+        "buildId": {
+          "type": "string",
+          "description": "An opaque whole-worker identifier. Replaces the deprecated `binary_checksum` field when this\nmessage is included in requests which previously used that."
+        },
+        "bundleId": {
+          "type": "string",
+          "description": "Set if the worker used a dynamically loadable bundle to process\nthe task. The bundle could be a WASM blob, JS bundle, etc."
+        },
+        "useVersioning": {
+          "type": "boolean",
+          "description": "If set, the worker is opting in to worker versioning. Otherwise, this is used only as a\nmarker for workflow reset points and the BuildIDs search attribute."
+        }
+      },
+      "title": "Identifies the version(s) of a worker that processed a task"
     },
     "v1WorkflowExecution": {
       "type": "object",
@@ -6079,6 +6200,10 @@
         },
         "searchAttributes": {
           "$ref": "#/definitions/v1SearchAttributes"
+        },
+        "useCompatibleVersion": {
+          "type": "boolean",
+          "description": "If this is set, the workflow executing this command wishes to continue as new using a version\ncompatible with the version that this workflow most recently ran on."
         }
       }
     },
@@ -6167,6 +6292,10 @@
         "historySizeBytes": {
           "type": "string",
           "format": "int64"
+        },
+        "mostRecentWorkerVersionStamp": {
+          "$ref": "#/definitions/v1WorkerVersionStamp",
+          "title": "If set, the most recent worker version stamp that appeared in a workflow task completion"
         }
       }
     },
@@ -6188,6 +6317,10 @@
         "header": {
           "$ref": "#/definitions/v1Header",
           "description": "Headers that were passed by the sender of the signal and copied by temporal \nserver into the workflow task."
+        },
+        "skipGenerateWorkflowTask": {
+          "type": "boolean",
+          "description": "Indicates the signal did not generate a new workflow task when received."
         }
       }
     },
@@ -6294,6 +6427,14 @@
           "type": "string",
           "format": "int64",
           "title": "Version of the child execution initiated event in parent workflow\nIt should be used together with parent_initiated_event_id to identify\na child initiated event for global namespace"
+        },
+        "workflowId": {
+          "type": "string",
+          "description": "This field is new in 1.21."
+        },
+        "sourceVersionStamp": {
+          "$ref": "#/definitions/v1WorkerVersionStamp",
+          "description": "If this workflow intends to use anything other than the current overall default version for\nthe queue, then we include it here."
         }
       },
       "title": "Always the first event in workflow history"
@@ -6511,13 +6652,17 @@
           "type": "string",
           "title": "Binary ID of the worker who completed this task"
         },
-        "workerVersioningId": {
-          "$ref": "#/definitions/v1VersionId",
-          "description": "ID of the worker who picked up this workflow task, or missing if worker\nis not using versioning."
+        "workerVersion": {
+          "$ref": "#/definitions/v1WorkerVersionStamp",
+          "description": "Version info of the worker who processed this workflow task. If present, the `build_id` field\nwithin is also used as `binary_checksum`, which may be omitted in that case (it may also be\npopulated to preserve compatibility)."
         },
         "sdkMetadata": {
           "$ref": "#/definitions/v1WorkflowTaskCompletedMetadata",
           "description": "Data the SDK wishes to record for itself, but server need not interpret, and does not\ndirectly impact workflow state."
+        },
+        "meteringMetadata": {
+          "$ref": "#/definitions/v1MeteringMetadata",
+          "title": "Local usage data sent during workflow task completion and recorded here for posterity"
         }
       }
     },
@@ -6621,7 +6766,11 @@
         },
         "binaryChecksum": {
           "type": "string",
-          "title": "If a worker explicitly failed this task, it's binary id"
+          "title": "DEPRECATED since 1.21 - use `worker_version` instead.\nIf a worker explicitly failed this task, its binary id"
+        },
+        "workerVersion": {
+          "$ref": "#/definitions/v1WorkerVersionStamp",
+          "description": "Version info of the worker who processed this workflow task. If present, the `build_id` field\nwithin is also used as `binary_checksum`, which may be omitted in that case (it may also be\npopulated to preserve compatibility)."
         }
       }
     },
