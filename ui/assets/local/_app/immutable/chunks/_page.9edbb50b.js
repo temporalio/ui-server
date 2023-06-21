@@ -1,1 +1,0 @@
-import{r as t}from"./index.b1f5b21f.js";import{d as e}from"./route-for.a6375db2.js";const r=async function(){const o=e("feed");throw t(302,o)},c=Object.freeze(Object.defineProperty({__proto__:null,load:r},Symbol.toStringTag,{value:"Module"}));export{c as _,r as l};
