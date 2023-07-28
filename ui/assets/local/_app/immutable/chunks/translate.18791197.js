@@ -1,1 +1,0 @@
-import{t as $,b as d}from"./index.682c258e.js";import{i as n}from"./has.8da86d13.js";function k(m,i,f,l){let b,s,o,t;m in d?b=m:(b="common",s=m),n(i)?t=i:typeof i=="number"?o=i:s===void 0&&(s=i),typeof f=="number"?o=f:n(f)&&(t=f),n(l)&&(t=l);const v={...o!==void 0&&{count:o},...t&&{replace:t}};return $(`${b}:${String(s)}`,v)}export{k as t};

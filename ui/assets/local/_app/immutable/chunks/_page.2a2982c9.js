@@ -1,1 +1,0 @@
-import{r as n,e as s}from"./index.b1f5b21f.js";import{h as c}from"./workflow-service.17fc7143.js";const l=async function({url:r,params:e}){const{namespace:t,workflow:a}=e,{runId:o}=await c({namespace:t,workflowId:a});throw o?n(302,`${r.pathname}/${o}`):s(404)},p=Object.freeze(Object.defineProperty({__proto__:null,load:l},Symbol.toStringTag,{value:"Module"}));export{p as _,l};
