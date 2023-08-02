@@ -864,6 +864,121 @@
         ]
       }
     },
+    "/api/v1/namespaces/{namespace}/task-queues/{taskQueue}/compatibility": {
+      "get": {
+        "summary": "Fetches the worker build id versioning sets for a task queue.",
+        "operationId": "WorkflowService_GetWorkerBuildIdCompatibility",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetWorkerBuildIdCompatibilityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "taskQueue",
+            "description": "Must be set, the task queue to interrogate about worker id compatibility.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maxSets",
+            "description": "Limits how many compatible sets will be returned. Specify 1 to only return the current\ndefault major version set. 0 returns all sets.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
+    "/api/v1/namespaces/{namespace}/worker-task-reachability": {
+      "get": {
+        "summary": "Fetches task reachability to determine whether a worker may be retired.\nThe request may specify task queues to query for or let the server fetch all task queues mapped to the given\nbuild IDs.",
+        "description": "When requesting a large number of task queues or all task queues associated with the given build ids in a\nnamespace, all task queues will be listed in the response but some of them may not contain reachability\ninformation due to a server enforced limit. When reaching the limit, task queues that reachability information\ncould not be retrieved for will be marked with a single TASK_REACHABILITY_UNSPECIFIED entry. The caller may issue\nanother call to get the reachability for those task queues.\n\nOpen source users can adjust this limit by setting the server's dynamic config value for\n`limit.reachabilityTaskQueueScan` with the caveat that this call can strain the visibility store.",
+        "operationId": "WorkflowService_GetWorkerTaskReachability",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetWorkerTaskReachabilityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "buildIds",
+            "description": "Build ids to retrieve reachability for. An empty string will be interpreted as an unversioned worker.\nThe number of build ids that can be queried in a single API call is limited.\nOpen source users can adjust this limit by setting the server's dynamic config value for\n`limit.reachabilityQueryBuildIds` with the caveat that this call can strain the visibility store.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "taskQueues",
+            "description": "Task queues to retrieve reachability for. Leave this empty to query for all task queues associated with given\nbuild ids in the namespace.\nMust specify at least one task queue if querying for an unversioned worker.\nThe number of task queues that the server will fetch reachability information for is limited.\nSee the `GetWorkerTaskReachabilityResponse` documentation for more information.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "reachability",
+            "description": "Type of reachability to query for.\n`TASK_REACHABILITY_NEW_WORKFLOWS` is always returned in the response.\nUse `TASK_REACHABILITY_EXISTING_WORKFLOWS` if your application needs to respond to queries on closed workflows.\nOtherwise, use `TASK_REACHABILITY_OPEN_WORKFLOWS`. Default is `TASK_REACHABILITY_EXISTING_WORKFLOWS` if left\nunspecified.\nSee the TaskReachability docstring for information about each enum variant.\n\n - TASK_REACHABILITY_NEW_WORKFLOWS: There's a possiblity for a worker to receive new workflow tasks. Workers should *not* be retired.\n - TASK_REACHABILITY_EXISTING_WORKFLOWS: There's a possiblity for a worker to receive existing workflow and activity tasks from existing workflows. Workers\nshould *not* be retired.\nThis enum value does not distinguish between open and closed workflows.\n - TASK_REACHABILITY_OPEN_WORKFLOWS: There's a possiblity for a worker to receive existing workflow and activity tasks from open workflows. Workers\nshould *not* be retired.\n - TASK_REACHABILITY_CLOSED_WORKFLOWS: There's a possiblity for a worker to receive existing workflow tasks from closed workflows. Workers may be\nretired dependending on application requirements. For example, if there's no need to query closed workflows.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "TASK_REACHABILITY_UNSPECIFIED",
+              "TASK_REACHABILITY_NEW_WORKFLOWS",
+              "TASK_REACHABILITY_EXISTING_WORKFLOWS",
+              "TASK_REACHABILITY_OPEN_WORKFLOWS",
+              "TASK_REACHABILITY_CLOSED_WORKFLOWS"
+            ],
+            "default": "TASK_REACHABILITY_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "WorkflowService"
+        ]
+      }
+    },
     "/api/v1/namespaces/{namespace}/workflows": {
       "get": {
         "summary": "ListWorkflowExecutions is a visibility API to list workflow executions in a specific namespace.",
@@ -2057,6 +2172,23 @@
       },
       "description": "System capability details."
     },
+    "UpdateWorkerBuildIdCompatibilityRequestAddNewCompatibleVersion": {
+      "type": "object",
+      "properties": {
+        "newBuildId": {
+          "type": "string",
+          "description": "A new id to be added to an existing compatible set."
+        },
+        "existingCompatibleBuildId": {
+          "type": "string",
+          "description": "A build id which must already exist in the version sets known by the task queue. The new\nid will be stored in the set containing this id, marking it as compatible with\nthe versions within."
+        },
+        "makeSetDefault": {
+          "type": "boolean",
+          "description": "When set, establishes the compatible set being targeted as the overall default for the\nqueue. If a different set was the current default, the targeted set will replace it as\nthe new default."
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -2536,6 +2668,24 @@
       ],
       "default": "BATCH_OPERATION_TYPE_UNSPECIFIED"
     },
+    "v1BuildIdReachability": {
+      "type": "object",
+      "properties": {
+        "buildId": {
+          "type": "string",
+          "description": "A build id or empty if unversioned."
+        },
+        "taskQueueReachability": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1TaskQueueReachability"
+          },
+          "description": "Reachability per task queue."
+        }
+      },
+      "description": "Reachability of tasks for a worker by build id, in one or more task queues."
+    },
     "v1CalendarSpec": {
       "type": "object",
       "properties": {
@@ -2898,6 +3048,19 @@
       ],
       "default": "COMMAND_TYPE_UNSPECIFIED",
       "description": "Whenever this list of command types is changed do change the function shouldBufferEvent in mutableStateBuilder.go to make sure to do the correct event ordering."
+    },
+    "v1CompatibleVersionSet": {
+      "type": "object",
+      "properties": {
+        "buildIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "All the compatible versions, unordered, except for the last element, which is considered the set \"default\"."
+        }
+      },
+      "description": "Used by the worker versioning APIs, represents an unordered set of one or more versions which are\nconsidered to be compatible with each other. Currently the versions are always worker build IDs."
     },
     "v1CompleteWorkflowExecutionCommandAttributes": {
       "type": "object",
@@ -3393,6 +3556,32 @@
         "capabilities": {
           "$ref": "#/definitions/GetSystemInfoResponseCapabilities",
           "description": "All capabilities the system supports."
+        }
+      }
+    },
+    "v1GetWorkerBuildIdCompatibilityResponse": {
+      "type": "object",
+      "properties": {
+        "majorVersionSets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CompatibleVersionSet"
+          },
+          "description": "Major version sets, in order from oldest to newest. The last element of the list will always\nbe the current default major version. IE: New workflows will target the most recent version\nin that version set.\n\nThere may be fewer sets returned than exist, if the request chose to limit this response."
+        }
+      }
+    },
+    "v1GetWorkerTaskReachabilityResponse": {
+      "type": "object",
+      "properties": {
+        "buildIdReachability": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1BuildIdReachability"
+          },
+          "description": "Task reachability, broken down by build id and then task queue.\nWhen requesting a large number of task queues or all task queues associated with the given build ids in a\nnamespace, all task queues will be listed in the response but some of them may not contain reachability\ninformation due to a server enforced limit. When reaching the limit, task queues that reachability information\ncould not be retrieved for will be marked with a single TASK_REACHABILITY_UNSPECIFIED entry. The caller may issue\nanother call to get the reachability for those task queues.\n\nOpen source users can adjust this limit by setting the server's dynamic config value for\n`limit.reachabilityTaskQueueScan` with the caveat that this call can strain the visibility store."
         }
       }
     },
@@ -5815,6 +6004,22 @@
         }
       }
     },
+    "v1TaskQueueReachability": {
+      "type": "object",
+      "properties": {
+        "taskQueue": {
+          "type": "string"
+        },
+        "reachability": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1TaskReachability"
+          },
+          "description": "Task reachability for a worker in a single task queue.\nSee the TaskReachability docstring for information about each enum variant.\nIf reachability is empty, this worker is considered unreachable in this task queue."
+        }
+      },
+      "description": "Reachability of tasks for a worker on a single task queue."
+    },
     "v1TaskQueueStatus": {
       "type": "object",
       "properties": {
@@ -5848,6 +6053,18 @@
       ],
       "default": "TASK_QUEUE_TYPE_UNSPECIFIED",
       "description": " - TASK_QUEUE_TYPE_WORKFLOW: Workflow type of task queue.\n - TASK_QUEUE_TYPE_ACTIVITY: Activity type of task queue."
+    },
+    "v1TaskReachability": {
+      "type": "string",
+      "enum": [
+        "TASK_REACHABILITY_UNSPECIFIED",
+        "TASK_REACHABILITY_NEW_WORKFLOWS",
+        "TASK_REACHABILITY_EXISTING_WORKFLOWS",
+        "TASK_REACHABILITY_OPEN_WORKFLOWS",
+        "TASK_REACHABILITY_CLOSED_WORKFLOWS"
+      ],
+      "default": "TASK_REACHABILITY_UNSPECIFIED",
+      "description": "Specifies which category of tasks may reach a worker on a versioned task queue.\nUsed both in a reachability query and its response.\n\n - TASK_REACHABILITY_NEW_WORKFLOWS: There's a possiblity for a worker to receive new workflow tasks. Workers should *not* be retired.\n - TASK_REACHABILITY_EXISTING_WORKFLOWS: There's a possiblity for a worker to receive existing workflow and activity tasks from existing workflows. Workers\nshould *not* be retired.\nThis enum value does not distinguish between open and closed workflows.\n - TASK_REACHABILITY_OPEN_WORKFLOWS: There's a possiblity for a worker to receive existing workflow and activity tasks from open workflows. Workers\nshould *not* be retired.\n - TASK_REACHABILITY_CLOSED_WORKFLOWS: There's a possiblity for a worker to receive existing workflow tasks from closed workflows. Workers may be\nretired dependending on application requirements. For example, if there's no need to query closed workflows."
     },
     "v1TerminateWorkflowExecutionResponse": {
       "type": "object"
@@ -5987,6 +6204,15 @@
     },
     "v1UpdateScheduleResponse": {
       "type": "object"
+    },
+    "v1UpdateWorkerBuildIdCompatibilityResponse": {
+      "type": "object",
+      "properties": {
+        "versionSetId": {
+          "type": "string",
+          "description": "The id of the compatible set that the updated version was added to, or exists in. Users don't\nneed to understand or care about this value, but it has value for debugging purposes."
+        }
+      }
     },
     "v1UpsertWorkflowSearchAttributesCommandAttributes": {
       "type": "object",
