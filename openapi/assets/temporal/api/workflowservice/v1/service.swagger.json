@@ -841,7 +841,7 @@
           },
           {
             "name": "taskQueueType",
-            "description": " - TASK_QUEUE_TYPE_WORKFLOW: Workflow type of task queue.\n - TASK_QUEUE_TYPE_ACTIVITY: Activity type of task queue.",
+            "description": "If unspecified (TASK_QUEUE_TYPE_UNSPECIFIED), then default value (TASK_QUEUE_TYPE_WORKFLOW) will be used.\n\n - TASK_QUEUE_TYPE_WORKFLOW: Workflow type of task queue.\n - TASK_QUEUE_TYPE_ACTIVITY: Activity type of task queue.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -2127,9 +2127,48 @@
           "WorkflowService"
         ]
       }
+    },
+    "/api/v1/systemInfo": {
+      "get": {
+        "summary": "GetSystemInfo returns information about the system.",
+        "operationId": "WorkflowService_GetSystemInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetSystemInfoResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "WorkflowService"
+        ]
+      }
     }
   },
   "definitions": {
+    "CountWorkflowExecutionsResponseAggregationGroup": {
+      "type": "object",
+      "properties": {
+        "groupValues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Payload"
+          }
+        },
+        "count": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "GetSystemInfoResponseCapabilities": {
       "type": "object",
       "properties": {
@@ -2168,6 +2207,10 @@
         "sdkMetadata": {
           "type": "boolean",
           "title": "True if the server knows about the sdk metadata field on WFT completions and will record\nit in history"
+        },
+        "countGroupByExecutionStatus": {
+          "type": "boolean",
+          "title": "True if the server supports count group by execution status\n(-- api-linter: core::0140::prepositions=disabled --)"
         }
       },
       "description": "System capability details."
@@ -2186,6 +2229,19 @@
         "makeSetDefault": {
           "type": "boolean",
           "description": "When set, establishes the compatible set being targeted as the overall default for the\nqueue. If a different set was the current default, the targeted set will replace it as\nthe new default."
+        }
+      }
+    },
+    "UpdateWorkerBuildIdCompatibilityRequestMergeSets": {
+      "type": "object",
+      "properties": {
+        "primarySetBuildId": {
+          "type": "string",
+          "title": "A build ID in the set whose default will become the merged set default"
+        },
+        "secondarySetBuildId": {
+          "type": "string",
+          "title": "A build ID in the set which will be merged into the primary set"
         }
       }
     },
@@ -3144,7 +3200,16 @@
       "properties": {
         "count": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "If `query` is not grouping by any field, the count is an approximate number\nof workflows that matches the query.\nIf `query` is grouping by a field, the count is simply the sum of the counts\nof the groups returned in the response. This number can be smaller than the\ntotal number of workflows matching the query."
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/CountWorkflowExecutionsResponseAggregationGroup"
+          },
+          "description": "`groups` contains the groups if the request is grouping by a field.\nThe list might not be complete, and the counts of each group is approximate."
         }
       }
     },
@@ -5236,6 +5301,16 @@
           "format": "int64",
           "description": "Number of skipped actions due to overlap."
         },
+        "bufferDropped": {
+          "type": "string",
+          "format": "int64",
+          "description": "Number of dropped actions due to buffer limit."
+        },
+        "bufferSize": {
+          "type": "string",
+          "format": "int64",
+          "description": "Number of actions in the buffer. The buffer holds the actions that cannot\nbe immediately triggered (due to the overlap policy). These actions can be a result of\nthe normal schedule or a backfill."
+        },
         "runningWorkflows": {
           "type": "array",
           "items": {
@@ -6206,13 +6281,7 @@
       "type": "object"
     },
     "v1UpdateWorkerBuildIdCompatibilityResponse": {
-      "type": "object",
-      "properties": {
-        "versionSetId": {
-          "type": "string",
-          "description": "The id of the compatible set that the updated version was added to, or exists in. Users don't\nneed to understand or care about this value, but it has value for debugging purposes."
-        }
-      }
+      "type": "object"
     },
     "v1UpsertWorkflowSearchAttributesCommandAttributes": {
       "type": "object",
@@ -6738,6 +6807,11 @@
           "$ref": "#/definitions/v1Meta",
           "description": "The metadata about this update."
         },
+        "acceptedEventId": {
+          "type": "string",
+          "format": "int64",
+          "description": "The event ID indicating the acceptance of this update."
+        },
         "outcome": {
           "$ref": "#/definitions/v1Outcome",
           "description": "The outcome of executing the workflow update function."
@@ -6911,6 +6985,14 @@
             "format": "int64"
           },
           "description": "Flags used by the SDK lang. No attempt is made to distinguish between different SDK languages\nhere as processing a workflow with a different language than the one which authored it is\nalready undefined behavior. See `core_used_patches` for more.\n\n(-- api-linter: core::0141::forbidden-types=disabled\n    aip.dev/not-precedent: These really shouldn't have negative values. --)"
+        },
+        "sdkName": {
+          "type": "string",
+          "description": "Name of the SDK that processed the task. This is usually something like \"temporal-go\" and is\nusually the same as client-name gRPC header. This should only be set if its value changed\nsince the last time recorded on the workflow (or be set on the first task).\n\n(-- api-linter: core::0122::name-suffix=disabled\n    aip.dev/not-precedent: We're ok with a name suffix here. --)"
+        },
+        "sdkVersion": {
+          "type": "string",
+          "description": "Version of the SDK that processed the task. This is usually something like \"1.20.0\" and is\nusually the same as client-version gRPC header. This should only be set if its value changed\nsince the last time recorded on the workflow (or be set on the first task)."
         }
       }
     },
