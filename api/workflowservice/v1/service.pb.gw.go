@@ -4744,7 +4744,7 @@ var (
 
 	pattern_WorkflowService_GetClusterInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "cluster"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_WorkflowService_GetSystemInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "systemInfo"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_WorkflowService_GetSystemInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "system-info"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_WorkflowService_GetWorkerBuildIdCompatibility_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"api", "v1", "namespaces", "namespace", "task-queues", "task_queue", "compatibility"}, "", runtime.AssumeColonVerbOpt(true)))
 
