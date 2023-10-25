@@ -16,7 +16,7 @@ require (
 	go.temporal.io/api v1.24.0
 	golang.org/x/net v0.17.0
 	golang.org/x/oauth2 v0.8.0
-	google.golang.org/grpc v1.57.0
+	google.golang.org/grpc v1.57.1
 	gopkg.in/validator.v2 v2.0.0-20210331031555-b37d688a7fb0
 	gopkg.in/yaml.v3 v3.0.1
 )
