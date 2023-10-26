@@ -1,0 +1,1 @@
+import{B as s}from"./encode-uri.e26747e0.js";function a(t){return decodeURIComponent(window.atob(t).split("").map(function(r){return"%"+("00"+r.charCodeAt(0).toString(16)).slice(-2)}).join(""))}const u=(t,r=s)=>r?a(t):t,c=t=>(t==null?void 0:t.substring(0,8))==="https://",e=t=>(t==null?void 0:t.substring(0,7))==="http://",b=t=>e(t)||c(t);export{u as a,b,c as v};

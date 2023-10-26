@@ -1,1 +1,0 @@
-import{r as o}from"./index.b1f5b21f.js";const t=async function({url:e}){throw o(302,`${e.pathname}/history`)},a=Object.freeze(Object.defineProperty({__proto__:null,load:t},Symbol.toStringTag,{value:"Module"}));export{a as _,t as l};
