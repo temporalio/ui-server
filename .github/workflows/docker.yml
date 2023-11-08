@@ -20,11 +20,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Login to Cloud registries
+        uses: temporalio/private-actions/docker/cloud-docker-login/@main
 
       - name: Docker meta for Commit image
         id: meta_commit
@@ -36,8 +33,8 @@ jobs:
             type=sha,format=short,event=branch
             latest
 
-      - name: Push Commit image to DockerHub
-        uses: docker/build-push-action@v4
+      - name: Push Commit image to repositories
+        uses: temporalio/private-actions/docker/push-to-registries/@main
         if: github.event_name == 'push'
         with:
           push: true
@@ -55,31 +52,11 @@ jobs:
             type=semver,pattern={{version}}
             latest
 
-      - name: Push Release image to DockerHub
-        uses: docker/build-push-action@v4
-        if: github.event_name == 'release'
+      - name: Push Release image to repositories
+        uses: temporalio/private-actions/docker/push-to-registries/@main
+        if: github.event_name == 'push'
         with:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta_release.outputs.tags }}
           labels: ${{ steps.meta_release.outputs.labels }}
-
-      - name: Docker meta for Release image
-        id: cloud_meta_release
-        uses: docker/metadata-action@v4
-        if: github.event_name == 'release'
-        with:
-          images: temporalio/cloud-ui
-          tags: |
-            type=semver,pattern={{version}}
-            latest
-
-      - name: Push Release image to DockerHub
-        uses: docker/build-push-action@v4
-        if: github.event_name == 'release'
-        with:
-          push: true
-          build-args: TEMPORAL_CLOUD_UI=true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.cloud_meta_release.outputs.tags }}
-          labels: ${{ steps.cloud_meta_release.outputs.labels }}
