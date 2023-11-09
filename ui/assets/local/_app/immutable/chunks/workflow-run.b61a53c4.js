@@ -1,0 +1,1 @@
+import{w as o}from"./singletons.0ff6221e.js";import{p as r}from"./persist-store.d6947085.js";const t=o(0),e={workflow:null,workers:{pollers:[],taskQueueStatus:null}},l=o(e),i=r("workflowSummaryView",!0,!0),a=r("workflowTimelineView",!0,!0);export{a,i as b,e as i,t as r,l as w};
