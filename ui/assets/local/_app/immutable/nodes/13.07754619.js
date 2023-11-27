@@ -1,1 +1,0 @@
-import{r as o}from"../chunks/index.3158323b.js";import{f as r}from"../chunks/route-for.f3c5b9e9.js";const t=async function(){const e=r("feed");throw o(302,e)},c=Object.freeze(Object.defineProperty({__proto__:null,load:t},Symbol.toStringTag,{value:"Module"}));export{c as universal};
