@@ -26,8 +26,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gogo/gateway"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -150,9 +149,6 @@ func getTemporalClientMux(c echo.Context, temporalConn *grpc.ClientConn, apiMidd
 		append(muxOpts,
 			withMarshaler(),
 			version.WithVersionHeader(c),
-			// This is necessary to get error details properly
-			// marshalled in unary requests.
-			runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
 		)...,
 	)
 
@@ -167,11 +163,8 @@ func getTemporalClientMux(c echo.Context, temporalConn *grpc.ClientConn, apiMidd
 }
 
 func withMarshaler() runtime.ServeMuxOption {
-	jsonpb := &gateway.JSONPb{
-		EmitDefaults: true,
-		Indent:       "  ",
-		OrigName:     false,
-	}
-
-	return runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb)
+	var jsonpb runtime.JSONPb
+	jsonpb.EmitUnpopulated = true
+	jsonpb.Indent = "  "
+	return runtime.WithMarshalerOption(runtime.MIMEWildcard, &jsonpb)
 }

@@ -141,7 +141,10 @@ func (s *Server) Start() error {
 	}
 
 	address := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
-	s.httpServer.Logger.Fatal(s.httpServer.Start(address))
+	// s.httpServer.Logger.Fatal(s.httpServer.Start(address))
+	if err := s.httpServer.Start(address); err != nil {
+		s.httpServer.Logger.Error(err)
+	}
 	return nil
 }
 
