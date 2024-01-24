@@ -1,1 +1,0 @@
-import{r as a}from"../chunks/index.3158323b.js";import{g as s}from"../chunks/route-for.ad76720c.js";const c=async function({params:o}){const{namespace:r,workflow:e,run:t}=o,n=s({namespace:r,workflow:e,run:t});throw a(302,n)},u=Object.freeze(Object.defineProperty({__proto__:null,load:c},Symbol.toStringTag,{value:"Module"}));export{u as universal};
