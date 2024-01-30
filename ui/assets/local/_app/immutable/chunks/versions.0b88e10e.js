@@ -1,0 +1,1 @@
+import{h as o}from"./singletons.c4ea79a5.js";import{p as e}from"./stores.731290ba.js";import{s as m}from"./settings.eab90f1e.js";const n=o([e],([r])=>{var a;return(a=r.data)==null?void 0:a.cluster}),t=o([n],([r])=>r==null?void 0:r.serverVersion),d=o([m],([r])=>r==null?void 0:r.version);export{n as c,t,d as u};
