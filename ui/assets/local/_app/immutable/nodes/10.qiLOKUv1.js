@@ -1,0 +1,1 @@
+import{r as e}from"../chunks/index.aHWtvSLc.js";import{r as o}from"../chunks/route-for.2o4PCImE.js";const t=async()=>{const r=o();e(302,r)},s=Object.freeze(Object.defineProperty({__proto__:null,load:t},Symbol.toStringTag,{value:"Module"}));export{s as universal};
