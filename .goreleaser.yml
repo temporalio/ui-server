@@ -1,0 +1,31 @@
+before:
+  hooks:
+    - go mod download
+
+release:
+  name_template: "v{{ .Version }}"
+  mode: keep-existing  # This ensures existing releases are kept and updated
+
+builds:
+  - main: ./cmd/server
+    binary: ui-server
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  algorithm: sha256
