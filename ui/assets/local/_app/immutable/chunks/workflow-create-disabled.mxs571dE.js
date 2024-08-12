@@ -1,0 +1,1 @@
+import{D as a}from"./scheduler.pPC3woXQ.js";import{c as o}from"./core-user.pR4796gV.js";const n=(e,r)=>{const s=o(),t=a(s).namespaceWriteDisabled(r??e.params.namespace);return e.data.settings.startWorkflowDisabled?!0:t};export{n as w};
