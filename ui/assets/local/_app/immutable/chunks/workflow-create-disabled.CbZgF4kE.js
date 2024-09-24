@@ -1,0 +1,1 @@
+import{C as o}from"./scheduler.DZa-jdu7.js";import{c}from"./core-user.Chd_gjhx.js";const l=(e,i)=>{var r,s;const t=c(),a=o(t).namespaceWriteDisabled(e.params.namespace);return(s=(r=e==null?void 0:e.data)==null?void 0:r.settings)!=null&&s.startWorkflowDisabled?!0:a};export{l as w};
