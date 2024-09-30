@@ -1,1 +1,0 @@
-var n=(r=>(r[r.Unspecified=0]="Unspecified",r[r.Signal=1]="Signal",r[r.None=2]="None",r))(n||{}),a=(r=>(r[r.Cancel=0]="Cancel",r[r.Reset=1]="Reset",r[r.Terminate=2]="Terminate",r))(a||{});export{a as A,n as R};
