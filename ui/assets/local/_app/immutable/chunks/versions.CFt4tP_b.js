@@ -1,1 +1,0 @@
-import{d as o}from"./entry.DU5rjygv.js";import{p as e}from"./stores.MyY6Mj7a.js";const s=o([e],([r])=>{var a;return(a=r.data)==null?void 0:a.cluster}),n=o([e],([r])=>r.data.settings),p=o([s],([r])=>r==null?void 0:r.serverVersion),d=o([n],([r])=>r==null?void 0:r.version);export{s as c,n as s,p as t,d as u};
