@@ -1,0 +1,1 @@
+import{w as e}from"./entry.D8Pooqjr.js";import{C as a}from"./scheduler.D6mQsyhd.js";const i=200,o=e(0),r=e(i),c=e([]),s=e([]),l=()=>{s.set([]),c.set([]),o.set(0),r.set(i)},f=()=>{s.set([]),c.set([])},m=t=>{c.set([]),a(s).includes(t.id)?s.set(a(s).filter(n=>n!==t.id)):s.set([...a(s),t.id])};export{s as a,l as b,f as c,o as d,r as e,i,m as s};
