@@ -1,0 +1,1 @@
+import{p as a}from"./persist-store.BHr381Ut.js";var r={BASE_URL:"./",DEV:!1,MODE:"production",PROD:!0,SSR:!1,VITE_API:"",VITE_MODE:"development",VITE_TEMPORAL_PORT:"7233"};const s=a("dark mode",!!r.VITE_DARK_MODE,!0),o=e=>{s.subscribe(t=>{t?e.dataset.theme="dark":e.dataset.theme="light"})};export{o as d,s as u};
