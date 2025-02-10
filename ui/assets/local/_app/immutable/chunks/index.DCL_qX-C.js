@@ -1,0 +1,1 @@
+import{g as a}from"./parse-with-big-int.DJQKqIvA.js";var l=p;function p(u,n,c,i){var e,r,t;return function(){if(t=this,r=Array.prototype.slice.call(arguments),e&&(c||i))return;if(!c)return o(),e=setTimeout(s,n),e;e=setTimeout(o,n),u.apply(t,r);function s(){o(),u.apply(t,r)}function o(){clearTimeout(e),e=null}}}const b=a(l);export{b as d};
