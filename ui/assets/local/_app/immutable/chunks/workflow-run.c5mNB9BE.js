@@ -1,1 +1,0 @@
-import{w as r}from"./entry.jzP5rKgD.js";import{p as e}from"./persist-store.CLzEq3DL.js";const s=r(0),t={workflow:null,workers:{pollers:[],taskQueueStatus:null},metadata:void 0,userMetadata:{summary:"",details:""}},l=r(t);e("workflowSummaryView",!0,!0);e("workflowTimelineView",!0,!0);export{t as i,s as r,l as w};
