@@ -1,0 +1,1 @@
+import{w as r}from"./s0RhsljA.js";import{v as u}from"./Dz_GI0CC.js";const t=r([]),c=e=>{const s={id:u(),duration:3e3,variant:"primary",...e};t.update(i=>[...i,s]);const o=setTimeout(()=>{a(s.id),clearTimeout(o)},s.duration)},a=e=>{t.update(s=>s.filter(o=>o.id!==e))},p=()=>{t.set([])},m={push:c,pop:a,clear:p,toasts:t,set:t.set,subscribe:t.subscribe,update:t.update};export{m as t};

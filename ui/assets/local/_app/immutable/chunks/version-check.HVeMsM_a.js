@@ -1,1 +1,0 @@
-const n=(i,u)=>{if(!i||!u)return!1;const[o,r,s]=i.split(".").map(Number),[a,t,e]=u.split(".").map(Number);return o!==a?o>a:r!==t?r>t:s>e},m=(i,u)=>{if(!i||!u)return!1;const[o,r,s]=i.split(".").map(Number),[a,t,e]=u.split(".").map(Number);return o!==a?a>o:r!==t?r===void 0&&t||r===void 0&&t===void 0?!0:t>r:s===void 0&&e||s===void 0&&(e===void 0||isNaN(e))?!0:e>=s};export{n as i,m};
