@@ -1,1 +1,0 @@
-import"./CWj6FrbW.js";import"./69_IOA4Y.js";import{t,a as e}from"./B11KKQxI.js";var i=t('<hr tabindex="-1" aria-hidden="true" class="w-full border-subtle">');function n(r){var a=i();e(r,a)}export{n as M};
