@@ -1,0 +1,106 @@
+name: Sync From UI Release
+
+on:
+  repository_dispatch:
+    types: [ui-release-published]
+
+jobs:
+  sync-ui:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ui-server
+        uses: actions/checkout@v4
+
+      - name: Prepare checkout token
+        id: generate_token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+        with:
+          app_id: ${{ secrets.TEMPORAL_CICD_APP_ID }}
+          private_key: ${{ secrets.TEMPORAL_CICD_PRIVATE_KEY }}
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
+
+      - name: Load SHA
+        uses: ./.github/actions/load-sha
+        id: resolved
+        with:
+          ui_commit_ref: ${{ github.event.client_payload.ref }}
+          token: ${{ outputs.generate_token.outputs.token }}
+
+      - name: Copy UI
+        uses: ./.github/actions/download-and-build-ui
+        with:
+          ref: ${{ outputs.resolved.outputs.sha }}
+          token: ${{ outputs.generate_token.outputs.token }}
+
+  #     - name: Create PR with copied UI
+  #       uses: peter-evans/create-pull-request-au
+  #       id: cpr
+  #       with:
+  #         token: ${{ outputs.generate_token.outputs.token }}
+  #         branch: sync-ui-${{ github.event.client_payload.release_tag }}
+  #         title: Sync from UI ${{ github.event.client_payload.release_tag }}
+  #         commit-message: "chore: sync from ui@${{ github.event.client_payload.release_tag }}"
+  #         body: |
+  #           This PR copies the latest UI server code from [ui@${{ github.event.client_payload.release_tag }}](${{ github.event.client_payload.release_url }}).
+  #
+  #     - name: Auto-approve PR
+  #       if: steps.cpr.outputs.pull-request-number != ''
+  #       uses: hmarr/auto-approve-action@v3
+  #       with:
+  #         github-token: ${{ outputs.generate_token.outputs.token }}
+  #
+  #     - name: Merge PR
+  #       if: steps.cpr.outputs.pull-request-number != ''
+  #       uses: peter-evans/enable-pull-request-automerge@v3
+  #       with:
+  #         token: ${{ outputs.generate_token.outputs.token }}
+  #         pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+  #         merge-method: squash
+  #
+  # release:
+  #   needs: sync-ui
+  #   runs-on: ubuntu-latest
+  #   if: github.event.client_payload.release_tag != ''
+  #
+  #   steps:
+  #     - name: Checkout merged branch
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Create GitHub Release
+  #       uses: softprops/action-gh-release@v1
+  #       with:
+  #         tag_name: ${{ github.event.client_payload.release_tag }}
+  #         name: Release ${{ github.event.client_payload.release_tag }}
+  #         body: |
+  #           Release synced from [ui@${{ github.event.client_payload.release_tag }}](${{ github.event.client_payload.release_url }})
+  #
+  #     - name: Setup Go
+  #       uses: ./.github/actions/setup-go
+  #
+  #     - name: Run GoReleaser
+  #       uses: goreleaser/goreleaser-action@v5
+  #       with:
+  #         distribution: goreleaser
+  #         version: latest
+  #         args: release --clean
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #
+  #     - name: Dispatch to SaaS UI Server
+  #       uses: peter-evans/repository-dispatch@v3
+  #       with:
+  #         token: ${{ secrets.SAAS_UI_SERVER_PAT }}
+  #         repository: ${{ env.SAAS_UI_SERVER_REPO }}
+  #         event-type: trigger-from-ui-server
+  #         client-payload: |
+  #           {
+  #             "release_tag": "${{ github.event.client_payload.release_tag }}",
+  #             "release_url": "https://github.com/${{ github.repository }}/releases/tag/${{ github.event.client_payload.release_tag }}"
+  #           }
+  #

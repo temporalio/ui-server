@@ -1,0 +1,33 @@
+name: Download and Build UI
+description: Downloads, builds, and copies temporalio/ui from a given SHA
+
+inputs:
+  ref:
+    description: 'Commit SHA of temporalio/ui to build'
+    required: true
+  token:
+    description: 'GitHub token for authentication'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download UI
+      shell: bash
+      run: |
+        curl -L https://github.com/temporalio/ui/archive/${{ inputs.ref }}.tar.gz -o ui.tar.gz
+        tar -xzf ui.tar.gz
+        mv ui-${{ inputs.ref }} ui-release
+
+    - name: Build UI
+      run: |
+        cd ui-release
+
+        pnpm i
+        pnpm build:server
+
+    - name: Copy UI to server
+      run: |
+        rm -rf server/proto/dependencies/api
+        cp -r ui-release/server/* ./
+        rm -rf ui-release ui.tar.gz
