@@ -1,8 +1,8 @@
-name: Sync From UI Release
+name: On Release Dispatch
 
 on:
   repository_dispatch:
-    types: [ui-release-published]
+    types: [sync-from-ui-release]
 
 jobs:
   sync-ui:
@@ -38,16 +38,16 @@ jobs:
           ref: ${{ outputs.resolved.outputs.sha }}
           token: ${{ outputs.generate_token.outputs.token }}
 
-  #     - name: Create PR with copied UI
-  #       uses: peter-evans/create-pull-request-au
-  #       id: cpr
-  #       with:
-  #         token: ${{ outputs.generate_token.outputs.token }}
-  #         branch: sync-ui-${{ github.event.client_payload.release_tag }}
-  #         title: Sync from UI ${{ github.event.client_payload.release_tag }}
-  #         commit-message: "chore: sync from ui@${{ github.event.client_payload.release_tag }}"
-  #         body: |
-  #           This PR copies the latest UI server code from [ui@${{ github.event.client_payload.release_tag }}](${{ github.event.client_payload.release_url }}).
+      - name: Create PR with copied UI
+        uses: peter-evans/create-pull-request-au
+        id: cpr
+        with:
+          token: ${{ outputs.generate_token.outputs.token }}
+          branch: sync-ui-${{ github.event.client_payload.release_tag }}
+          title: Sync from UI ${{ github.event.client_payload.release_tag }}
+          commit-message: "chore: sync from ui@${{ github.event.client_payload.release_tag }}"
+          body: |
+            This PR copies the latest UI server code from [ui@${{ github.event.client_payload.release_tag }}](${{ github.event.client_payload.release_url }}).
   #
   #     - name: Auto-approve PR
   #       if: steps.cpr.outputs.pull-request-number != ''

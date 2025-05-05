@@ -1,0 +1,33 @@
+name: On Commit Dispatch
+
+on:
+  repository_dispatch:
+    types: [sync-from-ui-commit]
+
+jobs:
+  sync-ui:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ui-server
+        uses: actions/checkout@v4
+
+      - name: Prepare checkout token
+        id: generate_token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+        with:
+          app_id: ${{ secrets.TEMPORAL_CICD_APP_ID }}
+          private_key: ${{ secrets.TEMPORAL_CICD_PRIVATE_KEY }}
+
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
+
+      - name: Load SHA
+        uses: ./.github/actions/load-sha
+        id: resolved
+        with:
+          ui_commit_ref: ${{ github.event.client_payload.ref }}
+          token: ${{ outputs.generate_token.outputs.token }}
