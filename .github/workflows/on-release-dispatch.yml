@@ -116,9 +116,11 @@ jobs:
         with:
           token: ${{ needs.sync-ui.outputs.generate_token.outputs.token }}
           repository: temporalio/saas-ui-server
-          event-type: trigger-from-ui-server
+          event-type: sync-from-ui-server-release
           client-payload: |
             {
+              "ui_release_tag": "${{ github.event.client_payload.release_tag }}",
+              "ui_release_url": "${{ github.event.client_payload.release_url }}",
               "release_tag": "${{ needs.sync-ui.outputs.create_release.outputs.tag_name }}",
               "release_url": "${{ needs.sync-ui.outputs.create_release.outputs.html_url }}"
             }
