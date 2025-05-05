@@ -1,6 +1,10 @@
 name: Setup Go
 description: 'Set up Go and Protoc'
 
+inputs:
+  token:
+    description: 'Optional GitHub token'
+
 runs:
   using: 'composite'
 
@@ -10,8 +14,8 @@ runs:
         go-version: '1.23'
 
     - name: Setup Protoc
+      if : ${{ inputs.token }}
       uses: arduino/setup-protoc@v1
       with:
         version: '3.x'
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-
+        repo-token: ${{ inputs.token }}

@@ -96,6 +96,8 @@ jobs:
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
+        with:
+          token: ${{ needs.sync-ui.outputs.generate_token.outputs.token }}
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
