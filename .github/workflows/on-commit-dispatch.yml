@@ -5,29 +5,37 @@ on:
     types: [sync-from-ui-commit]
 
 jobs:
-  sync-ui:
+  sync:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout ui-server
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Prepare checkout token
-        id: generate_token
-        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+      - name: Download and Build UI
+        uses: ./.github/actions/download-and-build-ui
         with:
-          app_id: ${{ secrets.TEMPORAL_CICD_APP_ID }}
-          private_key: ${{ secrets.TEMPORAL_CICD_PRIVATE_KEY }}
+          ref: ${{ github.event.client_payload.ref }}
 
-      - name: Setup Node
-        uses: ./.github/actions/setup-node
+      - name: Commit changes
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add .
+          git commit -m "Sync from UI commit ${{ github.sha }}"
+          git push
 
-      - name: Setup Go
-        uses: ./.github/actions/setup-go
-
-      - name: Load SHA
-        uses: ./.github/actions/load-sha
-        id: resolved
+      - name: Docker meta for Commit image
+        id: meta_commit
+        uses: docker/metadata-action@v4
         with:
-          ui_commit_ref: ${{ github.event.client_payload.ref }}
-          token: ${{ outputs.generate_token.outputs.token }}
+          images: temporaliotest/ui
+          tags: |
+            type=sha,format=short,event=branch
+            latest
+
+      - name: Docker Build and Push
+        uses: ./.github/actions/docker-build-push
+        with:
+          images: temporaliotest/ui
+          tags: ${{ steps.meta_commit.outputs.tags }}
+          labels: ${{ steps.meta_commit.outputs.labels }}

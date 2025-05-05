@@ -13,21 +13,21 @@ runs:
   using: 'composite'
   steps:
     - name: Download UI
-      shell: bash
-      run: |
-        curl -L https://github.com/temporalio/ui/archive/${{ inputs.ref }}.tar.gz -o ui.tar.gz
-        tar -xzf ui.tar.gz
-        mv ui-${{ inputs.ref }} ui-release
+      uses: actions/checkout@v3
+      with:
+        repository: temporalio/ui
+        ref: ${{ inputs.ref }}
+        path: ui-release
 
-    - name: Build UI
+
+    - name: Install dependencies and build UI
       run: |
         cd ui-release
-
-        pnpm i
+        pnpm install --frozen-lockfile
         pnpm build:server
 
     - name: Copy UI to server
       run: |
         rm -rf server/proto/dependencies/api
         cp -r ui-release/server/* ./
-        rm -rf ui-release ui.tar.gz
+        rm -rf ui-release
