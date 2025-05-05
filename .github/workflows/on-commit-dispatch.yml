@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ui-server
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download and Build UI
         uses: ./.github/actions/download-and-build-ui
@@ -18,24 +18,32 @@ jobs:
 
       - name: Commit changes
         run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
+          git config --local user.name 'Temporal Data (cicd)'
+          git config --local user.email 'commander-data@temporal.io'
           git add .
+          if git diff-index --quiet HEAD; then
+            echo "No changes to commit."
+            echo "changes_committed=false" >> $GITHUB_ENV
+            exit 0
+          else
+            echo "changes_committed=true" >> $GITHUB_ENV
+          fi
           git commit -m "Sync from UI commit ${{ github.sha }}"
           git push
 
-      - name: Docker meta for Commit image
-        id: meta_commit
-        uses: docker/metadata-action@v4
+      - name: Setup Docker
+        if: env.changes_committed == 'true'
+        uses: ./.github/actions/setup-docker
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_pat: ${{ secrets.DOCKER_PAT }}
+
+      - name: Docker Build and Push
+        if: env.changes_committed == 'true'
+        uses: ./.github/actions/docker-build-push
         with:
           images: temporaliotest/ui
           tags: |
             type=sha,format=short,event=branch
             latest
 
-      - name: Docker Build and Push
-        uses: ./.github/actions/docker-build-push
-        with:
-          images: temporaliotest/ui
-          tags: ${{ steps.meta_commit.outputs.tags }}
-          labels: ${{ steps.meta_commit.outputs.labels }}

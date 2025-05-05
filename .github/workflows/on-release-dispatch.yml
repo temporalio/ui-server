@@ -46,8 +46,13 @@ jobs:
           merge-method: squash
 
       - name: Create GitHub Release
+        id: create_release
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ steps.generate_token.outputs.token }}
+          generate_release_notes: true
+          append_body: true
+          make_latest: true
           tag_name: ${{ github.event.client_payload.release_tag }}
           name: Release ${{ github.event.client_payload.release_tag }}
           body: |
@@ -60,27 +65,16 @@ jobs:
       - name: Checkout ui-server
         uses: actions/checkout@v4
 
-      - name: Docker meta for Release image
-        id: meta_release
-        uses: docker/metadata-action@v4
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
         with:
-          images: temporalio/ui
-          tags: |
-            type=semver,pattern={{version}}
-            latest
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_pat: ${{ secrets.DOCKER_PAT }}
 
       - name: Docker Build and Push
         uses: ./.github/actions/docker-build-push
         with:
           images: temporalio/ui
-          tags: ${{ steps.meta_release.outputs.tags }}
-          labels: ${{ steps.meta_release.outputs.labels }}
-
-      - name: Docker meta for Cloud Release image
-        id: cloud_meta_release
-        uses: docker/metadata-action@v4
-        with:
-          images: temporalio/cloud-ui
           tags: |
             type=semver,pattern={{version}}
             latest
@@ -89,8 +83,9 @@ jobs:
         uses: ./.github/actions/docker-build-push
         with:
           images: temporalio/cloud-ui
-          tags: ${{ steps.cloud_meta_release.outputs.tags }}
-          labels: ${{ steps.cloud_meta_release.outputs.labels }}
+          tags: |
+            type=semver,pattern={{version}}
+            latest
 
   release-go:
     runs-on: ubuntu-latest
@@ -103,13 +98,12 @@ jobs:
         uses: ./.github/actions/setup-go
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
-          distribution: goreleaser
-          version: ${{ github.event.client_payload.release_tag }}
-          args: release --clean
+          version: '~> v2'
+          args: release
         env:
-          GITHUB_TOKEN: ${{ outputs.generate_token.token }}
+          GITHUB_TOKEN: ${{ needs.sync-ui.outputs.generate_token.outputs.token }}
 
   dispatch-saas-ui-server:
     runs-on: ubuntu-latest
@@ -118,12 +112,12 @@ jobs:
       - name: Dispatch to SaaS UI Server
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.SAAS_UI_SERVER_PAT }}
-          repository: ${{ env.SAAS_UI_SERVER_REPO }}
+          token: ${{ needs.sync-ui.outputs.generate_token.outputs.token }}
+          repository: temporalio/saas-ui-server
           event-type: trigger-from-ui-server
           client-payload: |
             {
-              "release_tag": "${{ github.event.client_payload.release_tag }}",
-              "release_url": "https://github.com/${{ github.repository }}/releases/tag/${{ github.event.client_payload.release_tag }}"
+              "release_tag": "${{ needs.sync-ui.outputs.create_release.outputs.tag_name }}",
+              "release_url": "${{ needs.sync-ui.outputs.create_release.outputs.html_url }}",
             }
 

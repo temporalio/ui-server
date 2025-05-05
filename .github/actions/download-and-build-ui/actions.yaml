@@ -19,7 +19,6 @@ runs:
         ref: ${{ inputs.ref }}
         path: ui-release
 
-
     - name: Install dependencies and build UI
       run: |
         cd ui-release
