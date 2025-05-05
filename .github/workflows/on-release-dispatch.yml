@@ -118,6 +118,6 @@ jobs:
           client-payload: |
             {
               "release_tag": "${{ needs.sync-ui.outputs.create_release.outputs.tag_name }}",
-              "release_url": "${{ needs.sync-ui.outputs.create_release.outputs.html_url }}",
+              "release_url": "${{ needs.sync-ui.outputs.create_release.outputs.html_url }}"
             }
 
