@@ -139,3 +139,43 @@ This setup enables continuous and tag-based updates of UI logic into downstream 
 - go.mod
 - .aider.requirements.md
 
+# UI Release Strategy
+
+This document outlines the release strategy for the `temporalio/ui`, `temporalio/ui-server`, and `temporalio/saas-ui-server` repositories.
+
+## Overview
+
+The release process is designed to ensure smooth synchronization and deployment across the three repositories, leveraging GitHub Actions for automation.
+
+## Repositories
+
+- **`temporalio/ui`**: The primary source of UI code. Changes here trigger downstream actions.
+- **`temporalio/ui-server`**: Integrates UI code and handles backend logic.
+- **`temporalio/saas-ui-server`**: Deploys the integrated UI and backend to production.
+
+## Release Process
+
+1. **Commit to `main` in `ui`**:
+   - Triggers a dispatch to `ui-server`.
+   - `ui-server` builds and pushes a Docker image.
+
+2. **Release in `ui`**:
+   - Triggers a dispatch to `ui-server`.
+   - `ui-server` creates a release, builds Docker images, and dispatches to `saas-ui-server`.
+
+3. **Deployment in `saas-ui-server`**:
+   - Updates dependencies and deploys the new version.
+
+## Automation
+
+- **GitHub Actions**: Used for building, testing, and deploying across repositories.
+- **Composite Actions**: Reusable actions for common tasks like building Docker images.
+
+## Security
+
+- **GitHub App Authentication**: Secure token generation for accessing repositories.
+- **Secrets Management**: Sensitive information is stored in GitHub Secrets.
+
+## Conclusion
+
+This strategy ensures efficient and reliable updates across the UI ecosystem, maintaining consistency and quality in deployments.
