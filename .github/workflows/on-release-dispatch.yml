@@ -4,124 +4,51 @@ on:
   repository_dispatch:
     types: [sync-from-ui-release]
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+
 jobs:
   sync-ui:
     runs-on: ubuntu-latest
+
+    outputs:
+      commit_hash: ${{ steps.commit_changes.outputs.commit_hash }}
+      release_url: ${{ steps.create_release.outputs.url }}
+
     steps:
       - name: Checkout ui-server
         uses: actions/checkout@v4
-
-      - name: Prepare checkout token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.TEMPORAL_CICD_APP_ID }}
-          private_key: ${{ secrets.TEMPORAL_CICD_PRIVATE_KEY }}
 
       - name: Download and Build UI
         uses: ./.github/actions/download-and-build-ui
         with:
-          ref: ${{ github.event.client_payload.release_tag }}
+          ref: ${{ github.event.client_payload.ref }}
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+      - name: Commit changes
+        id: commit_changes
+        uses: ./.github/actions/commit-changes
         with:
-          token: ${{ steps.generate_token.outputs.token }}
-          branch: sync-ui-${{ github.event.client_payload.release_tag }}
-          title: Sync from UI ${{ github.event.client_payload.release_tag }}
-          commit-message: "chore: sync from ui@${{ github.event.client_payload.release_tag }}"
-          body: |
-            This PR syncs the latest UI server code from [ui@${{ github.event.client_payload.release_tag }}](${{ github.event.client_payload.release_url }}).
-
-      - name: Auto-approve PR
-        uses: hmarr/auto-approve-action@v3
-        with:
-          github-token: ${{ steps.generate_token.outputs.token }}
-
-      - name: Merge PR
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          token: ${{ steps.generate_token.outputs.token }}
-          pull-request-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
-          merge-method: squash
+          message: "Sync from UI release ${{ github.event.client_payload.release_tag }}"
 
       - name: Create GitHub Release
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          token: ${{ steps.generate_token.outputs.token }}
+          target_commitish: ${{ steps.commit_changes.outputs.commit_hash }}
           generate_release_notes: true
-          append_body: true
-          make_latest: true
           tag_name: ${{ github.event.client_payload.release_tag }}
-          name: Release ${{ github.event.client_payload.release_tag }}
+          name: ${{ github.event.client_payload.release_tag }}
           body: |
             Release synced from [ui@${{ github.event.client_payload.release_tag }}](${{ github.event.client_payload.release_url }})
 
-  push-docker:
-    runs-on: ubuntu-latest
+  release-and-dispatch:
+    uses: ./.github/workflows/on-release.yaml
     needs: [sync-ui]
-    steps:
-      - name: Checkout ui-server
-        uses: actions/checkout@v4
-
-      - name: Setup Docker
-        uses: ./.github/actions/setup-docker
-        with:
-          docker_username: ${{ secrets.DOCKER_USERNAME }}
-          docker_pat: ${{ secrets.DOCKER_PAT }}
-
-      - name: Docker Build and Push
-        uses: ./.github/actions/docker-build-push
-        with:
-          images: temporalio/ui
-          tags: |
-            type=semver,pattern={{version}}
-            latest
-
-      - name: Docker Cloud Build and Push
-        uses: ./.github/actions/docker-build-push
-        with:
-          images: temporalio/cloud-ui
-          tags: |
-            type=semver,pattern={{version}}
-            latest
-
-  release-go:
-    runs-on: ubuntu-latest
-    needs: [sync-ui, push-docker]
-    steps:
-      - name: Checkout merged branch
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: ./.github/actions/setup-go
-        with:
-          token: ${{ needs.sync-ui.outputs.generate_token.outputs.token }}
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
-        with:
-          version: '~> v2'
-          args: release
-        env:
-          GITHUB_TOKEN: ${{ needs.sync-ui.outputs.generate_token.outputs.token }}
-
-  dispatch-saas-ui-server:
-    runs-on: ubuntu-latest
-    needs: [sync-ui, push-docker, release-go]
-    steps:
-      - name: Dispatch to SaaS UI Server
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ needs.sync-ui.outputs.generate_token.outputs.token }}
-          repository: temporalio/saas-ui-server
-          event-type: sync-from-ui-server-release
-          client-payload: |
-            {
-              "ui_release_tag": "${{ github.event.client_payload.release_tag }}",
-              "ui_release_url": "${{ github.event.client_payload.release_url }}",
-              "release_tag": "${{ needs.sync-ui.outputs.create_release.outputs.tag_name }}",
-              "release_url": "${{ needs.sync-ui.outputs.create_release.outputs.html_url }}"
-            }
-
+    secrets: inherit
+    with:
+      ref: ${{ needs.sync-ui.outputs.commit_hash }}
+      release_tag: ${{ needs.sync-ui.outputs.release_tag }}
+      release_url: ${{ needs.sync-ui.outputs.release_url }}

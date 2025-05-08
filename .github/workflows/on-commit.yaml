@@ -1,0 +1,42 @@
+name: On Commit
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+env:
+  GITHUB_REF: ${{ inputs.ref || github.event.ref }}
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ui-server
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.GITHUB_REF }}
+
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_pat: ${{ secrets.DOCKER_PAT }}
+
+      - name: Docker Build and Push
+        uses: ./.github/actions/docker-build-push
+        with:
+          images: ${{ vars.DOCKER_IMAGE_TEST_UI }}
+          tags: |
+            type=sha,format=short,event=branch
+            latest
