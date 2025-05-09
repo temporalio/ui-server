@@ -19,7 +19,7 @@ permissions:
   contents: write
 
 jobs:
-  sync:
+  docker-build-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ui-server

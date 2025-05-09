@@ -23,6 +23,8 @@ jobs:
         uses: ./.github/actions/download-and-build-ui
         with:
           ref: ${{ github.event.client_payload.ref }}
+          upstream_org: ${{ vars.UPSTREAM_ORG }}
+          upstream_repo: ${{ vars.UPSTREAM_REPO }}
 
       - name: Commit changes
         id: commit_changes

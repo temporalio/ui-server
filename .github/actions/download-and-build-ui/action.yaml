@@ -8,6 +8,12 @@ inputs:
   token:
     description: 'GitHub token for authentication'
     required: true
+  upstream_org:
+    description: 'Upstream organization of the UI repository'
+    required: true
+  upstream_repo:
+    description: 'Upstream repository of the UI'
+    required: true
 
 runs:
   using: 'composite'
@@ -15,7 +21,7 @@ runs:
     - name: Download UI
       uses: actions/checkout@v3
       with:
-        repository: temporalio/ui
+        repository: ${{ inputs.upstream_org }}/${{ inputs.upstream_repo }}
         ref: ${{ inputs.ref }}
         path: ui-release
 
@@ -24,9 +30,11 @@ runs:
 
     - name: Install dependencies and build UI
       shell: bash
+      env:
+        HUSKY: '0'
       run: |
         cd ui-release
-        pnpm install --frozen-lockfile
+        pnpm install
         pnpm build:server
 
     - name: Copy UI to server
