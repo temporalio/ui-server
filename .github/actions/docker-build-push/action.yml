@@ -1,0 +1,33 @@
+name: 'Docker Build and Push'
+description: 'Build and push Docker images'
+
+inputs:
+  images:
+    description: 'Docker images'
+    required: true
+  tags:
+    description: 'Docker metadata tags'
+    required: true
+  build-args:
+    description: 'Docker build arguments'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Docker meta for Release image
+      id: meta_release
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ inputs.images }}
+        tags: ${{ inputs.tags }}
+
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        build-args: ${{ inputs.build-args }}
+        platforms: linux/amd64,linux/arm64
+        tags: ${{ steps.meta_release.outputs.tags }}
+        labels: ${{ steps.meta_release.outputs.labels }}

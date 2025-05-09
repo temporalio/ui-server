@@ -1,0 +1,28 @@
+name: 'Docker Build and Push'
+description: 'Build and push Docker images'
+
+inputs:
+  message:
+    description: 'The commit message'
+    required: true
+
+outputs:
+  commit_hash:
+    value: ${{ steps.commit_changes.outputs.commit_hash }}
+    description: 'The commit hash of the pushed changes'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Commit changes
+      shell: bash
+      id: commit_changes
+      run: |
+        git config --local user.name 'Temporal Data (cicd)'
+        git config --local user.email 'commander-data@temporal.io'
+        git add .
+        git commit -m "${{ inputs.message }}"
+        git push
+
+        echo "commit_hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+

@@ -1,0 +1,45 @@
+name: Download and Build UI
+description: Downloads, builds, and copies temporalio/ui from a given SHA
+
+inputs:
+  ref:
+    description: 'Commit SHA of temporalio/ui to build'
+    required: true
+  token:
+    description: 'GitHub token for authentication'
+    required: true
+  upstream_org:
+    description: 'Upstream organization of the UI repository'
+    required: true
+  upstream_repo:
+    description: 'Upstream repository of the UI'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download UI
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ inputs.upstream_org }}/${{ inputs.upstream_repo }}
+        ref: ${{ inputs.ref }}
+        path: ui-release
+
+    - name: Setup Node and pnpm
+      uses: ./.github/actions/setup-node
+
+    - name: Install dependencies and build UI
+      shell: bash
+      env:
+        HUSKY: '0'
+      run: |
+        cd ui-release
+        pnpm install
+        pnpm build:server
+
+    - name: Copy UI to server
+      shell: bash
+      run: |
+        rm -rf server/proto/dependencies/api
+        cp -r ui-release/server/* ./
+        rm -rf ui-release

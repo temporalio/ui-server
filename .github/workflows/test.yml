@@ -14,12 +14,10 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.23"
+        uses: ./.github/actions/setup-go
 
       - name: build
         run: make build-server
