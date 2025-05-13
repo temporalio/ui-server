@@ -1,0 +1,56 @@
+name: On Release Dispatch
+
+on:
+  repository_dispatch:
+    types: [sync-from-ui-release]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+
+jobs:
+  sync-ui:
+    runs-on: ubuntu-latest
+
+    outputs:
+      commit_hash: ${{ steps.commit_changes.outputs.commit_hash }}
+      release_url: ${{ steps.create_release.outputs.url }}
+
+    steps:
+      - name: Checkout ui-server
+        uses: actions/checkout@v4
+
+      - name: Download and Build UI
+        uses: ./.github/actions/download-and-build-ui
+        with:
+          ref: ${{ github.event.client_payload.ref }}
+          upstream_org: ${{ vars.UPSTREAM_ORG }}
+          upstream_repo: ${{ vars.UPSTREAM_REPO }}
+
+      - name: Commit changes
+        id: commit_changes
+        uses: ./.github/actions/commit-changes
+        with:
+          message: "Sync from UI release ${{ github.event.client_payload.release_tag }}"
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          target_commitish: ${{ steps.commit_changes.outputs.commit_hash }}
+          generate_release_notes: true
+          tag_name: ${{ github.event.client_payload.release_tag }}
+          name: ${{ github.event.client_payload.release_tag }}
+          body: |
+            Release synced from [ui@${{ github.event.client_payload.release_tag }}](${{ github.event.client_payload.release_url }})
+
+  release-and-dispatch:
+    uses: ./.github/workflows/on-release.yaml
+    needs: [sync-ui]
+    secrets: inherit
+    with:
+      ref: ${{ needs.sync-ui.outputs.commit_hash }}
+      release_tag: ${{ github.event.client_payload.release_tag }}
+      release_url: ${{ needs.sync-ui.outputs.release_url }}

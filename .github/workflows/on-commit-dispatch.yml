@@ -1,0 +1,40 @@
+name: On Commit Dispatch
+
+on:
+  repository_dispatch:
+    types: [sync-from-ui-commit]
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    outputs:
+      commit_hash: ${{ steps.commit_changes.outputs.commit_hash }}
+
+    steps:
+      - name: Checkout ui-server
+        uses: actions/checkout@v4
+
+      - name: Download and Build UI
+        uses: ./.github/actions/download-and-build-ui
+        with:
+          ref: ${{ github.event.client_payload.ref }}
+          upstream_org: ${{ vars.UPSTREAM_ORG }}
+          upstream_repo: ${{ vars.UPSTREAM_REPO }}
+
+      - name: Commit changes
+        id: commit_changes
+        uses: ./.github/actions/commit-changes
+        with:
+          message: "Sync from UI commit ${{ github.sha }}"
+
+  commit:
+    uses: ./.github/workflows/on-commit.yaml
+    needs: [sync]
+    secrets: inherit
+    with:
+      ref: ${{ needs.sync.outputs.commit_hash }}

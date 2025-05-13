@@ -1,0 +1,109 @@
+name: On Release
+
+on:
+  release:
+    types: [published]
+
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+      release_tag:
+        required: true
+        type: string
+      release_url:
+        required: true
+        type: string
+
+env:
+  GITHUB_REF: ${{ inputs.ref || github.event.ref }}
+  GITHUB_RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}
+  GITHUB_RELEASE_URL: ${{ inputs.release_url || github.event.release.html_url }}
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+
+jobs:
+  release-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ui-server
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.GITHUB_REF }}
+
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_pat: ${{ secrets.DOCKER_PAT }}
+
+      - name: Docker UI Build and Push
+        uses: ./.github/actions/docker-build-push
+        with:
+          images: ${{ vars.DOCKER_IMAGE_UI }}
+          tags: |
+            type=semver,pattern={{version}}
+            ${{ env.GITHUB_RELEASE_TAG }}
+            latest
+
+      - name: Docker Cloud Build and Push
+        uses: ./.github/actions/docker-build-push
+        with:
+          images: ${{ vars.DOCKER_IMAGE_CLOUD_UI }}
+          build-args: TEMPORAL_CLOUD_UI=true
+          tags: |
+            type=semver,pattern={{version}}
+            ${{ env.GITHUB_RELEASE_TAG }}
+            latest
+
+  release-go:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout merged branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.GITHUB_REF }}
+
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: '~> v2'
+          args: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dispatch-saas-ui-server:
+    runs-on: ubuntu-latest
+    needs: [release-go]
+    steps:
+      - name: Prepare token
+        id: generate_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.TEMPORAL_CICD_APP_ID }}
+          private-key: ${{ secrets.TEMPORAL_CICD_PRIVATE_KEY }}
+          permission-contents: write
+          repositories: ${{ vars.DOWNSTREAM_REPO }}
+
+      - name: Dispatch to SaaS UI Server
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          repository: ${{ vars.DOWNSTREAM_ORG }}/${{ vars.DOWNSTREAM_REPO }}
+          event-type: sync-from-ui-server-release
+          client-payload: |
+            {
+              "ref": "${{ env.GITHUB_REF }}",
+              "release_tag": "${{ env.GITHUB_RELEASE_TAG }}",
+              "release_url": "${{ env.GITHUB_RELEASE_URL }}"
+            }
+
