@@ -28,6 +28,7 @@ jobs:
           ref: ${{ github.event.client_payload.ref }}
           upstream_org: ${{ vars.UPSTREAM_ORG }}
           upstream_repo: ${{ vars.UPSTREAM_REPO }}
+          version: ${{ github.event.client_payload.release_tag }}
 
       - name: Commit changes
         id: commit_changes

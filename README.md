@@ -10,6 +10,26 @@ made to the UI repository.
 
 For contributions follow UI's development guide https://github.com/temporalio/ui
 
+## Building
+
+### Local Development
+```bash
+make build
+```
+
+### Docker Build
+```bash
+docker build .
+```
+
+### Version Management
+Version information is updated during the sync process from the UI repository:
+- **Release syncs**: Version is automatically updated to match the release tag during sync
+- **Commit syncs**: Version remains as-is from the source repository
+- **Local builds**: Uses the current version from source code
+
+The version is stored in `server/version.UIVersion` and can be retrieved at runtime.
+
 
 ## To View gRPC routes:
 [Temporal API Workflowservice](https://github.com/temporalio/api/blob/master/temporal/api/workflowservice/v1/service.proto)

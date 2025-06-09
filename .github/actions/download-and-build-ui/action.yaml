@@ -14,6 +14,9 @@ inputs:
   upstream_repo:
     description: 'Upstream repository of the UI'
     required: true
+  version:
+    description: 'Optional version to set in version.go'
+    required: false
 
 runs:
   using: 'composite'
@@ -43,3 +46,15 @@ runs:
         rm -rf server/proto/dependencies/api
         cp -r ui-release/server/* ./
         rm -rf ui-release
+
+    - name: Update version
+      shell: bash
+      if: ${{ inputs.version != '' }}
+      run: |
+        # Extract version (remove 'v' prefix if present)
+        VERSION="${{ inputs.version }}"
+        VERSION="${VERSION#v}"
+        echo "Updating version to: $VERSION"
+
+        # Update the version.go file
+        sed -i "s/UIVersion               = \".*\"/UIVersion               = \"$VERSION\"/" server/version/version.go
