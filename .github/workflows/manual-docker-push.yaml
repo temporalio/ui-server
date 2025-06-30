@@ -1,0 +1,63 @@
+name: Manual Docker Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref to build from (commit SHA, tag, or branch)'
+        required: true
+        type: string
+      version:
+        description: 'Version tag for Docker image (e.g., 2.38.3)'
+        required: true
+        type: string
+      push_latest:
+        description: 'Also update the latest tag'
+        required: false
+        type: boolean
+        default: false
+      image_type:
+        description: 'Which image to push'
+        required: true
+        type: choice
+        options:
+          - ui
+          - cloud-ui
+          - both
+
+permissions:
+  contents: read
+
+jobs:
+  push-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout specific ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup Docker
+        uses: ./.github/actions/setup-docker
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_pat: ${{ secrets.DOCKER_PAT }}
+
+      - name: Push UI Image
+        if: ${{ inputs.image_type == 'ui' || inputs.image_type == 'both' }}
+        uses: ./.github/actions/docker-build-push
+        with:
+          images: ${{ vars.DOCKER_IMAGE_UI }}
+          tags: |
+            ${{ inputs.version }}
+            ${{ inputs.push_latest && 'latest' || '' }}
+
+      - name: Push Cloud UI Image
+        if: ${{ inputs.image_type == 'cloud-ui' || inputs.image_type == 'both' }}
+        uses: ./.github/actions/docker-build-push
+        with:
+          images: ${{ vars.DOCKER_IMAGE_CLOUD_UI }}
+          build-args: TEMPORAL_CLOUD_UI=true
+          tags: |
+            ${{ inputs.version }}
+            ${{ inputs.push_latest && 'latest' || '' }}
