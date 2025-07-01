@@ -19,7 +19,6 @@ on:
 env:
   GITHUB_REF: ${{ inputs.ref || github.event.ref }}
   GITHUB_RELEASE_TAG_NAME: ${{ inputs.release_tag || github.event.release.tag_name }}
-  GITHUB_RELEASE_VERSION: ${{ startsWith(inputs.release_tag || github.event.release.tag_name, 'v') && substring(inputs.release_tag || github.event.release.tag_name, 1) || inputs.release_tag || github.event.release.tag_name }}
   GITHUB_RELEASE_URL: ${{ inputs.release_url || github.event.release.html_url }}
 
 permissions:
@@ -37,6 +36,10 @@ jobs:
         with:
           ref: ${{ env.GITHUB_REF }}
 
+      - name: Strip v prefix from tag
+        id: version
+        run: echo "version=${GITHUB_RELEASE_TAG_NAME#v}" >> $GITHUB_OUTPUT
+
       - name: Setup Docker
         uses: ./.github/actions/setup-docker
         with:
@@ -49,7 +52,7 @@ jobs:
           images: ${{ vars.DOCKER_IMAGE_UI }}
           tags: |
             type=semver,pattern={{version}}
-            ${{ env.GITHUB_RELEASE_VERSION }}
+            ${{ steps.version.outputs.version }}
             latest
 
       - name: Docker Cloud Build and Push
@@ -59,7 +62,7 @@ jobs:
           build-args: TEMPORAL_CLOUD_UI=true
           tags: |
             type=semver,pattern={{version}}
-            ${{ env.GITHUB_RELEASE_TAG }}
+            ${{ steps.version.outputs.version }}
             latest
 
   release-go:
