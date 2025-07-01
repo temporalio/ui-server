@@ -1,0 +1,1 @@
+import{f as r}from"../chunks/BysLwzTu.js";import{a as s}from"../chunks/DAc9Z4oz.js";import{L as u}from"../chunks/DEqViXIl.js";const c=async({params:t,parent:e,fetch:a})=>{await e();const o=await r(t.namespace,a);s.set(o)},l=Object.freeze(Object.defineProperty({__proto__:null,load:c},Symbol.toStringTag,{value:"Module"}));export{u as component,l as universal};

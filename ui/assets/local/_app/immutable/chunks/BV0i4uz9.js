@@ -1,0 +1,1 @@
+import{w as e,g as i}from"./DaqIHZoW.js";const c=200,o=e(0),n=e(c),s=e([]),t=e(0),d=()=>{s.set([]),t.set(0),o.set(0),n.set(c)},l=()=>{s.set([]),t.set(0)},p=a=>{i(s).includes(a.id)?(t.set(0),s.set([])):s.set([a.id])};export{t as a,s as b,l as c,d,n as e,o as f,c as i,p as s};

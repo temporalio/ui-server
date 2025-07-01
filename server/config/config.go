@@ -66,6 +66,8 @@ type (
 		HideWorkflowQueryErrors bool `yaml:"hideWorkflowQueryErrors"`
 		// Whether to disable refreshing workflow counts in UI
 		RefreshWorkflowCountsDisabled bool `yaml:"refreshWorkflowCountsDisabled"`
+		// Whether to disable activity commands in the UI
+		ActivityCommandsDisabled bool `yaml:"activityCommandsDisabled"`
 		// Forward specified HTTP headers from HTTP API requests to Temporal gRPC backend
 		ForwardHeaders []string `yaml:"forwardHeaders"`
 		HideLogs       bool     `yaml:"hideLogs"`
@@ -115,6 +117,8 @@ type (
 		CallbackURL string `yaml:"callbackUrl"`
 		// Options added as URL query params when redirecting to auth provider. Can be used to configure custom auth flows such as Auth0 invitation flow.
 		Options map[string]interface{} `yaml:"options"`
+		// UseIDTokenAsBearer - Use ID token instead of access token as Bearer in Authorization header
+		UseIDTokenAsBearer bool `yaml:"useIdTokenAsBearer"`
 	}
 
 	Codec struct {
