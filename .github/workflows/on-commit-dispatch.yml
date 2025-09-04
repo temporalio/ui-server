@@ -31,6 +31,8 @@ jobs:
         uses: ./.github/actions/commit-changes
         with:
           message: "Sync from UI commit ${{ github.sha }}"
+          app-id: ${{ secrets.TEMPORAL_CICD_APP_ID }}
+          private-key: ${{ secrets.TEMPORAL_CICD_PRIVATE_KEY }}
 
   commit:
     uses: ./.github/workflows/on-commit.yaml
