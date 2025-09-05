@@ -19,8 +19,25 @@ jobs:
       release_url: ${{ steps.create_release.outputs.url }}
 
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.TEMPORAL_CICD_APP_ID }}
+          private-key: ${{ secrets.TEMPORAL_CICD_PRIVATE_KEY }}
+
       - name: Checkout ui-server
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
+          gh auth status -a
+          git config --global user.name "temporal-cicd[bot]"
+          git config --global user.email "gh-action@users.noreply.github.com"
 
       - name: Download and Build UI
         uses: ./.github/actions/download-and-build-ui
@@ -34,8 +51,6 @@ jobs:
         uses: ./.github/actions/commit-changes
         with:
           message: "Sync from UI release ${{ github.event.client_payload.release_tag }}"
-          app-id: ${{ secrets.TEMPORAL_CICD_APP_ID }}
-          private-key: ${{ secrets.TEMPORAL_CICD_PRIVATE_KEY }}
 
       - name: Create GitHub Release
         id: create_release
