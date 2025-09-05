@@ -1,0 +1,1 @@
+import{q as r,u as c,ax as i,aD as _,aw as h,y as u,L as y,z as d,C as k,U as l}from"./DSxqszTl.js";function I(f,n,t){r&&c();var e=f,s=l,a,o=i()?_:h;u(()=>{o(s,s=n())&&(a&&y(a),a=d(()=>t(e)))}),r&&(e=k)}export{I as k};

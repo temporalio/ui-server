@@ -1,0 +1,1 @@
+import{d as t}from"./Cb3VdkNs.js";import{p as a}from"./BY-uLiCW.js";const d=a("dark mode",!1,!0),o=t(d,e=>{var s,r;return e=="system"?((r=(s=window.matchMedia)==null?void 0:s.call(window,"(prefers-color-scheme: dark)"))==null?void 0:r.matches)??!1:e}),c=e=>{o.subscribe(s=>{s?e.dataset.theme="dark":e.dataset.theme="light"})};export{d as a,c as d,o as u};

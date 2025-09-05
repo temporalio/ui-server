@@ -1,0 +1,1 @@
+import{r as e}from"../chunks/hUONLBj8.js";import"../chunks/CWj6FrbW.js";import"../chunks/69_IOA4Y.js";const t=async function({url:o}){e(302,`${o.pathname}/history`)},c=Object.freeze(Object.defineProperty({__proto__:null,load:t},Symbol.toStringTag,{value:"Module"}));function i(o){}export{i as component,c as universal};
