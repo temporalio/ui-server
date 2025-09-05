@@ -27,17 +27,21 @@ runs:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ inputs.private-key }}
 
+    - name: Configure Git
+      shell: bash
+      run: |
+        echo ${{ steps.generate_token.outputs.token }} | gh auth login --with-token
+        gh auth status -a
+        git config --global user.name "temporal-cicd[bot]"
+        git config --global user.email "gh-action@users.noreply.github.com"
+
     - name: Commit changes
       shell: bash
       id: commit_changes
       run: |
-        git config --local user.name 'Temporal Data (cicd)'
-        git config --local user.email 'commander-data@temporal.io'
         git add .
         git commit -m "${{ inputs.message }}"
         git push
 
         echo "commit_hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      env:
-        GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
 
