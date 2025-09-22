@@ -1,0 +1,1 @@
+import"./CWj6FrbW.js";import"./69_IOA4Y.js";import{t as p,h as l,r as d,d as s}from"./CtXwlho8.js";import{s as e}from"./CykH9iyL.js";var i=p('<div class="h-full px-4 pb-16 pt-4 xl:px-8"><!></div>');function u(o,t){var a=i(),r=l(a);e(r,t,"default",{},null),d(a),s(o,a)}export{u as W};
