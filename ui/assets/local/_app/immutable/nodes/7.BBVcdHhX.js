@@ -1,0 +1,2 @@
+import"../chunks/CWj6FrbW.js";import{t as p,i as n,d as l,r as c,j as m,e as d}from"../chunks/BUtADDjV.js";import{s as f}from"../chunks/D8C9uSNL.js";import{s as v,a as $}from"../chunks/B1GMiS9d.js";import{v as u}from"../chunks/D36Cuv01.js";var g=p("<div><!></div>");function E(e,o){const[s,a]=v(),r=()=>$(u,"$viewDataEncoderSettings",s);var t=g(),i=n(t);l(i,()=>o.children),c(t),m(()=>f(t,1,`absolute bottom-0 left-0 right-0 ${(r()?"top-[540px]":"top-0")??""}
+flex h-full flex-col`)),d(e,t),a()}export{E as component};
