@@ -1,0 +1,1 @@
+import{g as n}from"./Bq4CR0Xw.js";import{p as i}from"./DI6i4Kkd.js";const s=i("AuthUser",{}),p=()=>n(s),u=t=>{const{accessToken:e,idToken:r,name:o,email:a,picture:c}=t;if(!e)throw new Error("No access token");s.set({accessToken:e,idToken:r,name:o,email:a,picture:c})},U=()=>{s.set({})};export{s as a,U as c,p as g,u as s};
