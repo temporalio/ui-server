@@ -1,0 +1,1 @@
+import{r as n,e as s}from"../chunks/hUONLBj8.js";import{f as c}from"../chunks/CmP24Sqv.js";const f=async function({url:e,params:r}){const{namespace:t,workflow:a}=r,{runId:o}=await c({namespace:t,workflowId:a});o?n(302,`${e.pathname}/${o}`):s(404)},p=Object.freeze(Object.defineProperty({__proto__:null,load:f},Symbol.toStringTag,{value:"Module"}));export{p as universal};
