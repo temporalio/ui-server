@@ -1,0 +1,1 @@
+import{w as r}from"./B9uAqm1w.js";import{p as e}from"./BJLi_mc8.js";const s=r(0),o={workflow:null,workers:{pollers:[],taskQueueStatus:null},metadata:void 0,userMetadata:{summary:"",details:""}},l=r(o);e("workflowSummaryView",!0,!0);e("workflowTimelineView",!0,!0);export{o as i,s as r,l as w};

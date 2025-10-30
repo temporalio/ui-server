@@ -1,0 +1,1 @@
+import{v as r,w as i,a9 as c,ai as _,a8 as h,x as d,F as k,D as u,G as v,U as y}from"./CeuSLZ0_.js";function I(f,n,t){r&&i();var e=f,s=y,a,o=c()?_:h;d(()=>{o(s,s=n())&&(a&&k(a),a=u(()=>t(e)))}),r&&(e=v)}export{I as k};
