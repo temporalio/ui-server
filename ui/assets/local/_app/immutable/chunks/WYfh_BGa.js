@@ -1,0 +1,1 @@
+import"./Bzak7iHL.js";import{t as o,i as p,d as i,r as d,j as m,e as l,a8 as c}from"./C-0kx8Rl.js";import{a as f}from"./DliSAU7O.js";import{p as n}from"./B0Wc33k0.js";var v=o("<div><!></div>");function _(e,r){let s=n(r,"class",3,"");var a=v(),t=p(a);i(t,()=>r.children??c),d(a),m(()=>f(a,1,`surface-primary border border-subtle p-4 ${s()??""}`)),l(e,a)}export{_ as C};
