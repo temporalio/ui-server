@@ -1,0 +1,1 @@
+import{g as p}from"./DSbgyoV1.js";var n,i;function m(){if(i)return n;i=1,n=a;function a(o,s,c,l){var e,r,u;return function(){if(u=this,r=Array.prototype.slice.call(arguments),e&&(c||l))return;if(!c)return t(),e=setTimeout(f,s),e;e=setTimeout(t,s),o.apply(u,r);function f(){t(),o.apply(u,r)}function t(){clearTimeout(e),e=null}}}return n}var b=m();const D=p(b);export{D as d};
