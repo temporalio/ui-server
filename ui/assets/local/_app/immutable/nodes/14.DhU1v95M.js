@@ -1,0 +1,1 @@
+import{r}from"../chunks/pfMRWl6z.js";import{r as o}from"../chunks/BeMdwWVl.js";const t=async function(){const e=o("feed");r(302,e)},c=Object.freeze(Object.defineProperty({__proto__:null,load:t},Symbol.toStringTag,{value:"Module"}));export{c as universal};
