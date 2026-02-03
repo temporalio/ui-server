@@ -1,0 +1,1 @@
+import{r as t}from"../chunks/pfMRWl6z.js";const o=async function({url:e}){t(302,`${e.pathname}/details`)},a=Object.freeze(Object.defineProperty({__proto__:null,load:o},Symbol.toStringTag,{value:"Module"}));export{a as universal};
