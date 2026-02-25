@@ -1,0 +1,1 @@
+import{I as c,K as o,J as d,O as i,ad as m}from"./DZ1-1a5q.js";function k(e,n,f){c(()=>{var r=o(()=>n(e,f==null?void 0:f())||{});if(f&&(r!=null&&r.update)){var a=!1,t={};d(()=>{var s=f();i(s),a&&m(t,s)&&(t=s,r.update(s))}),a=!0}if(r!=null&&r.destroy)return()=>r.destroy()})}export{k as a};

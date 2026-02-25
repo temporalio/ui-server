@@ -1,0 +1,1 @@
+import{M as n,N as o}from"./DZ1-1a5q.js";const e="core-context",c=t=>{n(e,t)};function r(){return o(e)}function s(t){return t?`${t} - webui`:"webui"}function u(){const t=r().getUserIdentifier();return s(t)}export{u as g,c as s};
