@@ -1,0 +1,1 @@
+import{r as o}from"../chunks/C8BZa76B.js";import"../chunks/Bzak7iHL.js";import"../chunks/69_IOA4Y.js";const t=async function({url:e}){o(302,`${e.pathname}/timeline`)},i=Object.freeze(Object.defineProperty({__proto__:null,load:t},Symbol.toStringTag,{value:"Module"}));function c(e){}export{c as component,i as universal};
