@@ -1,0 +1,1 @@
+function r(t,e=document.body){const o=typeof e=="string"?document.querySelector(e):e;return o?(o.appendChild(t),{destroy(){t.parentNode&&t.parentNode.removeChild(t)}}):(console.warn("Portal target not found"),{destroy(){}})}export{r as p};
