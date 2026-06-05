@@ -41,5 +41,9 @@ runs:
       shell: bash
       run: |
         rm -rf server/proto/dependencies/api
+        # Remove stale build output before overlaying the fresh build.
+        # ui/assets/local holds content-hashed assets; cp -r only overwrites
+        # same-name files, so changed chunks accumulate old-hash copies forever.
+        rm -rf ui/assets/local
         cp -r ui-release/server/* ./
         rm -rf ui-release
