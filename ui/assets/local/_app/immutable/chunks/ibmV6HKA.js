@@ -1,1 +1,0 @@
-import{N as n,O as o}from"./CYx2j9em.js";const e="core-context",c=t=>{n(e,t)};function r(){return o(e)}function s(t){return t?`${t} - webui`:"webui"}function u(){const t=r().getUserIdentifier();return s(t)}export{u as g,c as s};

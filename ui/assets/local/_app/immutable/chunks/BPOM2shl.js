@@ -1,1 +1,0 @@
-import{q as n}from"./CGJfDR-z.js";import{p as i}from"./Bhi0130y.js";const s=i("AuthUser",{}),p=()=>n(s),u=t=>{const{accessToken:e,idToken:r,name:o,email:a,picture:c}=t;if(!e)throw new Error("No access token");s.set({accessToken:e,idToken:r,name:o,email:a,picture:c})},U=()=>{s.set({})};export{s as a,U as c,p as g,u as s};
