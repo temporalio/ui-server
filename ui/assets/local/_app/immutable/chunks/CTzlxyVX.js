@@ -1,0 +1,1 @@
+const o=e=>{const t=e==null?void 0:e.indexOf("?");return t>-1?e.slice(0,t):e},i=(e,t,c=!1)=>{const s=o(e).split("/"),r=o(t).split("/");if(c&&s.length!==r.length)return!1;for(let n=0;n<s.length;n++){const a=s[n],f=r[n];if(a!==f)return!1}return!0};export{i as p};
