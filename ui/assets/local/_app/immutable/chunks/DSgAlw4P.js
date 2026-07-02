@@ -1,0 +1,1 @@
+import{p as n}from"./BDmlwANL.js";const t="navOpen",s="savedQueryNavOpen",i=n(t,!0),r=n(s,!0);let a=!1;const u=e=>{a||e===void 0||(a=!0,e&&(i.setInitialValue(!1),r.setInitialValue(!1)))};export{u as i,i as n,r as s};
