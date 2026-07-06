@@ -1,0 +1,1 @@
+import{l as r}from"./D9CAOdVh.js";import{c as i}from"./CfLHRXez.js";const d=(e,n)=>{var s,t;if((t=(s=e==null?void 0:e.data)==null?void 0:s.settings)!=null&&t.disableWriteActions)return!0;const a=i();return r(a).namespaceWriteDisabled(e.params.namespace)};export{d as s};
