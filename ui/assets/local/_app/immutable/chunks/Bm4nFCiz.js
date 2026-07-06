@@ -1,0 +1,1 @@
+import"./Bzak7iHL.js";import{j as a,r as l,b as t,c as d}from"./BmCDx2Ca.js";import{s as n}from"./C1n6J_Zq.js";var c=d('<div class="contents xl:col-span-2 xl:row-[span_var(--row-count)] xl:grid xl:grid-cols-subgrid xl:grid-rows-subgrid [&amp;:not(:first-child)]:ml-8"><!></div>');function v(o,s){var r=c(),i=a(r);n(i,()=>s.children),l(r),t(o,r)}export{v as D};
