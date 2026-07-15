@@ -1,0 +1,1 @@
+import{r as t}from"../chunks/CQG01CFa.js";import{g as n}from"../chunks/Dc9zG6pZ.js";const a=async function({params:e}){const{namespace:o}=e,r=n({namespace:o});t(301,r)},l=Object.freeze(Object.defineProperty({__proto__:null,load:a},Symbol.toStringTag,{value:"Module"}));export{l as universal};
