@@ -1,1 +1,0 @@
-import"../chunks/Bzak7iHL.js";import{s as e,e as n}from"../chunks/kJbupcvq.js";import{W as p}from"../chunks/9H6hnj3u.js";import{a as m}from"../chunks/Cla04V2G.js";function f(t){const o=()=>n(m,"$importEvents",s),[s,r]=e();p(t,{get events(){return o()}}),r()}export{f as component};
