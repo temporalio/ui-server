@@ -1,1 +1,0 @@
-import{p as n}from"./DuVhQE4N.js";const s="navOpen",i="savedQueryNavOpen",r=n(s,!0),a=n(i,!1);let t=!1;const u=e=>{if(!(t||e===void 0)){if(t=!0,!e){a.setInitialValue(!0);return}r.setInitialValue(!1),a.setInitialValue(!1)}};export{u as i,r as n,a as s};
