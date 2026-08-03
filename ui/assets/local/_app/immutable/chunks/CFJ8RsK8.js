@@ -1,0 +1,1 @@
+const u=r=>Object.keys((r==null?void 0:r.scalingGroups)??{}).length>0,o=r=>{var s,e;return r?[r.computeConfig,(s=r.currentVersionSummary)==null?void 0:s.computeConfig,(e=r.rampingVersionSummary)==null?void 0:e.computeConfig].some(u):!1};export{o as d};
