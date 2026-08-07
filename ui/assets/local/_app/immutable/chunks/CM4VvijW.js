@@ -1,0 +1,1 @@
+import{d as n}from"./D4Efgifo.js";import{c}from"./CHODU1ji.js";const f=(r,m)=>{var t,s,e,o;const i=c(),a=n(i).namespaceWriteDisabled(r.params.namespace);return(s=(t=r==null?void 0:r.data)==null?void 0:t.settings)!=null&&s.disableWriteActions||(o=(e=r==null?void 0:r.data)==null?void 0:e.settings)!=null&&o.startWorkflowDisabled?!0:a};export{f as w};
