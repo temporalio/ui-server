@@ -1,1 +1,0 @@
-import{p as r,u as t}from"./8ra_Y3nU.js";import{s as e}from"./DLL5Lftl.js";const a={get data(){return r.data},get error(){return r.error},get params(){return r.params},get status(){return r.status},get url(){return r.url}},s={get current(){return t.current},check:e.updated.check},n=a,o=s;export{n as p,o as u};
