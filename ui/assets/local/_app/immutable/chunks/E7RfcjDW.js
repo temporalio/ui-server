@@ -1,0 +1,1 @@
+import{o as c}from"./DtNcsu2B.js";const u=((o,n)=>{let r=!1;const e=t=>{r=t.button===0&&!!(o!=null&&o.contains(t.target))},i=t=>{if(t.detail>0&&r){r=!1;return}o&&!o.contains(t.target)&&!t.defaultPrevented&&n(t)},s=c(document,"pointerdown",e,{capture:!0}),a=c(document,"click",i,{capture:!0});return{destroy:()=>{s(),a()}}});export{u as c};
