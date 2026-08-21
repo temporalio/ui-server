@@ -1,0 +1,1 @@
+import"./Bzak7iHL.js";import{b as a,a6 as e}from"./xVOrq-b6.js";import{s as l,r as $}from"./D0RPz-YM.js";import{I as n}from"./DmQQCz2z.js";var i=new Set(["$$slots","$$events","$$legacy"]),m=e('<path fill="currentColor" d="M14 8 2 15V1z"></path>');function u(r,s){const o=$(s,i);n(r,l(()=>o,{children:(t,c)=>{var p=m();a(t,p)},$$slots:{default:!0}}))}export{u as P};
