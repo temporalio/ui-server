@@ -1,1 +1,0 @@
-import{an as o}from"./xVOrq-b6.js";import{p as e}from"./CRgbx9Ix.js";const n=o([e],([r])=>{var a;return(a=r.data)==null?void 0:a.cluster}),s=o([e],([r])=>r.data.settings),p=o([n],([r])=>r==null?void 0:r.serverVersion),m=o([s],([r])=>r==null?void 0:r.version);export{n as c,s,p as t,m as u};
