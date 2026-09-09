@@ -1,0 +1,1 @@
+import{t as e}from"./dJRM_EPn.js";const n={Running:"workflows.running",TimedOut:"workflows.timed-out",Completed:"workflows.completed",Failed:"workflows.failed",ContinuedAsNew:"workflows.continued-as-new",Canceled:"workflows.canceled",Terminated:"workflows.terminated",Paused:"workflows.paused"},w=o=>o in n,l=o=>o&&w(o)?e(n[o]):e("common.unknown");export{l as g};
