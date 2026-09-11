@@ -1,5 +1,5 @@
 name: Download and Build UI
-description: Downloads, builds, and copies temporalio/ui from a given SHA
+description: Downloads and builds temporalio/ui from a given SHA, staged for overlay
 
 inputs:
   ref:
@@ -14,6 +14,11 @@ inputs:
   upstream_repo:
     description: 'Upstream repository of the UI'
     required: true
+
+outputs:
+  build_dir:
+    description: 'Directory holding the built UI output, ready to overlay onto the repo root'
+    value: ${{ steps.stage_build.outputs.build_dir }}
 
 runs:
   using: 'composite'
@@ -37,13 +42,16 @@ runs:
         pnpm install
         pnpm build:server
 
-    - name: Copy UI to server
+    - name: Stage build output
+      id: stage_build
       shell: bash
       run: |
-        rm -rf server/proto/dependencies/api
-        # Remove stale build output before overlaying the fresh build.
-        # ui/assets/local holds content-hashed assets; cp -r only overwrites
-        # same-name files, so changed chunks accumulate old-hash copies forever.
-        rm -rf ui/assets/local
-        cp -r ui-release/server/* ./
+        set -euo pipefail
+        # Stage outside the working tree so commit-changes can re-apply the build
+        # after resetting onto a newer main. See that action for why it retries.
+        BUILD_DIR="$RUNNER_TEMP/ui-build"
+        rm -rf "$BUILD_DIR"
+        mkdir -p "$BUILD_DIR"
+        cp -r ui-release/server/* "$BUILD_DIR"/
         rm -rf ui-release
+        echo "build_dir=$BUILD_DIR" >> "$GITHUB_OUTPUT"
