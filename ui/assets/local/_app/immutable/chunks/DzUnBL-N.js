@@ -1,0 +1,1 @@
+import"./Bzak7iHL.js";import{s as o,r as p}from"./DYZ4dx2G.js";import{I as a}from"./k35wtQLD.js";import{E as l}from"./ky_cun6-.js";var n=new Set(["$$slots","$$events","$$legacy"]);function d(r,s){const t=p(s,n);a(r,o(()=>t,{children:(e,$)=>{l(e,{x:2.667,y:2.667,width:10.667,height:10.667})},$$slots:{default:!0}}))}export{d as E};
