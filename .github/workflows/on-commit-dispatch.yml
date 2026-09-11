@@ -27,6 +27,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ steps.generate_token.outputs.token }}
+          ref: main
           fetch-depth: 0
 
       - name: Configure Git
@@ -37,6 +38,7 @@ jobs:
           git config --global user.email "gh-action@users.noreply.github.com"
 
       - name: Download and Build UI
+        id: build_ui
         uses: ./.github/actions/download-and-build-ui
         with:
           ref: ${{ github.event.client_payload.ref }}
@@ -47,11 +49,5 @@ jobs:
         id: commit_changes
         uses: ./.github/actions/commit-changes
         with:
-          message: "Sync from UI commit ${{ github.sha }}"
-
-  commit:
-    uses: ./.github/workflows/on-commit.yaml
-    needs: [sync]
-    secrets: inherit
-    with:
-      ref: ${{ needs.sync.outputs.commit_hash }}
+          message: "Sync from UI commit ${{ github.event.client_payload.ref }}"
+          build_dir: ${{ steps.build_ui.outputs.build_dir }}

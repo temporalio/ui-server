@@ -1,10 +1,21 @@
-name: 'Docker Build and Push'
-description: 'Build and push Docker images'
+name: 'Commit Changes'
+description: 'Overlays the built UI onto the latest branch tip and pushes, retrying if the branch moves'
 
 inputs:
   message:
     description: 'The commit message'
     required: true
+  build_dir:
+    description: 'Directory holding the built UI output to overlay onto the repo root'
+    required: true
+  branch:
+    description: 'Branch to commit onto'
+    required: false
+    default: 'main'
+  attempts:
+    description: 'How many times to re-anchor and retry the push'
+    required: false
+    default: '5'
 
 outputs:
   commit_hash:
@@ -17,10 +28,49 @@ runs:
     - name: Commit changes
       shell: bash
       id: commit_changes
+      env:
+        MESSAGE: ${{ inputs.message }}
+        BUILD_DIR: ${{ inputs.build_dir }}
+        BRANCH: ${{ inputs.branch }}
+        ATTEMPTS: ${{ inputs.attempts }}
       run: |
-        git add .
-        git commit -m "${{ inputs.message }}"
-        git push
+        set -euo pipefail
 
-        echo "commit_hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        for attempt in $(seq 1 "$ATTEMPTS"); do
+          # Re-anchor on the live branch tip before every attempt.
+          #
+          # actions/checkout fetches the SHA that github.sha was pinned to when the
+          # repository_dispatch event was created, and force-rewinds origin/main to
+          # it. A run that waits in the queue therefore starts from a base that is
+          # already several commits stale, and another sync can land while this one
+          # builds. Both cases end in a non-fast-forward push, so re-read the tip
+          # here instead of trusting the checkout.
+          git fetch origin "$BRANCH"
+          git reset --hard "origin/$BRANCH"
 
+          # The build is a full replacement of these paths, not a delta, so
+          # re-applying it onto a newer base loses nothing. Everything outside
+          # these paths comes from the reset above and is preserved.
+          rm -rf server/proto/dependencies/api ui/assets/local
+          cp -r "$BUILD_DIR"/* ./
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit: $BRANCH already matches this build."
+            echo "commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "$MESSAGE"
+
+          if git push origin "HEAD:$BRANCH"; then
+            echo "commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Push rejected on attempt $attempt of $ATTEMPTS: $BRANCH moved. Re-anchoring."
+          sleep $(( RANDOM % 10 + 5 ))
+        done
+
+        echo "::error::Could not push to $BRANCH after $ATTEMPTS attempts."
+        exit 1
