@@ -8,6 +8,19 @@ inputs:
   build_dir:
     description: 'Directory holding the built UI output to overlay onto the repo root'
     required: true
+  ui_sha:
+    description: 'SHA of the UI commit that was built, recorded as a UI-Commit trailer'
+    required: true
+  upstream_org:
+    description: 'Upstream organization of the UI repository'
+    required: true
+  upstream_repo:
+    description: 'Upstream repository of the UI'
+    required: true
+  skip_if_superseded:
+    description: 'Skip the push when the branch already reflects a newer UI commit. Releases must set this to false so the release tag has a commit to point at.'
+    required: false
+    default: 'true'
   branch:
     description: 'Branch to commit onto'
     required: false
@@ -29,12 +42,45 @@ runs:
       shell: bash
       id: commit_changes
       env:
+        GH_TOKEN: ${{ github.token }}
         MESSAGE: ${{ inputs.message }}
         BUILD_DIR: ${{ inputs.build_dir }}
+        UI_SHA: ${{ inputs.ui_sha }}
+        UPSTREAM: ${{ inputs.upstream_org }}/${{ inputs.upstream_repo }}
+        SKIP_IF_SUPERSEDED: ${{ inputs.skip_if_superseded }}
         BRANCH: ${{ inputs.branch }}
         ATTEMPTS: ${{ inputs.attempts }}
       run: |
         set -euo pipefail
+
+        # Is the UI commit on the branch tip newer than the one we built? If so this
+        # run lost a race it must not win: pushing would roll the UI back.
+        #
+        # Push order is decided by runner scheduling, not by UI commit order. A run
+        # can sit in the queue for minutes while a newer sync starts and finishes,
+        # so "last push wins" is not safe on its own.
+        superseded() {
+          [ "$SKIP_IF_SUPERSEDED" = "true" ] || return 1
+
+          local head_ui status
+          head_ui="$(git log -1 --format='%(trailers:key=UI-Commit,valueonly)' | tr -d '[:space:]')"
+          # No trailer means the tip predates this check; nothing to compare against.
+          [ -n "$head_ui" ] || return 1
+          [ "$head_ui" != "$UI_SHA" ] || return 1
+
+          if ! status="$(gh api "repos/$UPSTREAM/compare/$UI_SHA...$head_ui" --jq .status 2>/dev/null)"; then
+            echo "::warning::Could not compare $UI_SHA with $head_ui; proceeding with the push."
+            return 1
+          fi
+
+          case "$status" in
+            ahead|identical)
+              # The branch already has this build's changes, or later ones.
+              return 0 ;;
+            *)
+              return 1 ;;
+          esac
+        }
 
         for attempt in $(seq 1 "$ATTEMPTS"); do
           # Re-anchor on the live branch tip before every attempt.
@@ -47,6 +93,12 @@ runs:
           # here instead of trusting the checkout.
           git fetch origin "$BRANCH"
           git reset --hard "origin/$BRANCH"
+
+          if superseded; then
+            echo "$BRANCH already reflects a UI commit at or after $UI_SHA. Nothing to do."
+            echo "commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
           # The build is a full replacement of these paths, not a delta, so
           # re-applying it onto a newer base loses nothing. Everything outside
@@ -61,7 +113,7 @@ runs:
             exit 0
           fi
 
-          git commit -m "$MESSAGE"
+          git commit -m "$MESSAGE" --trailer "UI-Commit: $UI_SHA"
 
           if git push origin "HEAD:$BRANCH"; then
             echo "commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"

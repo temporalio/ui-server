@@ -51,3 +51,6 @@ jobs:
         with:
           message: "Sync from UI commit ${{ github.event.client_payload.ref }}"
           build_dir: ${{ steps.build_ui.outputs.build_dir }}
+          ui_sha: ${{ steps.build_ui.outputs.ui_sha }}
+          upstream_org: ${{ vars.UPSTREAM_ORG }}
+          upstream_repo: ${{ vars.UPSTREAM_REPO }}

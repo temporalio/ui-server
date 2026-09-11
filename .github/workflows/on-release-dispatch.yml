@@ -54,6 +54,11 @@ jobs:
         with:
           message: "Sync from UI release ${{ github.event.client_payload.release_tag }}"
           build_dir: ${{ steps.build_ui.outputs.build_dir }}
+          ui_sha: ${{ steps.build_ui.outputs.ui_sha }}
+          upstream_org: ${{ vars.UPSTREAM_ORG }}
+          upstream_repo: ${{ vars.UPSTREAM_REPO }}
+          # A release must always land a commit for its tag to point at.
+          skip_if_superseded: 'false'
 
       - name: Create GitHub Release
         id: create_release
