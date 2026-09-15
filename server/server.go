@@ -124,7 +124,8 @@ func NewServer(opts ...server_options.ServerOption) *Server {
 			}
 		}
 		route.SetUIRoutes(e, cfg.PublicPath, assets)
-		route.SetRenderRoute(e, cfg.PublicPath)
+		// PublicPath strips cfg.PublicPath before Echo matches routes.
+		route.SetRenderRoute(e, "/")
 	}
 
 	s := &Server{
