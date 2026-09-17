@@ -41,7 +41,7 @@ func TestCertLoader_ReloadsNewKeyPair(t *testing.T) {
 			assert.NoError(t, os.WriteFile(certPath, certPEM1, 0644))
 			assert.NoError(t, os.WriteFile(keyPath, keyPEM1, 0644))
 
-			loader := &certLoader{CertFile: certPath, KeyFile: keyPath}
+			loader := NewCertLoader(certPath, keyPath)
 
 			loaded1, err := loader.GetClientCertificate(nil)
 			assert.NoError(t, err)
@@ -79,6 +79,31 @@ func TestCertLoader_ReloadsNewKeyPair(t *testing.T) {
 			assert.NotEqual(t, expect1.Certificate, loaded2.Certificate)
 		})
 	}
+}
+
+// TestCertLoader_GetCertificate_MatchesGetClientCertificate confirms the
+// server-side callback returns the same underlying cert as the client-side
+// callback for a shared underlying loader.
+func TestCertLoader_GetCertificate_MatchesGetClientCertificate(t *testing.T) {
+	dir := t.TempDir()
+	certPath := filepath.Join(dir, "cert.pem")
+	keyPath := filepath.Join(dir, "key.pem")
+
+	certPEM, keyPEM := generateCertKeyPair(t, "server")
+	assert.NoError(t, os.WriteFile(certPath, certPEM, 0644))
+	assert.NoError(t, os.WriteFile(keyPath, keyPEM, 0644))
+
+	loader := NewCertLoader(certPath, keyPath)
+
+	fromServer, err := loader.GetCertificate(nil)
+	assert.NoError(t, err)
+	assert.NotNil(t, fromServer)
+
+	fromClient, err := loader.GetClientCertificate(nil)
+	assert.NoError(t, err)
+	assert.NotNil(t, fromClient)
+
+	assert.Equal(t, fromServer.Certificate, fromClient.Certificate)
 }
 
 func generateCertKeyPair(t *testing.T, commonName string) (certPEM, keyPEM []byte) {

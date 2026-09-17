@@ -23,6 +23,8 @@
 package server
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -38,6 +40,7 @@ import (
 	"github.com/temporalio/ui-server/v2/server/csrf"
 	"github.com/temporalio/ui-server/v2/server/headers"
 	"github.com/temporalio/ui-server/v2/server/route"
+	"github.com/temporalio/ui-server/v2/server/rpc"
 	"github.com/temporalio/ui-server/v2/server/server_options"
 
 	"github.com/temporalio/ui-server/v2/ui"
@@ -144,10 +147,20 @@ func (s *Server) Start() error {
 	}
 
 	address := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
-	if cfg.UIServerTLS.CertFile != "" && cfg.UIServerTLS.KeyFile != "" {
+	switch {
+	case cfg.UIServerTLS.CertFile != "" && cfg.UIServerTLS.KeyFile != "" && cfg.UIServerTLS.CaFile != "":
+		s.httpServer.Logger.Info("Starting UI server with mTLS...")
+		tlsConfig, buildErr := buildUIServerTLSConfig(cfg.UIServerTLS)
+		if buildErr != nil {
+			return buildErr
+		}
+		s.httpServer.TLSServer.Addr = address
+		s.httpServer.TLSServer.TLSConfig = tlsConfig
+		err = s.httpServer.StartServer(s.httpServer.TLSServer)
+	case cfg.UIServerTLS.CertFile != "" && cfg.UIServerTLS.KeyFile != "":
 		s.httpServer.Logger.Info("Starting UI server with TLS...")
 		err = s.httpServer.StartTLS(address, cfg.UIServerTLS.CertFile, cfg.UIServerTLS.KeyFile)
-	} else {
+	default:
 		err = s.httpServer.Start(address)
 	}
 
@@ -155,6 +168,54 @@ func (s *Server) Start() error {
 		s.httpServer.Logger.Fatal(err)
 	}
 	return nil
+}
+
+// buildUIServerTLSConfig assembles a *tls.Config for the inbound HTTPS
+// listener when mTLS is enabled. The server cert is reloaded from disk on
+// change via rpc.NewCertLoader. The client CA bundle is loaded once at
+// startup; rotating the CA requires a process restart.
+func buildUIServerTLSConfig(cfg config.UIServerTLS) (*tls.Config, error) {
+	loader := rpc.NewCertLoader(cfg.CertFile, cfg.KeyFile)
+	if _, err := loader.GetCertificate(nil); err != nil {
+		return nil, fmt.Errorf("load initial ui-server key pair: %w", err)
+	}
+
+	caBytes, err := os.ReadFile(cfg.CaFile)
+	if err != nil {
+		return nil, fmt.Errorf("read ui-server client CA %q: %w", cfg.CaFile, err)
+	}
+	pool := x509.NewCertPool()
+	if !pool.AppendCertsFromPEM(caBytes) {
+		return nil, fmt.Errorf("no valid PEM certificates in %q", cfg.CaFile)
+	}
+
+	clientAuth, err := parseClientAuth(cfg.ClientAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	return &tls.Config{
+		MinVersion:     tls.VersionTLS12,
+		NextProtos:     []string{"h2", "http/1.1"},
+		GetCertificate: loader.GetCertificate,
+		ClientAuth:     clientAuth,
+		ClientCAs:      pool,
+	}, nil
+}
+
+func parseClientAuth(s string) (tls.ClientAuthType, error) {
+	switch s {
+	case "", "requireAndVerify", "require":
+		return tls.RequireAndVerifyClientCert, nil
+	case "verifyIfGiven":
+		return tls.VerifyClientCertIfGiven, nil
+	case "request":
+		return tls.RequestClientCert, nil
+	case "requireAny":
+		return tls.RequireAnyClientCert, nil
+	default:
+		return 0, fmt.Errorf("invalid uiServerTLS.clientAuth %q", s)
+	}
 }
 
 // Stop UI server.

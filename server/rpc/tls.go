@@ -52,7 +52,15 @@ type HttpGetter interface {
 	Get(url string) (resp *http.Response, err error)
 }
 
-type certLoader struct {
+// CertLoader is a hot-reloading TLS key-pair loader. It caches the parsed
+// key pair and reloads from disk when the cert file's mtime changes. If a
+// reload fails (e.g. mid-rotation with mismatched cert/key or transient IO
+// error) the last known-good cert is returned so live traffic is not dropped.
+//
+// A single CertLoader can serve both sides of a TLS handshake via its
+// GetClientCertificate (client-side) and GetCertificate (server-side)
+// methods.
+type CertLoader struct {
 	CertFile    string
 	KeyFile     string
 	cachedCert  *tls.Certificate
@@ -60,7 +68,30 @@ type certLoader struct {
 	lock        sync.RWMutex
 }
 
-func (l *certLoader) GetClientCertificate(_ *tls.CertificateRequestInfo) (*tls.Certificate, error) {
+// NewCertLoader constructs a CertLoader for the given cert and key files.
+// The files are not read until GetCertificate or GetClientCertificate is
+// invoked.
+func NewCertLoader(certFile, keyFile string) *CertLoader {
+	return &CertLoader{CertFile: certFile, KeyFile: keyFile}
+}
+
+// GetClientCertificate is a tls.Config.GetClientCertificate callback used
+// when the ui-server acts as a TLS client (e.g. dialing the Temporal frontend).
+func (l *CertLoader) GetClientCertificate(_ *tls.CertificateRequestInfo) (*tls.Certificate, error) {
+	return l.getCert()
+}
+
+// GetCertificate is a tls.Config.GetCertificate callback used when the
+// ui-server acts as a TLS server (e.g. terminating inbound HTTPS on the UI
+// listener).
+func (l *CertLoader) GetCertificate(_ *tls.ClientHelloInfo) (*tls.Certificate, error) {
+	return l.getCert()
+}
+
+// getCert returns the cached key pair if the cert file on disk is unchanged,
+// otherwise reloads from disk. On reload failure the last known-good cert is
+// returned so a transient bad rotation does not drop live traffic.
+func (l *CertLoader) getCert() (*tls.Certificate, error) {
 	stat, err := os.Stat(l.CertFile)
 	if err != nil {
 		l.lock.RLock()
@@ -150,12 +181,8 @@ func CreateTLSConfig(address string, cfg *config.TLS) (*tls.Config, error) {
 	if configureKeyPairFromFile {
 		// Configure server to reload client cert from file if it changes on
 		// disk.
-		certLoader := &certLoader{
-			CertFile: cfg.CertFile,
-			KeyFile:  cfg.KeyFile,
-			lock:     sync.RWMutex{},
-		}
-		tlsConfig.GetClientCertificate = certLoader.GetClientCertificate
+		loader := NewCertLoader(cfg.CertFile, cfg.KeyFile)
+		tlsConfig.GetClientCertificate = loader.GetClientCertificate
 	}
 
 	if configureKeyPairFromBytes {
