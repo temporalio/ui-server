@@ -40,10 +40,26 @@ runs:
     - name: Copy UI to server
       shell: bash
       run: |
-        rm -rf server/proto/dependencies/api
-        # Remove stale build output before overlaying the fresh build.
-        # ui/assets/local holds content-hashed assets; cp -r only overwrites
-        # same-name files, so changed chunks accumulate old-hash copies forever.
-        rm -rf ui/assets/local
-        cp -r ui-release/server/* ./
+        # Mirror ui/server into this repo. --delete removes files that were
+        # deleted or renamed in temporalio/ui. The excludes are files that
+        # only ui-server has.
+        test -f ui-release/server/go.mod
+        changes="$RUNNER_TEMP/sync-changes.txt"
+        rsync --archive --delete --itemize-changes \
+          --exclude=/.git/ \
+          --exclude=/.github/ \
+          --exclude=/.vscode/ \
+          --exclude=/.gitignore \
+          --exclude=/.goreleaser.yml \
+          --exclude=/ui-release/ \
+          ui-release/server/ ./ > "$changes"
         rm -rf ui-release
+
+        deleted=$(grep '^\*deleting' "$changes" | grep -v ' ui/assets/local/' | sed 's/^\*deleting *//' || true)
+        if [ -n "$deleted" ]; then
+          {
+            echo "### Files deleted by the sync"
+            echo
+            echo "$deleted" | sed 's/^/- `/; s/$/`/'
+          } >> "$GITHUB_STEP_SUMMARY"
+        fi
