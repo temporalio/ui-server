@@ -47,7 +47,7 @@ jobs:
         id: commit_changes
         uses: ./.github/actions/commit-changes
         with:
-          message: "Sync from UI commit ${{ github.sha }}"
+          message: "Sync from UI commit ${{ github.event.client_payload.ref }}"
 
   commit:
     uses: ./.github/workflows/on-commit.yaml
