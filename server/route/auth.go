@@ -96,6 +96,16 @@ func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) 
 		log.Fatal(err)
 	}
 
+	// end_session_endpoint is advertised in the provider's OIDC discovery document and is
+	// needed for RP-Initiated Logout. It is optional, so a provider that omits it simply
+	// disables the feature rather than failing startup.
+	var providerMeta struct {
+		EndSessionEndpoint string `json:"end_session_endpoint"`
+	}
+	if err := provider.Claims(&providerMeta); err != nil {
+		log.Printf("[Auth] unable to read provider metadata: %v", err)
+	}
+
 	oidcConfig := &oidc.Config{ClientID: providerCfg.ClientID}
 	verifier := provider.Verifier(oidcConfig)
 	auth.SetVerifier(verifier)
@@ -116,12 +126,50 @@ func SetAuthRoutes(e *echo.Echo, cfgProvider *config.ConfigProviderWithRefresh) 
 	maxSessionDuration := serverCfg.Auth.MaxSessionDuration
 	refreshTokenDuration := providerCfg.RefreshTokenDuration
 
+	endSession := endSessionConfig{
+		enabled:               providerCfg.EndSessionEnabled,
+		endpoint:              providerMeta.EndSessionEndpoint,
+		postLogoutRedirectURI: providerCfg.PostLogoutRedirectUri,
+	}
+	if endSession.enabled && endSession.endpoint == "" {
+		log.Printf("[Auth] endSessionEnabled is set but the provider did not advertise an end_session_endpoint; RP-initiated logout is disabled")
+	}
+	if endSession.postLogoutRedirectURI == "" {
+		if origin, err := originFromURL(providerCfg.CallbackURL); err == nil {
+			endSession.postLogoutRedirectURI = origin
+		} else {
+			log.Printf("[Auth] unable to derive post_logout_redirect_uri from callback URL: %v", err)
+		}
+	}
+
 	api := e.Group("/auth")
 	api.GET("/sso", authenticate(&oauthCfg, providerCfg.Options, serverCfg.CORS.AllowOrigins, secure))
 	api.GET("/sso/callback", authenticateCb(ctx, &oauthCfg, provider, maxSessionDuration, refreshTokenDuration, secure))
 	api.GET("/sso_callback", authenticateCb(ctx, &oauthCfg, provider, maxSessionDuration, refreshTokenDuration, secure)) // compatibility with UI v1
 	api.GET("/refresh", refreshTokens(ctx, &oauthCfg, provider, maxSessionDuration, refreshTokenDuration, secure))
-	api.GET("/logout", logout(secure))
+	api.GET("/logout", logout(secure, endSession))
+}
+
+// endSessionConfig captures what the logout handler needs to perform OIDC
+// RP-Initiated Logout. When enabled is false, or endpoint is empty, logout falls
+// back to clearing local cookies and redirecting to the app root.
+type endSessionConfig struct {
+	enabled               bool
+	endpoint              string
+	postLogoutRedirectURI string
+}
+
+// originFromURL returns the scheme://host origin of a URL, used as the default
+// post-logout redirect target when none is configured.
+func originFromURL(raw string) (string, error) {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return "", fmt.Errorf("unable to parse url %q: %w", raw, err)
+	}
+	if u.Scheme == "" || u.Host == "" {
+		return "", fmt.Errorf("url %q has no scheme or host", raw)
+	}
+	return fmt.Sprintf("%s://%s", u.Scheme, u.Host), nil
 }
 
 // cookieSecureForCallbackURL reports whether the auth cookies may carry the Secure
@@ -302,10 +350,20 @@ func refreshTokens(ctx context.Context, oauthCfg *oauth2.Config, provider *oidc.
 	}
 }
 
-// logout clears authentication cookies and redirects to root
-func logout(secure bool) func(echo.Context) error {
+// logout clears authentication cookies. When RP-Initiated Logout is enabled and the
+// provider advertises an end_session_endpoint, it then redirects the browser there so
+// the identity provider session is terminated; otherwise it redirects to root.
+func logout(secure bool, endSession endSessionConfig) func(echo.Context) error {
 	return func(c echo.Context) error {
 		log.Printf("[Auth] User logout initiated from %s", c.RealIP())
+
+		rpInitiated := endSession.enabled && endSession.endpoint != ""
+
+		// Capture the id_token_hint before clearing the user* cookies that carry it.
+		var idTokenHint string
+		if rpInitiated {
+			idTokenHint = auth.IDTokenFromCookies(c)
+		}
 
 		// Clear refresh token cookie
 		clearCookie(c, "refresh", secure)
@@ -322,9 +380,43 @@ func logout(secure bool) func(echo.Context) error {
 		}
 		log.Printf("[Auth] Cleared user data cookies")
 
+		if rpInitiated {
+			logoutURL, err := buildEndSessionURL(endSession.endpoint, idTokenHint, endSession.postLogoutRedirectURI)
+			if err != nil {
+				log.Printf("[Auth] unable to build end session URL, falling back to local logout: %v", err)
+			} else {
+				log.Printf("[Auth] Redirecting to provider end_session_endpoint for RP-initiated logout")
+				return c.Redirect(http.StatusSeeOther, logoutURL)
+			}
+		}
+
 		// Redirect to root (or login page)
 		return c.Redirect(http.StatusSeeOther, "/")
 	}
+}
+
+// buildEndSessionURL assembles the OIDC RP-Initiated Logout URL from the provider's
+// end_session_endpoint, adding id_token_hint and post_logout_redirect_uri when available
+// while preserving any query parameters already present on the endpoint.
+func buildEndSessionURL(endpoint, idTokenHint, postLogoutRedirectURI string) (string, error) {
+	u, err := url.Parse(endpoint)
+	if err != nil {
+		return "", fmt.Errorf("invalid end_session_endpoint %q: %w", endpoint, err)
+	}
+	if u.Scheme == "" || u.Host == "" {
+		return "", fmt.Errorf("end_session_endpoint %q is not an absolute URL", endpoint)
+	}
+
+	q := u.Query()
+	if idTokenHint != "" {
+		q.Set("id_token_hint", idTokenHint)
+	}
+	if postLogoutRedirectURI != "" {
+		q.Set("post_logout_redirect_uri", postLogoutRedirectURI)
+	}
+	u.RawQuery = q.Encode()
+
+	return u.String(), nil
 }
 
 // clearCookie sets a cookie with MaxAge=-1 to delete it
