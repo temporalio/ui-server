@@ -71,6 +71,8 @@ auth:
     callbackUrl: {{ env "TEMPORAL_AUTH_CALLBACK_URL" }}
     useIdTokenAsBearer: {{ env "TEMPORAL_AUTH_USE_ID_TOKEN_AS_BEARER" | default "false" }}
     refreshTokenDuration: {{ env "TEMPORAL_AUTH_REFRESH_TOKEN_DURATION" | default "" }}
+    endSessionEnabled: {{ env "TEMPORAL_AUTH_END_SESSION_ENABLED" | default "false" }}
+    postLogoutRedirectUri: {{ env "TEMPORAL_AUTH_POST_LOGOUT_REDIRECT_URI" | default "" }}
     scopes:
     {{- if env "TEMPORAL_AUTH_SCOPES" }}
     {{- range env "TEMPORAL_AUTH_SCOPES" | split "," }}
