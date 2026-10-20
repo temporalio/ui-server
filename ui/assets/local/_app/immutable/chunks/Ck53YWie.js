@@ -1,0 +1,1 @@
+function e(e=!0){let t=``;return t=e?window.location.origin+``:``,t.endsWith(`/`)&&(t=t.slice(0,-1)),t}export{e as t};

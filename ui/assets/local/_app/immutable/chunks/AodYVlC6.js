@@ -1,0 +1,1 @@
+import{A as e,Bt as t,L as n,P as r,R as i,Vt as a,ut as o}from"./CI15fvGn.js";import"./B8UK1oE5.js";function s(s,c){a(c,!0);var l=i(),u=o(l),d=t=>{var r=i(),a=o(r);e(a,()=>c.children),n(t,r)};r(u,e=>{var t;(t=c.namespace)!=null&&(t=t.namespaceInfo)!=null&&(t=t.capabilities)!=null&&t.standaloneActivityStartDelay&&e(d)}),n(s,l),t()}export{s as t};

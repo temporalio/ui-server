@@ -1,0 +1,1 @@
+import{t as e}from"./8qSFigyB.js";var t=(t,n)=>!t||!e(t,n)?`unsupported`:t[n]?`enabled`:`disabled`;export{t};

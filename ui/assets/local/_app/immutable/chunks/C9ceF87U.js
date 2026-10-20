@@ -1,0 +1,1 @@
+var e=(e,t)=>t===1?e:`${e}s`;export{e as t};

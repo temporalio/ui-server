@@ -1,0 +1,1 @@
+import{t as e}from"./8qSFigyB.js";function t(t){return t?e(t,`statusCode`,`statusText`,`response`):!1}export{t};

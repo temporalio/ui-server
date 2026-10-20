@@ -1,0 +1,1 @@
+var e=(e,t)=>{if(!e||!t)return!1;let[n,r,i]=e.split(`.`).map(Number),[a,o,s]=t.split(`.`).map(Number);return n===a?r===o?i>s:r>o:n>a},t=(e,t)=>{if(!e||!t)return!1;let[n,r,i]=e.split(`.`).map(Number),[a,o,s]=t.split(`.`).map(Number);return n===a?r===o?i===void 0&&s||i===void 0&&(s===void 0||isNaN(s))?!0:s>=i:r===void 0&&o||r===void 0&&o===void 0?!0:o>r:a>n};export{t as n,e as t};

@@ -1,0 +1,1 @@
+import{n as e}from"./DLYWgwmi.js";var t=(t,n={})=>{let[r,...i]=t.split(`.`);if(r&&i.length>0){let t=i.join(`.`);return e(`${r}:${t}`,n)}return t};export{t};

@@ -1,0 +1,1 @@
+import{Y as e,mt as t,yt as n}from"./CI15fvGn.js";function r(r){let i=n(()=>{r()});return{get value(){return e(i)},set value(e){t(i,e)}}}export{r as t};

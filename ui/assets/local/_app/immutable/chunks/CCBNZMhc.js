@@ -1,0 +1,1 @@
+import{Rt as e}from"./CI15fvGn.js";function t(t){return e(t)}export{t};

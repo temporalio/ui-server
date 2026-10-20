@@ -1,0 +1,1 @@
+var e=e=>(e==null?void 0:e.substring(0,8))===`https://`,t=e=>(e==null?void 0:e.substring(0,7))===`http://`,n=n=>t(n)||e(n);export{e as n,n as t};

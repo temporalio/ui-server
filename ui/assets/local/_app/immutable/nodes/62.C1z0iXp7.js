@@ -1,0 +1,1 @@
+import{n as e}from"../chunks/XKyaHtl9.js";import"../chunks/CI15fvGn.js";import"../chunks/B8UK1oE5.js";import{n as t}from"../chunks/BelWyZaW.js";var n=e({load:()=>r}),r=async function({url:e}){t(302,`${e.pathname}/timeline`)};function i(e){}export{i as component,n as universal};

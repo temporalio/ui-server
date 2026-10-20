@@ -1,0 +1,1 @@
+import"./CI15fvGn.js";import{t as e}from"./C53t_YU4.js";var t=new e(`(prefers-reduced-motion: reduce)`);export{t};

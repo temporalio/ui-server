@@ -1,0 +1,1 @@
+var e=(e,t=e=>e)=>[...e].sort((e,n)=>t(e).localeCompare(t(n)));export{e as t};

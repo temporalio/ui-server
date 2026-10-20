@@ -1,0 +1,1 @@
+var e=[`category=WorkflowTaskFailed`,`category=WorkflowTaskTimedOut`],t=`\`ExecutionStatus\`="Running" AND \`TemporalReportedProblems\` IN (${e.map(e=>`"`+e+`"`).join(`, `)})`,n=t=>{var n;return!t.searchAttributes||t.status!==`Running`?!1:(((n=t.searchAttributes)==null||(n=n.indexedFields)==null?void 0:n.TemporalReportedProblems)||[]).some(t=>e.includes(t))};export{n,t};

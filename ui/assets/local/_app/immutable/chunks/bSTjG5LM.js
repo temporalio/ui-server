@@ -1,0 +1,1 @@
+function e(...e){return t=>{for(let n of e)n==null||n(t)}}export{e as t};

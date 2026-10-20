@@ -1,0 +1,1 @@
+var e=[`json/plain`,`json/protobuf`],t=t=>e.includes(t);export{t as n,e as t};

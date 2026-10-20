@@ -1,0 +1,1 @@
+function e(e){var t;let{workflow:n,workers:r,workersLoaded:i}=e,a=(n==null?void 0:n.isRunning)||(n==null?void 0:n.isPaused);return!!(i&&a&&!(r!=null&&(t=r.pollers)!=null&&t.length))}export{e as t};

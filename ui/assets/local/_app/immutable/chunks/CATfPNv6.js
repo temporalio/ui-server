@@ -1,0 +1,1 @@
+import{Ht as e,Rt as t}from"./CI15fvGn.js";var n=`core-context`,r=t=>{e(n,t)};function i(){return t(n)}function a(){return i().getUserIdentifier()}export{r as n,a as t};

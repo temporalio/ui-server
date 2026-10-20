@@ -1,0 +1,1 @@
+import{a as e}from"./BbdIcWPJ.js";var t=t=>!!t.executionTime&&e(t.executionTime);export{t};

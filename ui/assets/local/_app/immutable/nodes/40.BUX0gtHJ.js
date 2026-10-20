@@ -1,0 +1,1 @@
+import{n as e}from"../chunks/XKyaHtl9.js";import{n as t}from"../chunks/BelWyZaW.js";var n=e({load:()=>r}),r=async function({url:e}){t(302,`${e.pathname}/details`)};export{n as universal};

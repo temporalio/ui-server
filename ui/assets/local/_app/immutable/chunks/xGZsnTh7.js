@@ -1,0 +1,1 @@
+import{K as e}from"./CI15fvGn.js";import"./BmYiw4hW.js";var t=((t,n)=>{let r=!1,i=e=>{r=e.button===0&&!!(t!=null&&t.contains(e.target))},a=e=>{e.detail>0&&r?r=!1:t&&!t.contains(e.target)&&!e.defaultPrevented&&n(e)},o=e(document,`pointerdown`,i,{capture:!0}),s=e(document,`click`,a,{capture:!0});return{destroy:()=>{o(),s()}}});export{t};

@@ -1,0 +1,1 @@
+var e=e=>{let t=e==null?void 0:e.indexOf(`?`);return t>-1?e.slice(0,t):e},t=(t,n,r=!1)=>{let i=e(t).split(`/`),a=e(n).split(`/`);if(r&&i.length!==a.length)return!1;for(let e=0;e<i.length;e++)if(i[e]!==a[e])return!1;return!0};export{t};

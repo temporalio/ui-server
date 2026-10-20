@@ -1,0 +1,1 @@
+var e=(e,t,n)=>!e.disableWriteActions&&!t.namespaceWriteDisabled(n)&&!t.isActivityCommandsDisabled&&!e.activityCommandsDisabled;export{e as t};
