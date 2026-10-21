@@ -171,6 +171,17 @@ type (
 		// this value is ignored. If neither is available, a 7 day default applies.
 		// Example values: "8h", "24h", "168h" (1 week).
 		RefreshTokenDuration time.Duration `yaml:"refreshTokenDuration"`
+		// EndSessionEnabled - optional, defaults to false. When true, logging out additionally
+		// performs OIDC RP-Initiated Logout: after clearing the local session cookies the browser
+		// is redirected to the provider's end_session_endpoint (discovered from OIDC metadata) so
+		// the identity provider session is terminated as well. When false the logout behavior is
+		// unchanged - only the local cookies are cleared. If the provider does not advertise an
+		// end_session_endpoint this option has no effect.
+		EndSessionEnabled bool `yaml:"endSessionEnabled"`
+		// PostLogoutRedirectUri - optional URL the provider redirects the browser back to after it
+		// ends the session during RP-Initiated Logout. It must be registered with the provider as an
+		// allowed post-logout redirect URI. When empty, the origin of CallbackURL is used.
+		PostLogoutRedirectUri string `yaml:"postLogoutRedirectUri"`
 	}
 
 	Codec struct {
