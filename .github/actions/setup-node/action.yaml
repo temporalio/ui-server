@@ -9,12 +9,14 @@ runs:
       uses: pnpm/action-setup@v4
       with:
         run_install: false
-        version: 10
+        # Use the packageManager pin from the UI being built.
+        package_json_file: ui-release/package.json
 
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 22
+        # Use the Node version from the UI being built.
+        node-version-file: ui-release/.node-version
         registry-url: 'https://registry.npmjs.org'
         cache: 'pnpm'
         cache-dependency-path: 'ui-release/pnpm-lock.yaml'

@@ -11,7 +11,8 @@ runs:
   steps:
     - uses: actions/setup-go@v4
       with:
-        go-version: '1.23'
+        # go.mod is synced from ui/server, so this follows the UI.
+        go-version-file: go.mod
 
     - name: Setup Protoc
       if : ${{ inputs.token }}
