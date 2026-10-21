@@ -21,13 +21,13 @@ jobs:
     steps:
       - name: Generate token
         id: generate_token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
         with:
           app-id: ${{ secrets.TEMPORAL_CICD_APP_ID }}
           private-key: ${{ secrets.TEMPORAL_CICD_PRIVATE_KEY }}
 
       - name: Checkout ui-server
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           token: ${{ steps.generate_token.outputs.token }}
           fetch-depth: 0
@@ -54,7 +54,7 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
           target_commitish: ${{ steps.commit_changes.outputs.commit_hash }}
           generate_release_notes: true
