@@ -1,0 +1,1 @@
+import{n as e}from"../chunks/XKyaHtl9.js";import{n as t,t as n}from"../chunks/BelWyZaW.js";import{d as r}from"../chunks/DnNcs3bB.js";var i=e({load:()=>a}),a=async function({url:e,params:i}){let{namespace:a,workflow:o}=i,{runId:s}=await r({namespace:a,workflowId:o});s?t(302,`${e.pathname}/${s}`):n(404)};export{i as universal};

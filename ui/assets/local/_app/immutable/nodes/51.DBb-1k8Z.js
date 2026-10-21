@@ -1,0 +1,1 @@
+import{n as e}from"../chunks/XKyaHtl9.js";import{n as t}from"../chunks/BelWyZaW.js";import{Y as n}from"../chunks/BBZG6nO-.js";var r=e({load:()=>i}),i=async function({params:e}){let{namespace:r}=e,i=n({namespace:r});t(301,i)};export{r as universal};

@@ -1,0 +1,1 @@
+import{It as e}from"./CI15fvGn.js";import"./BUQbonsm.js";var t=(t=2e3)=>{let n=e(!1);return{copy:async(e,r)=>{e.preventDefault(),e.stopPropagation();try{await navigator.clipboard.writeText(r),n.set(!0),setTimeout(()=>{n.set(!1)},t)}catch(e){console.error(e)}},copied:n}};export{t};

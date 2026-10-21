@@ -1,0 +1,1 @@
+import{Ot as e,kt as t}from"../chunks/CI15fvGn.js";import"../chunks/B8UK1oE5.js";import{n}from"../chunks/C91f9tG3.js";import{t as r}from"../chunks/DNedV1pG.js";function i(i){let a=()=>t(n,`$importEvents`,o),[o,s]=e();r(i,{get events(){return a()}}),s()}export{i as component};

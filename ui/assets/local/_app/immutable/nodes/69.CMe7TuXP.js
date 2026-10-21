@@ -1,1 +1,0 @@
-import{n as e}from"../chunks/XKyaHtl9.js";import{n as t}from"../chunks/BelWyZaW.js";import{a as n}from"../chunks/2Mdj1vPy.js";var r=e({load:()=>i}),i=async function({parent:e,params:r}){await e();let{namespace:i,workflow:a,run:o}=r,s=n({namespace:i,workflowId:a,runId:o});t(302,s)};export{r as universal};
