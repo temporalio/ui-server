@@ -1,1 +1,0 @@
-import{Mt as e}from"./CI15fvGn.js";import"./Dr-BRCg7.js";import{n as t}from"./Dw8u3yFE.js";var n=e([t],([e])=>{var t;return(t=e.data)==null?void 0:t.cluster}),r=e([t],([e])=>e.data.settings),i=e([n],([e])=>e==null?void 0:e.serverVersion),a=e([r],([e])=>e==null?void 0:e.version);export{n as i,a as n,r,i as t};
