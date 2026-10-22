@@ -1,1 +1,0 @@
-import{Pt as e,Rt as t,zt as n}from"./CI15fvGn.js";import"./DpXHGQCL.js";var r=`CoreUser`,i=e({namespaceWriteDisabled:()=>!1,isActivityCommandsDisabled:!1}),a=()=>n(`CoreUser`)?t(r):i;export{a as t};
