@@ -16,7 +16,7 @@ runs:
       uses: actions/setup-node@v4
       with:
         # Use the Node version from the UI being built.
-        node-version-file: ui-release/.node-version
+        node-version-file: ui-release/package.json
         registry-url: 'https://registry.npmjs.org'
         cache: 'pnpm'
         cache-dependency-path: 'ui-release/pnpm-lock.yaml'
