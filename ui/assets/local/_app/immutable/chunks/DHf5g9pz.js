@@ -1,1 +1,0 @@
-import{t as e}from"./ushYCBIk.js";var t={Running:`workflows.running`,TimedOut:`workflows.timed-out`,Completed:`workflows.completed`,Failed:`workflows.failed`,ContinuedAsNew:`workflows.continued-as-new`,Canceled:`workflows.canceled`,Terminated:`workflows.terminated`,Paused:`workflows.paused`},n=e=>e in t,r=r=>r&&n(r)?e(t[r]):e(`common.unknown`);export{r as t};

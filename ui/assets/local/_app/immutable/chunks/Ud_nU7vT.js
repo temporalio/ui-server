@@ -1,0 +1,1 @@
+import{t as e}from"./DLYWgwmi.js";var t=(t,n={style:`long`,type:`conjunction`})=>new Intl.ListFormat(e.language,n).format(t);export{t};
