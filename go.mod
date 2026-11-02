@@ -1,6 +1,6 @@
 module github.com/temporalio/ui-server/v2
 
-go 1.26.9
+go 1.26.10
 
 require (
 	github.com/Masterminds/semver/v3 v3.3.0
@@ -9,7 +9,7 @@ require (
 	github.com/gomarkdown/markdown v0.0.0-20260411013819-759bbc3e3207
 	github.com/gorilla/securecookie v1.1.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.30.0
-	github.com/labstack/echo/v4 v4.15.4
+	github.com/labstack/echo/v4 v4.16.1
 	github.com/stretchr/testify v1.11.1
 	github.com/urfave/cli/v2 v2.3.0
 	go.temporal.io/api v1.63.5
