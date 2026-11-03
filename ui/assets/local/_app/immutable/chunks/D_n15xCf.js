@@ -1,0 +1,1 @@
+import{u as e}from"./JpmeElfM.js";import{a as t}from"./C3VrqtZd.js";var n=n=>{var r;if(!n.executionTime||!n.startTime)return!1;let i=e(n.executionTime,n.startTime),a=((r=n.workflowExtendedInfo)==null||(r=r.timeSkippingInfo)==null?void 0:r.currentTime)||new Date;return!i||n.endTime||t(n.startTime,a)?!1:t(n.executionTime,a)};export{n as t};
