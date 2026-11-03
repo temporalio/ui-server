@@ -1,1 +1,0 @@
-import{M as e,N as t}from"./CcVKsmLI.js";import{o as n}from"./B0-u-1_3.js";var r=36e5;function i(i,a){e(2,arguments);var o=t(a);return n(i,o*r)}export{i as t};
