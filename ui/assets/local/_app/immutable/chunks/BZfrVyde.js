@@ -1,0 +1,1 @@
+import{N as e,P as t}from"./JpmeElfM.js";import{o as n}from"./uCbe24vy.js";var r=36e5;function i(i,a){e(2,arguments);var o=t(a);return n(i,o*r)}export{i as t};
