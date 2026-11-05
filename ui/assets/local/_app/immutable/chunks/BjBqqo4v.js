@@ -1,1 +1,0 @@
-var e=e=>e!=null&&e.length&&e.length>15?`${e.slice(0,7)}...${e.slice(-7)}`:e??``;export{e as t};
