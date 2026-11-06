@@ -1,0 +1,1 @@
+var e=[`Unspecified`,`Running`,`ShuttingDown`],t=[`Running`,`ShuttingDown`];function n(t){return e.includes(t)}export{t as n,n as t};
