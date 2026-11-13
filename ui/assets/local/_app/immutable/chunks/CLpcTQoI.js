@@ -1,0 +1,1 @@
+import{u as e}from"./CWQu2JdE.js";import{a as t}from"./4V16_nd_.js";import{t as n}from"./Bq2JCiIy.js";var r=r=>{if(!r.executionTime||!r.startTime)return!1;let i=e(r.executionTime,r.startTime),a=n(r);return!i||r.endTime||t(r.startTime,a)?!1:t(r.executionTime,a)};export{r as t};

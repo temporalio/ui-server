@@ -1,0 +1,1 @@
+import{F as e,P as t}from"./CWQu2JdE.js";import{o as n}from"./DN49Efea.js";var r=36e5;function i(i,a){t(2,arguments);var o=e(a);return n(i,o*r)}export{i as t};
