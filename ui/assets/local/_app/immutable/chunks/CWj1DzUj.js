@@ -1,0 +1,1 @@
+import"./D6qMi60j.js";var e=e=>e?!!(e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey):!1;export{e as t};
