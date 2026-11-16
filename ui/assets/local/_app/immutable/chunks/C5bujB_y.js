@@ -1,0 +1,1 @@
+import{t as e}from"./9RGQpiLH.js";var t=(t,n={})=>n.disableWriteActions===!0||n.startWorkflowDisabled===!0||!e.namespaces.canStartWorkflow(t);export{t};
