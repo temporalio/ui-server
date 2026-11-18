@@ -1,0 +1,1 @@
+import{It as e}from"./CI15fvGn.js";import"./dQOZ6r5W.js";import{t}from"./DGt4bqlo.js";var n=t(`lastNamespace`,`default`,!0),r=e([]),i=e(!1);export{r as n,i as r,n as t};
