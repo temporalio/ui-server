@@ -144,6 +144,37 @@ func SetUser(c echo.Context, user *User, opts CookieOptions) error {
 	return nil
 }
 
+// IDTokenFromCookies reassembles the user* cookies written by SetUser and returns
+// the raw OIDC id_token they carry, or "" when it is absent or unreadable. The user*
+// cookies are not HttpOnly and hold a base64-encoded UserResponse; logout uses the
+// id_token found here as the id_token_hint for OIDC RP-Initiated Logout.
+func IDTokenFromCookies(c echo.Context) string {
+	var encoded strings.Builder
+	for i := 0; i < 10; i++ {
+		cookie, err := c.Request().Cookie("user" + strconv.Itoa(i))
+		if err != nil || cookie.Value == "" {
+			break
+		}
+		encoded.WriteString(cookie.Value)
+	}
+
+	if encoded.Len() == 0 {
+		return ""
+	}
+
+	decoded, err := base64.StdEncoding.DecodeString(encoded.String())
+	if err != nil {
+		return ""
+	}
+
+	var user UserResponse
+	if err := json.Unmarshal(decoded, &user); err != nil {
+		return ""
+	}
+
+	return user.IDToken
+}
+
 // userCookieMaxAge returns the MaxAge for the user* cookies.
 //
 // Those cookies carry the access token, so they must not outlive the session
